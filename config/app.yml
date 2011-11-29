@@ -1,0 +1,24 @@
+# default configuration
+all:
+  site:
+    # define site locally
+    identifier:           en
+    definition:
+      name:               project name
+      cultures:           [en_GB]
+      default_culture:    en_GB
+      root_module:        default
+      
+    available_modules:  
+      - sitemap
+      
+    default_site:               en  # define locally
+      
+    # default settings
+    include_culture_in_routes:  false
+    managed_app:                frontend
+      
+    # default classes - change if override locally
+    routing_proxy_class:        siteRoutingProxyImpl
+    manager_class:              siteManager
+    

@@ -1,0 +1,14 @@
+# Site configuration
+all:
+  site:  # you'll want one of these for each dimension if you have multiple sites
+    identifier:           ##SITEIDENTIFIER##
+    definition:
+      name:               ##PROJECTNAME##
+      cultures:           [en_GB]
+      default_culture:    en_GB
+      
+    # the default site (used in the admin area)
+    default_site:         ##SITEIDENTIFIER##
+ 
+    available_modules:
+      - sitemap

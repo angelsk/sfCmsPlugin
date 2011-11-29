@@ -1,0 +1,66 @@
+# model definitions for sitetree ----------------------
+
+sitetree:
+  columns:
+    id:                     { type: integer, primary: true, autoincrement: true }
+    site:                   { type: string(3) }
+    
+    # a name for the route, unique for each site (generally automatically generated)
+    route_name:             { type: string, size: 255, notnull: true }
+    
+    # the title to appear in menus etc.
+    title:                  { type: string, size: 255, notnull: true }
+    
+    # SEO fields
+    html_title:             { type: string, size: 255 }
+    html_keywords:          { type: string, size: 255 }
+    html_description:       { type: string, size: 255 }
+    link_title:             { type: string, size: 255 }
+    
+    # the url for this page (not including parent page url)
+    base_url:               { type: string, size: 255, notnull: true }
+    
+    # should we prepend the parent's url to this one? e.g: /footer/terms or /terms (second is not prepended)
+    prepend_parent_url:     { type: boolean, default: true, notnull: true }
+    
+    # the target symfony module we are linking to that contains the page logic
+    target_module:          { type: string, size: 255, notnull: true }
+    
+    # is the page live?
+    is_active:              { type: boolean, default: false, notnull: true }
+    
+    # is hidden - ie. does not appear in (frontend) sitemap
+    is_hidden:              { type: boolean, default: false, notnull: true }
+    
+    # is locked - ie. editing / deleting / moving prevented
+    is_locked:              { type: boolean, default: false, notnull: true }
+      
+    # is core navigation - part of the header navigation - cached, but allows user to define core nav elements
+    is_core_navigation:     { type: boolean, default: false, notnull: true }
+      
+    # Auditing (combined with Blamable and Timestampable) - is deleted - ie. does not appear anywhere
+    # Also allows easy restore of accidentally deleted pages
+    is_deleted:             { type: boolean, default: false, notnull: true }
+    deleted_by:             { type: integer }   # sf_guard_id
+    deleted_at:             { type: timestamp }
+    
+  indexes:
+    route_name:
+      fields: [route_name, site]
+      type: unique
+          
+  actAs:
+    Timestampable:          # created_at and updated_at
+    Blameable:              # created_by and updated_by (override to use sfGuardUser)
+      listener: siteBlamableListener
+    NestedSet:              # creates sitetree structure - potentially many sites - see Model for root hack
+      hasManyRoots: true
+      rootColumnName: site
+    I18n:                   # adding in multilingual support just in case
+      fields: [title, html_title, html_keywords, html_description, link_title]
+      length: 5
+      
+  options:
+    symfony:                # some classes don't need these
+      filter: false
+      #form: false
