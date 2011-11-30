@@ -45,10 +45,10 @@ class sitetreeActions extends sfActions
 
     $form = new editSitetreeForm($sitetree);
 
-    if ($this->getRequest()->isMethod('post') && $this->hasRequestParameter('sitetree')) 
+    if (($request->isMethod(sfWebRequest::POST) || $request->isMethod(sfWebRequest::PUT)) && $request->hasParameter('sitetree')) 
     {
       // form was submitted
-      $form->bind($this->getRequestParameter('sitetree'));
+      $form->bind($request->getParameter('sitetree'));
 
       if ($form->isValid()) 
       {
@@ -76,10 +76,10 @@ class sitetreeActions extends sfActions
 
     $form = new createSitetreeForm($parent);
 
-    if ($this->getRequest()->isMethod('post') && $this->hasRequestParameter('sitetree')) 
+    if ($request->isMethod(sfWebRequest::POST) && $request->hasParameter('sitetree')) 
     {
       // form was submitted
-      $form->bind($this->getRequestParameter('sitetree'));
+      $form->bind($request->getParameter('sitetree'));
 
       if ($form->isValid()) 
       {

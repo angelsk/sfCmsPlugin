@@ -116,9 +116,10 @@ abstract class PluginsitetreeForm extends BasesitetreeForm
       'base_url'            => new sfValidatorAnd(array(
                                     new sfValidatorCallback(array('callback' => array($this, 'baseRouteValidatorCallback'))),
                                     new sfValidatorRegex(array(
-                                        'pattern' => '~^[^/][a-z/0-9_-]+[^/]$~i',
+                                        'pattern' => '/^[a-z0-9-_]+$/i',
                                         'required' => !$this->getObject()->getNode()->isRoot()
-                                    ))
+                                    ),
+                                    array('invalid' => 'Invalid - can only contain a-z, 0-9, _ and -'))
                                  ), array('required' => !$this->getObject()->getNode()->isRoot())),
       'target_module'       => new sfValidatorChoice(array('choices' => array_keys($modules))),
       'is_active'           => new sfValidatorBoolean(array('empty_value' => false)),

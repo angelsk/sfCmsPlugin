@@ -49,12 +49,12 @@ class siteRoutingProxyImpl implements siteRoutingProxy
 
 		if ($name)
 		{
-		  $routeName .= '+' . $name;
+		  $routeName .= siteManager::getInstance()->getRouteJunkChar() . $name;
 		}
 		
 		if ($extras) 
 		{
-			$routeName .= '+' . $extras;
+			$routeName .= siteManager::getInstance()->getRouteJunkChar() . $extras;
 		}
 		
 		return $routeName;
@@ -81,7 +81,7 @@ class siteRoutingProxyImpl implements siteRoutingProxy
 	
 	public function getSitetreeFromSymfonyRoute($symfonyRouteName, $site) 
 	{
-		$bits = explode('+', $symfonyRouteName);
+		$bits = explode(siteManager::getInstance()->getRouteJunkChar(), $symfonyRouteName);
 		
 		$routeName = $bits[0];
 		

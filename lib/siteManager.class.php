@@ -341,14 +341,14 @@ class siteManager
   
   /**
    * Get the "junk" char for routes.  This must be a character not allowed in the
-   * routenames.  It is used for when we have to generate multiple routes
+   * routenames (see createSitetreeForm - only a-z0-9-).  It is used for when we have to generate multiple routes
    * for one sitetree entry, eg. for greedy/i18n routes.
    *
    * @return string
    */
   public function getRouteJunkChar() 
   {
-    return '+';
+    return '_';
   }
   
   /**

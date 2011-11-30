@@ -18,8 +18,10 @@ class createSitetreeForm extends sitetreeForm
 
     $this->widgetSchema['route_name']      = new sfWidgetFormInputText();
     $this->validatorSchema['route_name']   = new sfValidatorRegex(array(
-                            'pattern' => '/^[a-z0-9_-]+$/i'
-                          ));
+                                                    'pattern' => '/^[a-z0-9-]+$/i',
+                                                    'required' => true
+                                                ),
+                                                array('invalid' => 'Invalid - can only contain a-z, 0-9 and -'));
     $this->getWidgetSchema()->setLabel('route_name', 'Unique page identifier <em>*</em>');
     
     $this->widgetSchema['parent']        = new sfWidgetFormInputHidden();
@@ -28,7 +30,7 @@ class createSitetreeForm extends sitetreeForm
     $this->getValidatorSchema()->setPostValidator(
                         new sfValidatorDoctrineUnique(array(
                           'model' => 'sitetree',
-                          'column' => array('route_name')
+                          'column' => array('route_name', 'site')
                         ),
                         array('invalid'=>'This identifier already exists for this site, please modify it so that it is unique'))
                       );
