@@ -778,7 +778,7 @@ class siteManager
       $treeObject = sitetreeTable::getInstance()->getTree();
     }
 
-    $results = $treeObject->fetchTree(array(), $hydrationMode);
+    $results = $treeObject->fetchTree(array('root_id' => $site), $hydrationMode);
 
     if ($includeTranslations) 
     {

@@ -6,6 +6,7 @@ all:
       name:               ##PROJECTNAME##
       cultures:           [en_GB]
       default_culture:    en_GB
+      root_module:        default
       
     # the default site (used in the admin area)
     default_site:         ##SITEIDENTIFIER##

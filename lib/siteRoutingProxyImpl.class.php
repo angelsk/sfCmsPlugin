@@ -45,7 +45,12 @@ class siteRoutingProxyImpl implements siteRoutingProxy
 	
 	public function getRouteName($sitetree, $name, $extras='') 
 	{
-		$routeName = $sitetree['route_name'] . '+' . $name;
+		$routeName = $sitetree['route_name'];
+
+		if ($name)
+		{
+		  $routeName .= '+' . $name;
+		}
 		
 		if ($extras) 
 		{

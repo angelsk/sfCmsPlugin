@@ -112,11 +112,11 @@ class PluginsitetreeTable extends Doctrine_Table
   {
     $culture = sfContext::getInstance()->getUser()->getCulture();
 
-    $query = self::getInstance()->createQuery('s')
+    $query = Doctrine_Core::getTable('sitetree')->createQuery('s')
            ->select('s.*, t.*')
            ->leftJoin('s.Translation t ON (s.id = t.id AND t.lang = ?) INDEXBY t.lang', array($culture));
 
-    $tree = self::getInstance()->getTree();
+    $tree = Doctrine_Core::getTable('sitetree')->getTree();
     $tree->setBaseQuery($query);
     
     return $tree;
@@ -127,7 +127,7 @@ class PluginsitetreeTable extends Doctrine_Table
    */
   public static function resetTreeQuery() 
   {
-    $tree = self::getInstance()->getTree();
+    $tree = Doctrine_Core::getTable('sitetree')->getTree();
     $tree->resetBaseQuery();
   }
 }
