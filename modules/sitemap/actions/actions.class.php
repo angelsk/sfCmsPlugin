@@ -10,7 +10,7 @@
  */
 class sitemapActions extends sfActions 
 {
-  public function executeIndex() 
+  public function executeIndex(sfWebRequest $request) 
   {
     $manager = siteManager::getInstance();
     $sitetreeNode = $manager->initCurrentSitetreeNode();
@@ -19,7 +19,7 @@ class sitemapActions extends sfActions
     $this->sitetree = $sitetreeNode;
   }
   
-  public function executeSitemap() 
+  public function executeSitemap(sfWebRequest $request) 
   {
     $manager = siteManager::getInstance();
     $sitetreeNode = $manager->initCurrentSitetreeNode();

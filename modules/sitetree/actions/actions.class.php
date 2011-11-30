@@ -18,7 +18,7 @@ class sitetreeActions extends sfActions
   /**
    * Change the language in the CMS
    */
-  public function executeLanguage()
+  public function executeLanguage(sfWebRequest $request)
   {
     $this->getUser()->setCulture($this->getRequestParameter('sf_culture'));
     $url = ($this->getRequest()->getReferer() != '' ? $this->getRequest()->getReferer() : '@homepage');
@@ -68,7 +68,7 @@ class sitetreeActions extends sfActions
   /**
    * Create a new node under the given parent.
    */
-  public function executeCreate() 
+  public function executeCreate(sfWebRequest $request) 
   {
     $parentId = $this->getRequestParameter('parent');
     $parent = sitetreeTable::getInstance()->findOneById($parentId);
