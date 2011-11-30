@@ -81,7 +81,7 @@ class siteRoutingProxyImpl implements siteRoutingProxy
 	
 	public function getSitetreeFromSymfonyRoute($symfonyRouteName, $site) 
 	{
-		$bits = explode(siteManager::getInstance()->getRouteJunkChar(), $symfonyRouteName);
+		$bits = explode(siteManager::getInstance()->getRouteJunkChar(), $symfonyRouteName, 2);
 		
 		$routeName = $bits[0];
 		
