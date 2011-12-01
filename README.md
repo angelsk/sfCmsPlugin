@@ -17,9 +17,9 @@ Dependancies
 
 ### Symfony
 
- * [http://svn.doctrine-project.org/extensions/Blameable/branches/1.2-1.0/ Blamable] (external in lib/doctrine_extensions)
- * [http://www.symfony-project.org/plugins/sfDoctrineGuardPlugin sfDoctrineGuardUserPlugin] (for the Blamable extension)
- * [http://www.symfony-project.org/plugins/ysfDimensionsPlugin ysfDimensionsPlugin] (for multiple sites)
+ * [Blamable]([http://svn.doctrine-project.org/extensions/Blameable/branches/1.2-1.0/) (external in lib/doctrine_extensions)
+ * [sfDoctrineGuardUserPlugin](http://www.symfony-project.org/plugins/sfDoctrineGuardPlugin) (for the Blamable extension)
+ * [ysfDimensionsPlugin](http://www.symfony-project.org/plugins/ysfDimensionsPlugin) (for multiple sites)
 
 Setup
 -----
@@ -41,7 +41,7 @@ multiple sites, you will add a new config file per dimension (as specified in th
 	      default_culture: 		en_GB
 		  root_module:          default			# You will need to ensure you have a module.yml for whichever module this is - see below
       	
-	    # the default site (used in the admin area)
+	    # the default site
         default_site: 			##SITENAME##
      
         available_modules:
