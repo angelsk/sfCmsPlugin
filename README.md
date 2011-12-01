@@ -6,6 +6,8 @@ Introduction
 
 A simple CMS plugin for Symfony 1.4 that uses dynamic routing to create a (potentially multisite) sitetree - into which any module can be plugged.
 
+Default configuration is specified in the plugin's `config/app.yml`.
+
 Dependancies
 ------------
 
@@ -29,7 +31,7 @@ If it's a fresh setup of a project, you can use the installer to create a skelet
 Otherwise you will need to add the following configuration to your existing project in `config/app.yml` for the main site.  For
 multiple sites, you will add a new config file per dimension (as specified in the `ysfDimensionsPlugin` README).
 
-	# Site configuration
+	# Basic site configuration
 	all:
 	  site:  # you'll want one of these for each dimension if you have multiple sites
 		identifier:				##SITENAME##
@@ -37,7 +39,7 @@ multiple sites, you will add a new config file per dimension (as specified in th
           name: 				##PROJECTNAME##
           cultures: 			[en_GB]
 	      default_culture: 		en_GB
-		  root_module:        default
+		  root_module:          default			# You will need to ensure you have a module.yml for whichever module this is - see below
       	
 	    # the default site (used in the admin area)
         default_site: 			##SITENAME##
@@ -45,30 +47,66 @@ multiple sites, you will add a new config file per dimension (as specified in th
         available_modules:
           - sitemap
 
-###Further setup
+Finally, enable the sitetree module in your backend app's `settings.yml`.  
+
+    enabled_modules:
+      - sfGuardAuth
+      - sfGuardUser
+      - sitetree
+
+The first visit to the admin sitetree module will set up the sitetree (including the root node - based on the config above).  You will 
+need to publish the root node and delete the default `@homepage` route in the frontend app to use the dynamic routing.
+
+
+Multiple Sites Setup
+--------------------
 
 Follow the instructions in `ysfDimensionsPlugin` if you have multiple sites to set up your configuration files.
 
 In `config/dimensions.yml` define the allowed sites:
 
     allowed:
-	  site:         [ ##SITENAME## ]
+	  site:         [ ##SITENAME##, ##SITENAME2## ]
 	default:        ##SITENAME##
 
-@TODO: Figure out best way to set dimensions.... filter? based on domain?
+With this plugin dimensions are used to control the site (and cultures are handled within these).  If your setup is one domain per site, you can set
+the dimension on the frontend app based on the URL by using a filter.  You will need to set up the URL to dimensions relationship in your  `config/app.yml`
 
-And set the default dimension in `ProjectConfiguration::setup()`.  It is advisable if using multiple sites with different domains to 
-set `SITE_ENV` (apache) or fastcgi_param (nginx) `site` to the site dimension you require in the vhost.  Otherwise it'll be part of the routing. 
+    # Site configuration
+    all:
+      site:
+        identifier:         gb
+        definition:
+          name:             UK site
+          cultures:         [en_GB]
+          default_culture:  en_GB
+          
+        # the default site
+        default_site:     gb
+        
+        ......
+      
+      # when the config has load this will determine which dimension is set based on the URL
+      # it will always default to the default_site above if the domain doesn't match
+      dimensions:
+        'www.example.co.uk':     gb
+        'www.example.fr':        fr
+
+and add the following to your app's `filters.yml`
+
+    # insert your own filters here
+    dimension:
+      class:      siteDimensionUrlFilter
+
+Also set the default dimension in `ProjectConfiguration::setup()` - this is so the command line doesn't error out as the configuration is loaded after.
 
     // setup dimensions before calling parent::setup();
-    $this->setDimension(array('site' => isset($_REQUEST['site']) ? $_REQUEST['site'] : '##SITENAME##')); // no config available in this method
-
-You'll need to delete the default `@homepage` route in the frontend app; and in the backend app you'll need to enable the sitemap module.
+    $this->setDimension(array('site' => '##SITENAME##'); // no config available at this point
 
 Custom modules
 --------------
 
-To make use of a dynamic sitetree, but have your own modules you need to add a `module.yml` config file to the module config folder, and enable the module
+To make use of a dynamic sitetree with your own modules you need to add a `module.yml` config file to the module config folder, and enable the module
 in the `app.yml` under `available_modules` (this will enable you to select it in the module dropdown on the sitetree edit/add form).
 
 	# Site configuration all:
@@ -92,7 +130,8 @@ based on the URL entered, then leave the routing as default.
 	    use_custom_routing: true 
 	    event_handler: [newModuleClass, siteEventHandler]
 
-The event handler manages the sitetree events (as required).
+The event handler manages the sitetree events (as required).  This can either be a global class with a method per module (so the events are managed in one place),
+or per module (maybe in a model file).
 
 	<?php
 	class newModuleClass 
@@ -108,6 +147,7 @@ The event handler manages the sitetree events (as required).
 		{
 	      // node has been deleted
 	      $sitetree = $event->getSubject();
+	      $site		= $sitetree->site;
      
 	      // handle delete
 	    } 
@@ -127,15 +167,30 @@ The event handler manages the sitetree events (as required).
 							$nodeUrl, 
 							array('module' => 'newModule', 'action' => 'index')
 						);
-		  // further routes
+						
+		  // further route examples
+		 $routingProxy->addRoute( 
+           				    $sitetree,
+				            'page', 
+				            $nodeUrl . '/page/:page', 
+				            array('module' => 'newModule', 'action' => 'index', 'page' => 1),
+				            array('page' => '\d+')
+				          );
+				
+		  $routingProxy->addRoute( 
+							$sitetree,
+							'item', 
+							$nodeUrl . '/:slug, 
+							array('module' => 'newModule', 'action' => 'item')
+						);
 		}
 	  }
 	}
 
 
-In the frontend module, you should initialise the sitetree node. This will both sort out the meta information, and provide you with the current sitetree node.
+In the frontend module, you should initialise the sitetree as this will both sort out the meta information, and provide you with the current tree node.
 
 	$siteManager = siteManager::getInstance(); 
 	$sitetreeNode = $siteManager->initCurrentSitetreeNode();
 
-Then continue as required.
+Then continue with the module's functionality.
