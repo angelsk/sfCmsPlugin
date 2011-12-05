@@ -807,9 +807,14 @@ class siteManager
    *
    * @return array
    */
-  public function getSitetreeForForm($level = null) 
+  public function getSitetreeForForm($site = null, $level = null) 
   {
-    $tree = sitetreeTable::getInstance()->getSitetree($level, Doctrine::HYDRATE_ARRAY);
+    if ($site === null) 
+    {
+      $site = $this->getCurrentSite();
+    }
+    
+    $tree = sitetreeTable::getInstance()->getSitetree($site, $level, Doctrine::HYDRATE_ARRAY);
     $culture = sfContext::getInstance()->getUser()->getCulture();
 
     foreach ($tree as $item) 
