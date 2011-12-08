@@ -22,7 +22,7 @@ class siteManager
   /**
    * The node where we are in the sitetree at the moment
    *
-   * @var sitetree
+   * @var Sitetree
    */
   protected $currentSitetree = null;
 
@@ -304,7 +304,7 @@ class siteManager
     $routingProxy = $this->getRoutingProxy($router);
     $site         = $this->getCurrentSite();
     
-    $sitetrees    = sitetreeTable::getInstance()->getSitetreeNodes($site, Doctrine::HYDRATE_RECORD, false);
+    $sitetrees    = SitetreeTable::getInstance()->getSitetreeNodes($site, Doctrine::HYDRATE_RECORD, false);
     $junkChar     = $this->getRouteJunkChar();
 
     $urlStack = array();
@@ -342,7 +342,7 @@ class siteManager
   /**
    * Get the "junk" char for routes.  This must be a character not allowed in the
    * routenames (see createSitetreeForm - only a-z0-9-).  It is used for when we have to generate multiple routes
-   * for one sitetree entry, eg. for greedy/i18n routes.
+   * for one Sitetree entry, eg. for greedy/i18n routes.
    *
    * @return string
    */
@@ -637,7 +637,7 @@ class siteManager
    * Returns null if none matches.
    *
    * @param sfContext $context
-   * @return sitetree
+   * @return Sitetree
    */
   public function getSitetreeNodeFromContext($context) 
   {
@@ -666,7 +666,7 @@ class siteManager
    *
    * If a sitetree has not been set manually it will look one up from the routing.
    *
-   * @return sitetree
+   * @return Sitetree
    */
   public function getCurrentSitetreeNode() 
   {
@@ -681,7 +681,7 @@ class siteManager
   /**
    * Set where we are in the sitetree.
    *
-   * @param sitetree $currentSitetree
+   * @param Sitetree $currentSitetree
    */
   public function setCurrentSitetreeNode($currentSitetree) 
   {
@@ -694,7 +694,7 @@ class siteManager
    * If a sitetree has not been set manually it will look one up from the routing
    * and add in things like http metas.
    *
-   * @return sitetree
+   * @return Sitetree
    */
   public function initCurrentSitetreeNode() 
   {
@@ -771,11 +771,11 @@ class siteManager
   {
     if ($includeTranslations) 
     {
-      $treeObject = sitetreeTable::getInstance()->setTreeQueryWithTranslation();
+      $treeObject = SitetreeTable::getInstance()->setTreeQueryWithTranslation();
     }
     else 
     {
-      $treeObject = sitetreeTable::getInstance()->getTree();
+      $treeObject = SitetreeTable::getInstance()->getTree();
     }
 
     $results = $treeObject->fetchTree(array('root_id' => $site), $hydrationMode);
@@ -794,9 +794,9 @@ class siteManager
     // we are missing a root node for this site, try and create one:
     $defn = $this->getSite();
     $rootModule = isset($defn['root_module']) ? $defn['root_module'] : 'default';
-    $rootNode = sitetree::createRoot($site, $rootModule);
+    $rootNode = Sitetree::createRoot($site, $rootModule);
 
-    $results = new Doctrine_Collection('sitetree');
+    $results = new Doctrine_Collection('Sitetree');
     $results->add($rootNode);
 
     return $results;
@@ -814,7 +814,7 @@ class siteManager
       $site = $this->getCurrentSite();
     }
     
-    $tree = sitetreeTable::getInstance()->getSitetree($site, $level, Doctrine::HYDRATE_ARRAY);
+    $tree = SitetreeTable::getInstance()->getSitetree($site, $level, Doctrine::HYDRATE_ARRAY);
     $culture = sfContext::getInstance()->getUser()->getCulture();
 
     foreach ($tree as $item) 
@@ -842,7 +842,7 @@ class siteManager
         
         foreach ($rawCoreNavigation as $sitetreeArray) 
         {
-          $sitetree = new sitetree();
+          $sitetree = new Sitetree();
           $sitetree->fromArray($sitetreeArray);
           $this->coreNavigation[] = $sitetree;
         }
@@ -857,7 +857,7 @@ class siteManager
       
       if (!$loadedFromCache) 
       {
-        $rawCoreNavigation = sitetreeTable::getInstance()->getCoreNavigation();
+        $rawCoreNavigation = SitetreeTable::getInstance()->getCoreNavigation();
         $cachedCoreNavigation = array();
         
         foreach ($rawCoreNavigation as $sitetree) 

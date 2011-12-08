@@ -1,12 +1,12 @@
 <?php
-class createSitetreeForm extends sitetreeForm 
+class createSitetreeForm extends SitetreeForm 
 {
   protected $parent;
 
   public function __construct($parent) 
   {
     $this->parent   = $parent;
-    $sitetree       = new sitetree();
+    $sitetree       = new Sitetree();
     $sitetree->site = $parent->site;
     
     parent::__construct($sitetree);
@@ -29,7 +29,7 @@ class createSitetreeForm extends sitetreeForm
 
     $this->getValidatorSchema()->setPostValidator(
                         new sfValidatorDoctrineUnique(array(
-                          'model' => 'sitetree',
+                          'model' => 'Sitetree',
                           'column' => array('route_name', 'site')
                         ),
                         array('invalid'=>'This identifier already exists for this site, please modify it so that it is unique'))

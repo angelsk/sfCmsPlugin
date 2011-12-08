@@ -1,6 +1,6 @@
 # model definitions for sitetree ----------------------
 
-sitetree:
+Sitetree:
   columns:
     id:                     { type: integer, primary: true, autoincrement: true }
     site:                   { type: string(3) }

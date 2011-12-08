@@ -1,5 +1,5 @@
 <?php
-class editSitetreeForm extends sitetreeForm 
+class editSitetreeForm extends SitetreeForm 
 {
   public function setup()  
   {

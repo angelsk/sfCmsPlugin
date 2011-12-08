@@ -23,15 +23,15 @@ interface siteRoutingProxy
 	 * Add the given route into the symfony routing
 	 * 
 	 * The "name" is the name used to identify this route for the module when 
-	 * it is adding more then one route for each sitetree node.  For example,
+	 * it is adding more then one route for each Sitetree node.  For example,
 	 * in the content listing module the name is "item" for the route which
 	 * displays the details page for an item.  Every node must provide a route
 	 * with a blank name, which is the route which matches the url for the 
-	 * sitetree node.
+	 * Sitetree node.
 	 * 
 	 * The $defaultParams and $requirements are the same as for sfPatternRouting
 	 * 
-	 * @param sitetree $sitetree
+	 * @param Sitetree $sitetree
 	 * @param string $name
 	 * @param string $url
 	 * @param array $defaultParams
@@ -53,7 +53,7 @@ interface siteRoutingProxy
 	 * 
 	 * returns something like "@sitetree_route_name+item?slug=mySlug"
 	 *
-	 * @param sitetree $sitetree
+	 * @param Sitetree $sitetree
 	 * @param string $name
 	 * @param array $params
 	 */
@@ -61,7 +61,7 @@ interface siteRoutingProxy
 	
 	
 	/**
-	 * Get the sitetree which created this route
+	 * Get the Sitetree which created this route
 	 * 
 	 * This takes a symfony route name, and returns the $sitetree node which
 	 * created it.  It can do this because we always include the route_name 
