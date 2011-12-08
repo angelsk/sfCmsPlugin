@@ -35,39 +35,39 @@ abstract class PluginContentBlockVersion extends BaseContentBlockVersion
 	/**
      * Make a new version and create the "current version" entry
      *
-     * @param ContentBlock $ContentBlock
+     * @param ContentBlock $contentBlock
      * @param string $lang
      * @return ContentBlockVersion
      */
-    public static function createInitialVersion($ContentBlock, $lang) 
+    public static function createInitialVersion($contentBlock, $lang) 
 	{
         // make version for the current lang
-        $ContentBlockVersion = self::createVersion($ContentBlock, $lang);
+        $contentBlockVersion = self::createVersion($contentBlock, $lang);
 
         // make our created version the current one
-        $ContentBlockCurrentVersion = new ContentBlockCurrentVersion();
-        $ContentBlockCurrentVersion->lang = $lang;
-        $ContentBlockCurrentVersion->ContentBlock = $ContentBlock;
-        $ContentBlockCurrentVersion->Version = $ContentBlockVersion;
-        $ContentBlockCurrentVersion->Content_block_version_id = $ContentBlockVersion->id;
-        $ContentBlockCurrentVersion->save();
+        $contentBlockCurrentVersion = new ContentBlockCurrentVersion();
+        $contentBlockCurrentVersion->lang = $lang;
+        $contentBlockCurrentVersion->ContentBlock = $contentBlock;
+        $contentBlockCurrentVersion->Version = $contentBlockVersion;
+        $contentBlockCurrentVersion->Content_block_version_id = $contentBlockVersion->id;
+        $contentBlockCurrentVersion->save();
 
-        return $ContentBlockVersion;
+        return $contentBlockVersion;
     }
     
  	/**
-     * @param ContentBlock $ContentBlock
+     * @param ContentBlock $contentBlock
      * @param string $lang
      * @return ContentBlockVersion
      */
-    public static function createVersion($ContentBlock, $lang) 
+    public static function createVersion($contentBlock, $lang) 
 	{
-        $ContentBlockVersion = new ContentBlockVersion();
-        $ContentBlockVersion->lang = $lang;
-        $ContentBlockVersion->ContentBlock = $ContentBlock;
-        $ContentBlockVersion->save();
+        $contentBlockVersion = new ContentBlockVersion();
+        $contentBlockVersion->lang = $lang;
+        $contentBlockVersion->ContentBlock = $contentBlock;
+        $contentBlockVersion->save();
 
-        return $ContentBlockVersion;
+        return $contentBlockVersion;
     }
     
     /**
@@ -129,9 +129,9 @@ abstract class PluginContentBlockVersion extends BaseContentBlockVersion
      */
     public function getDefinition() 
 	{
-    	$ContentBlockDefn = $this->ContentBlock->getDefinition();
+    	$contentBlockDefn = $this->ContentBlock->getDefinition();
 
-    	if ($ContentBlockDefn) return array_merge($ContentBlockDefn, $this->additionalParameters);
+    	if ($contentBlockDefn) return array_merge($contentBlockDefn, $this->additionalParameters);
     	else return $this->additionalParameters;
     }
 }

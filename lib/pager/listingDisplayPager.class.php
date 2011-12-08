@@ -1,9 +1,10 @@
 <?php
-class listingDisplayPager extends sfDoctrineSuperPager {
-
+class listingDisplayPager extends sfDoctrineSuperPager 
+{
 	protected $listing;
 
-	public function __construct($listing) {
+	public function __construct($listing) 
+	{
 		$this->listing = $listing;
 
 		$manager = listingManager::getInstance();

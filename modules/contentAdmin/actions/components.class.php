@@ -19,7 +19,7 @@ class ContentAdminComponents extends sfComponents
      */
     public function executeEditor(sfWebRequest $request) 
 	{
-        $contentGroup = $this->ContentGroup;
+        $contentGroup = $this->contentGroup;
         
         if (!$contentGroup instanceof ContentGroup) 
 		{

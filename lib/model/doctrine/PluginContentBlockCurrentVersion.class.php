@@ -15,16 +15,16 @@ abstract class PluginContentBlockCurrentVersion extends BaseContentBlockCurrentV
 	/**
 	 * Create unsaved current version for Content block
 	 *
-	 * @param ContentBlock $ContentBlock
+	 * @param ContentBlock $contentBlock
 	 * @param string $lang
 	 * @return ContentBlockCurrentVersion
 	 */
-	public static function createNew(ContentBlock $ContentBlock, $lang) 
+	public static function createNew(ContentBlock $contentBlock, $lang) 
 	{
-		$ContentBlockCurrentVersion = new ContentBlockCurrentVersion();
-		$ContentBlockCurrentVersion->lang = $lang;
-		$ContentBlockCurrentVersion->ContentBlock = $ContentBlock;
+		$contentBlockCurrentVersion = new ContentBlockCurrentVersion();
+		$contentBlockCurrentVersion->lang = $lang;
+		$contentBlockCurrentVersion->ContentBlock = $contentBlock;
 		
-		return $ContentBlockCurrentVersion;
+		return $contentBlockCurrentVersion;
 	}
 }
