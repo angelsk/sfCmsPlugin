@@ -40,7 +40,7 @@ class sitetreeActions extends sfActions
    */
   public function executeEdit(sfWebRequest $request) 
   {
-    $sitetree = sitetreeTable::getInstance()->findOneById($request->getParameter('id'));
+    $sitetree = SitetreeTable::getInstance()->findOneById($request->getParameter('id'));
     $this->forward404Unless($sitetree);
 
     $form = new editSitetreeForm($sitetree);
@@ -71,7 +71,7 @@ class sitetreeActions extends sfActions
   public function executeCreate(sfWebRequest $request) 
   {
     $parentId = $this->getRequestParameter('parent');
-    $parent = sitetreeTable::getInstance()->findOneById($parentId);
+    $parent = SitetreeTable::getInstance()->findOneById($parentId);
     $this->forward404Unless($parent, 'A parent was not provided for creation');
 
     $form = new createSitetreeForm($parent);
@@ -116,7 +116,7 @@ class sitetreeActions extends sfActions
    */
   public function executePublish(sfWebRequest $request) 
   {
-    $sitetree = sitetreeTable::getInstance()->findOneById($request->getParameter('id'));
+    $sitetree = SitetreeTable::getInstance()->findOneById($request->getParameter('id'));
     $this->forward404Unless($sitetree, 'No sitetree to publish');
 
     $sitetree->publish();
@@ -132,7 +132,7 @@ class sitetreeActions extends sfActions
    */
   public function executeDelete(sfWebRequest $request) 
   {
-    $sitetree = sitetreeTable::getInstance()->findOneById($request->getParameter('id'));
+    $sitetree = SitetreeTable::getInstance()->findOneById($request->getParameter('id'));
     $this->forward404Unless($sitetree, 'No sitetree to delete');
     $title = $sitetree->getTitle();
 
@@ -175,7 +175,7 @@ class sitetreeActions extends sfActions
    */
   public function executeRestore(sfWebRequest $request) 
   {
-    $sitetree = sitetreeTable::getInstance()->findOneById($request->getParameter('id'));
+    $sitetree = SitetreeTable::getInstance()->findOneById($request->getParameter('id'));
     $this->forward404Unless($sitetree, 'No sitetree to restore');
     $title = $sitetree->getTitle();
 

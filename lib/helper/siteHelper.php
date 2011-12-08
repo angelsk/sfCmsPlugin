@@ -22,7 +22,7 @@
  *
  * returns something like "@sitetree-route-name_item?slug=mySlug"
  *
- * @param sitetree $sitetree
+ * @param Sitetree $sitetree
  * @param string $name
  * @param array $params
  * @return string
@@ -32,7 +32,7 @@ function internal_url_for_sitetree($sitetree, $name='', $params = array())
   if (is_string($sitetree)) 
   {
     // check is active node
-    $sitetree = sitetreeTable::getInstance()->retrieveByRoutename($sitetree, true);
+    $sitetree = SitetreeTable::getInstance()->retrieveByRoutename($sitetree, true);
   }
   
   if (!$sitetree) return false;
@@ -43,7 +43,7 @@ function internal_url_for_sitetree($sitetree, $name='', $params = array())
 /**
  * Link to a sitetree node
  *
- * @param mixed $sitetree An sitetree::route_name or an sitetree
+ * @param mixed $sitetree An Sitetree::route_name or a Sitetree
  * @param string $displayName The text for the link
  * @param array $options link_to options
  * @return string
@@ -53,7 +53,7 @@ function link_to_sitetree($sitetree, $displayName=null, $options=array())
   if (is_string($sitetree))  
   {
     // check is active node
-    $sitetree = sitetreeTable::getInstance()->retrieveByRoutename($sitetree, true);
+    $sitetree = SitetreeTable::getInstance()->retrieveByRoutename($sitetree, true);
   }
 
   if (!$sitetree) return false;
@@ -158,7 +158,7 @@ function atom_for_sitetree($sitetree)
   if (is_string($sitetree))  
   {
     // check is active node
-    $sitetree = sitetreeTable::getInstance()->retrieveByRoutename($sitetree, true);
+    $sitetree = SitetreeTable::getInstance()->retrieveByRoutename($sitetree, true);
   }
 
   if (!$sitetree) 

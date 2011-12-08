@@ -4,4 +4,4 @@ all:
       name: Sitemap
       admin_url: sitetree/index
       use_custom_routing: true
-      event_handler: [sitetree, siteEventHandler]
+      event_handler: [Sitetree, siteEventHandler]

@@ -85,6 +85,6 @@ class siteRoutingProxyImpl implements siteRoutingProxy
 		
 		$routeName = $bits[0];
 		
-		return sitetreeTable::getInstance()->retrieveByRoutename($site, $routeName);
+		return SitetreeTable::getInstance()->retrieveByRoutename($site, $routeName);
 	}
 }
