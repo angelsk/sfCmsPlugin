@@ -329,7 +329,7 @@ class siteManager
       } 
       else 
       {
-        sitetree::addToRouting($sitetree, $routingProxy, $junkChar, $urlStack);
+        Sitetree::addToRouting($sitetree, $routingProxy, $junkChar, $urlStack);
       }
     }
     
@@ -743,9 +743,9 @@ class siteManager
     {
       if ($currentSitetree = $this->getCurrentSitetreeNode()) 
       {
-        sitetreeTable::getInstance()->setTreeQueryWithTranslation();
+        SitetreeTable::getInstance()->setTreeQueryWithTranslation();
         $this->currentSitetreeAncestors = $currentSitetree->getNode()->getAncestors();
-        sitetreeTable::getInstance()->resetTreeQuery();
+        SitetreeTable::getInstance()->resetTreeQuery();
       } 
       else 
       {

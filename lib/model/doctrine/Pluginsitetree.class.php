@@ -59,7 +59,7 @@ abstract class PluginSitetree extends BaseSitetree
    * Get the root node for the site
    * 
    * @param string $site
-   * @return sitetree
+   * @return Sitetree
    */
   public static function getRoot($site) 
   {
