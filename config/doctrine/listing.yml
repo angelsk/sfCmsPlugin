@@ -1,0 +1,145 @@
+# model definitions -------------------------
+
+Listing:
+  columns:
+    id:                           { type: integer, primary: true, autoincrement: true }  
+    # link this into the sitetree
+    sitetree_id:                  { type: integer, notnull: true }
+    # The type of the listing page, corresponds to the key from the definition in app/yml    
+    type:                         { type: string, size: 50, notnull: true }
+    # Should the user be able to order the items manually for this listing?
+    # If false, the order from the listing pager / config will be used.
+    use_custom_order:             { type: boolean, default: false, notnull: true }
+    # How many results should appear on each page?
+    results_per_page:             { type: integer, default: 10, notnull: true }
+    # This is the content group being used to render this page
+    content_group_id:             { type: integer }
+    # This is to add an external RSS feed to the listing / i.e: feedburner with listing's rss feed
+    rss_url:                      { type: string(255) }
+      
+  indexes:
+    site_route:
+      fields: route_name
+      type: unique
+      
+  relations:
+    ContentGroup:
+      class: ContentGroup
+      local: content_group_id
+      foreign: id
+      type: one
+    Sitetree:
+      class: Sitetree
+      local: sitetree_id
+      foreign: id
+      type: one
+      onDelete: NO ACTION
+  
+  actAs:
+    Timestampable:          # created_at and updated_at
+    Blameable:              # created_by and updated_by (override to use sfGuardUser)
+      listener: siteBlamableListener
+
+  options:
+    symfony:                # some classes don't need these
+      filter: false
+      #form: false
+
+
+# can turn categories on and off in the config for the listing - default off
+# becomes part of the routing
+ListingCategory:
+  columns:
+    id:                           { type: integer, primary: true, autoincrement: true } 
+    # Used to link this category into the content listing
+    listing_id:                   { type: integer }
+    # The title of this category.  Used to generate the slug
+    title:                        { type: string, size: 255, notnull: true }
+    is_active:                    { type: boolean, default: false, notnull: true }
+    
+  relations:
+    Listing:
+      class: Listing
+      local: listing_id
+      foreign: id
+      type: one
+          
+  actAs:
+    Timestampable:
+    Blameable:              # created_by and updated_by (override to use sfGuardUser)
+      listener: siteBlamableListener
+    Orderable:              # allow manual ordering
+      groupBy: [listing_id]
+    Sluggable:
+      unique: true
+      fields: [title]
+      canUpdate: false
+      uniqueBy: [listing_id]
+    I18n:
+      fields: [title]
+      length: 5
+      
+  options:
+    symfony:                # some classes don't need these
+      filter: false
+      #form: false
+    
+
+# generic listing item
+ListingItem:
+  columns:
+    id:                           { type: integer, primary: true, autoincrement: true } 
+    # Used to link this item into the content listing
+    listing_id:                   { type: integer }
+    # This is the content group being used to render this page
+    content_group_id:             { type: integer }
+    # used to link a listing item to a category - optional
+    listing_category_id:          { type: integer }
+    # The title of this item.  Used to generate the slug
+    title:                        { type: string, size: 255, notnull: true }
+    # date associated with the item - can be used to order
+    item_date:                    { type: datetime, notnull: false }
+    is_active:                    { type: boolean, default: false, notnull: true }
+    # item is live, but only accessible by url not on the general listing
+    is_hidden:                    { type: boolean, default: false, notnull: true }
+    # provide in config a list of statuses - e.g: featured, etc
+    status:                       { type: string, size: 25, notnull: false }
+      
+  relations:
+    Listing:
+      class: Listing
+      local: listing_id
+      foreign: id
+      type: one
+    ListingCategory:
+      class: ListingCategory
+      local: listing_category_id
+      foreign: id
+      type: one
+    ContentGroup:
+      class: ContentGroup
+      local: content_group_id
+      foreign: id
+      type: one
+          
+  actAs:
+    Timestampable:
+    Blameable:              # created_by and updated_by (override to use sfGuardUser)
+      listener: siteBlamableListener
+      relations:
+        created:
+          disabled: false  
+          class: sfGuardUser
+        updated:
+          disabled: false  
+          class: sfGuardUser
+    Orderable:              # allow manual ordering
+      groupBy: [listing_id]
+    Sluggable:
+      unique: true
+      fields: [title]
+      canUpdate: false
+      uniqueBy: [listing_id]
+    I18n:
+      fields: [title]
+      length: 5

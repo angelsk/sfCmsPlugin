@@ -1,0 +1,144 @@
+# model definitions ----------------------
+
+ContentGroup:
+  columns:
+    id:                           { type: integer, primary: true, autoincrement: true }  
+    type:                         { type: string(50) }
+    # this can be optionally used by the type implementation 
+    type_options:                 { type: string(255) }
+    
+  relations:
+    ContentBlocks:
+      class: ContentBlock
+      local: id
+      foreign: content_group_id
+      type: many
+      onDelete: CASCADE
+      
+  actAs:
+    Timestampable:          # created_at and updated_at
+    
+  options:
+    symfony:                # some classes don't need these
+      filter: false
+      form: false
+
+
+ContentBlock:
+  columns:
+    id:                           { type: integer, primary: true, autoincrement: true }  
+    content_group_id:             { type: integer(3) }
+    identifier:                   { type: string(50) }
+    type:                         { type: string(50) }
+    
+  relations:
+    CurrentVersions:
+      class: ContentBlockCurrentVersion
+      local: id
+      foreign: content_block_id
+      type: many
+      onDelete: CASCADE
+    ContentGroup:
+      class: ContentGroup
+      local: content_group_id
+      foreign: id
+      type: one
+    Versions:
+      class: ContentBlockVersion
+      local: id
+      foreign: content_block_id
+      type: many
+      onDelete: CASCADE
+      
+  actAs:
+    Timestampable:
+
+  indexes:
+    content_group_id:
+      fields: [content_group_id]
+  
+  options:
+    symfony:                # some classes don't need these
+      filter: false
+      form: false
+    
+    
+ContentBlockCurrentVersion:
+  columns:
+    id:                           { type: integer, primary: true, autoincrement: true }  
+    content_block_id:             { type: integer(3), primary: true }
+    lang:               		  { type: string(5) }
+    content_block_version_id:     { type: integer(3) }
+        
+  relations:
+    ContentBlock:
+      class: ContentBlock
+      local: content_block_id
+      foreign: id  
+      type: one
+    Version:
+      class: ContentBlockVersion
+      local: content_block_version_id
+      foreign: id  
+      type: one
+      
+  actAs:
+    Timestampable:
+    Blameable:              # created_by and updated_by (override to use sfGuardUser)
+      listener: siteBlamableListener
+    
+  indexes:
+    content_block_version_id:
+      fields: [content_block_version_id]
+    content_block_id:
+      fields: [content_block_id]
+      
+  options:
+    symfony:                # some classes don't need these
+      filter: false
+      form: false
+
+ContentBlockVersion:
+  columns:
+    id:                           { type: integer, primary: true, autoincrement: true }  
+    content_block_id:             { type: integer(3) }
+    lang:               		  { type: string(5) }
+    value:                        { type: clob }
+    #current_approval_id:          { type: integer(3) }
+    
+  relations:
+    
+    ContentBlock:
+      class: ContentBlock
+      local: content_block_id
+      foreign: id
+    CurrentVersion:
+      class: ContentBlockCurrentVersion
+      local: id
+      foreign: content_block_version_id  
+      type: one
+    #CurrentApproval:
+    #  class: approval
+    #  local: current_approval_id
+    #  foreign: id
+    #  type: one
+  
+  actAs:
+    Timestampable:
+      updated:
+        disabled: true
+    Blameable:              # created_by and updated_by (override to use sfGuardUser)
+      listener: siteBlamableListener
+      columns:
+        updated:
+          disabled: true    # versions are not updated, just created
+      relations:
+        created:
+          disabled: false   # we need to be able to display creator easily (not just audit)
+          class: sfGuardUser
+      
+  options:
+    symfony:                # some classes don't need these
+      filter: false
+      form: false
+      
