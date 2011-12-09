@@ -10,11 +10,11 @@ class PluginSitetreeTable extends Doctrine_Table
   /**
    * Returns an instance of this class.
    *
-   * @return object PluginSitetreeTable
+   * @return object SitetreeTable
    */
   public static function getInstance()
   {
-    return Doctrine_Core::getTable('PluginSitetree');
+    return Doctrine_Core::getTable('Sitetree');
   }
     
   /**

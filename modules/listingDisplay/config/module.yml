@@ -1,0 +1,7 @@
+all:
+  site:
+    module_definition:
+      name: "Content listing"
+      admin_url: listingAdmin/editByRoute
+      use_custom_routing: true
+      event_handler: [Listing, siteEventHandler]

@@ -1,0 +1,6 @@
+all:
+  site:
+    module_definition:
+      name: "Content page"
+      admin_url: pageAdmin/editByRoute
+      event_handler: [Page, siteEventHandler]
