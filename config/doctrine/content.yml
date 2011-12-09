@@ -2,10 +2,9 @@
 
 ContentGroup:
   columns:
-    id:                           { type: integer, primary: true, autoincrement: true }  
-    type:                         { type: string(50) }
+    type:                         { type: string, size: 50 }
     # this can be optionally used by the type implementation 
-    type_options:                 { type: string(255) }
+    type_options:                 { type: string, size: 255 }
     
   relations:
     ContentBlocks:
@@ -19,17 +18,16 @@ ContentGroup:
     Timestampable:          # created_at and updated_at
     
   options:
-    symfony:                # some classes don't need these
+    symfony:                
       filter: false
       form: false
 
 
 ContentBlock:
   columns:
-    id:                           { type: integer, primary: true, autoincrement: true }  
-    content_group_id:             { type: integer(3) }
-    identifier:                   { type: string(50) }
-    type:                         { type: string(50) }
+    content_group_id:             { type: integer }
+    identifier:                   { type: string, size: 50 }
+    type:                         { type: string, size: 50 }
     
   relations:
     CurrentVersions:
@@ -58,17 +56,16 @@ ContentBlock:
       fields: [content_group_id]
   
   options:
-    symfony:                # some classes don't need these
+    symfony:                
       filter: false
       form: false
     
     
 ContentBlockCurrentVersion:
   columns:
-    id:                           { type: integer, primary: true, autoincrement: true }  
-    content_block_id:             { type: integer(3), primary: true }
-    lang:               		  { type: string(5) }
-    content_block_version_id:     { type: integer(3) }
+    content_block_id:             { type: integer }
+    lang:               		      { type: string, size: 5 }
+    content_block_version_id:     { type: integer }
         
   relations:
     ContentBlock:
@@ -94,17 +91,16 @@ ContentBlockCurrentVersion:
       fields: [content_block_id]
       
   options:
-    symfony:                # some classes don't need these
+    symfony:                
       filter: false
       form: false
 
 ContentBlockVersion:
   columns:
     id:                           { type: integer, primary: true, autoincrement: true }  
-    content_block_id:             { type: integer(3) }
-    lang:               		  { type: string(5) }
+    content_block_id:             { type: integer }
+    lang:               		      { type: string, size: 5 }
     value:                        { type: clob }
-    #current_approval_id:          { type: integer(3) }
     
   relations:
     
@@ -117,11 +113,6 @@ ContentBlockVersion:
       local: id
       foreign: content_block_version_id  
       type: one
-    #CurrentApproval:
-    #  class: approval
-    #  local: current_approval_id
-    #  foreign: id
-    #  type: one
   
   actAs:
     Timestampable:
@@ -138,7 +129,7 @@ ContentBlockVersion:
           class: sfGuardUser
       
   options:
-    symfony:                # some classes don't need these
+    symfony:                
       filter: false
       form: false
       

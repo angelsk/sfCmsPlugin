@@ -2,7 +2,6 @@
 
 Listing:
   columns:
-    id:                           { type: integer, primary: true, autoincrement: true }  
     # link this into the sitetree
     sitetree_id:                  { type: integer, notnull: true }
     # The type of the listing page, corresponds to the key from the definition in app/yml    
@@ -15,12 +14,7 @@ Listing:
     # This is the content group being used to render this page
     content_group_id:             { type: integer }
     # This is to add an external RSS feed to the listing / i.e: feedburner with listing's rss feed
-    rss_url:                      { type: string(255) }
-      
-  indexes:
-    site_route:
-      fields: route_name
-      type: unique
+    rss_url:                      { type: string, size: 255 }
       
   relations:
     ContentGroup:
@@ -41,16 +35,14 @@ Listing:
       listener: siteBlamableListener
 
   options:
-    symfony:                # some classes don't need these
+    symfony:               
       filter: false
-      #form: false
 
 
 # can turn categories on and off in the config for the listing - default off
 # becomes part of the routing
 ListingCategory:
   columns:
-    id:                           { type: integer, primary: true, autoincrement: true } 
     # Used to link this category into the content listing
     listing_id:                   { type: integer }
     # The title of this category.  Used to generate the slug
@@ -80,15 +72,13 @@ ListingCategory:
       length: 5
       
   options:
-    symfony:                # some classes don't need these
+    symfony:                
       filter: false
-      #form: false
     
 
 # generic listing item
 ListingItem:
   columns:
-    id:                           { type: integer, primary: true, autoincrement: true } 
     # Used to link this item into the content listing
     listing_id:                   { type: integer }
     # This is the content group being used to render this page
@@ -98,7 +88,7 @@ ListingItem:
     # The title of this item.  Used to generate the slug
     title:                        { type: string, size: 255, notnull: true }
     # date associated with the item - can be used to order
-    item_date:                    { type: datetime, notnull: false }
+    item_date:                    { type: timestamp, notnull: false }
     is_active:                    { type: boolean, default: false, notnull: true }
     # item is live, but only accessible by url not on the general listing
     is_hidden:                    { type: boolean, default: false, notnull: true }
