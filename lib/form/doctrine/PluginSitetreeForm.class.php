@@ -55,6 +55,9 @@ abstract class PluginSitetreeForm extends BaseSitetreeForm
     $this->widgetSchema->setHelp('route_name', 'This is for development purposes to uniquely identify the page');
     $this->widgetSchema->setHelp('is_hidden', 'The page will be created, but only accessible via a direct URL - useful for competitions for example');
     $this->widgetSchema->setHelp('is_locked', 'Prevent page from being deleted (whilst locked), or the important settings from being changed');
+    
+    sfImagePoolUtil::addImageChooser($this);
+    $this->widgetSchema->setHelp('sf_image_pool_ids', 'Select an image tagged with "sitetree" to represent the page');
   }
     
   /**

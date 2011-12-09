@@ -1,0 +1,69 @@
+.folderTree {
+  overflow: hidden;
+  margin: 5px;
+  padding: 10px;
+  width: 50%;
+  min-width: 600px;
+}
+
+.folderTree ul {
+  margin: 0 0 0 20px;
+  padding: 0;
+}
+
+.folderTree ul li {
+  border-top: 1px solid #DDD;
+  padding-top: 3px;
+  position: relative;
+}
+
+.folderTree li .lnk {
+  padding-bottom: 5px;
+  overflow: hidden;
+}
+
+.folderTree, .folderTree li, .folderTree ul, .folderTree ul li {
+  list-style-type: none;
+}
+
+.folderTree li {
+  clear: both;
+}
+
+.folderTree .lnk {
+  width: 250px; 
+  padding: 0 10px;
+}
+
+.folderTree .nodeinfo {
+  width: 150px;
+  padding: 2px;
+  margin-left: 20px;
+  position: absolute;
+  right: 100px;
+  top: 0;
+}
+.folderTree .nodeinfo.blank {
+}
+
+.folderTree .sitetree_actions {
+  width: 100px;
+  position: absolute;
+  top: 0;
+  right: 0; 
+}
+
+#breadcrumbs {
+}
+
+.sitetreeInfo {
+  padding: 10px;
+  margin: 0px 0px 15px;
+  background: white;
+  border: 1px solid #DDD;
+}
+
+.site_sitetree_locked, .site_sitetree_hidden, .site_sitetree_published, .site_sitetree_not_published, .site_sitetree_editing { text-transform:uppercase; font-weight:bold; padding-right:10px; color:#0085c5;}
+.site_sitetree_locked, .site_sitetree_hidden {color:#000;}
+.site_sitetree_not_published {color:#ff0000;}
+.site_sitetree_editing {color: #00B585;}

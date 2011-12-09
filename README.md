@@ -17,12 +17,12 @@ Dependancies
 
 ### Symfony
 
+ * [sfDoctrineGuardUserPlugin](http://www.symfony-project.org/plugins/sfDoctrineGuardPlugin)
+ * [sfImagePoolPlugin](https://github.com/HollerLondon/sfImagePoolPlugin)
  * [Blamable]([http://svn.doctrine-project.org/extensions/Blameable/branches/1.2-1.0/) (external in lib/doctrine_extensions)
- * [sfDoctrineGuardUserPlugin](http://www.symfony-project.org/plugins/sfDoctrineGuardPlugin) (for the Blamable extension)
  * [ysfDimensionsPlugin](http://www.symfony-project.org/plugins/ysfDimensionsPlugin) (for multiple sites)
 
 ### TODO
- * sfImagePoolPlugin
  * sfMooToolsFormExtraPlugin
 
 Setup
@@ -65,6 +65,12 @@ Finally, enable the admin modules in your backend app's `settings.yml`.
 
 The first visit to the admin sitetree module will set up the sitetree (including the root node - based on the config above).  You will 
 need to publish the root node and delete the default `@homepage` route in the frontend app to use the dynamic routing.
+
+Enable the page and listing display modules in the frontend `settings.yml`.
+
+     enabled_modules:
+      - pageDisplay
+      - listingDisplay
 
 
 Multiple Sites Setup

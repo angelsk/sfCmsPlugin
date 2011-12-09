@@ -403,7 +403,7 @@ class siteManager
       // we already initialised the other context, switch to it now
       sfContext::switchTo($app . $env);
     }
-
+    
     try 
     {
       // make the url

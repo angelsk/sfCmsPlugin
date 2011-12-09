@@ -65,7 +65,7 @@ abstract class PluginContentBlock extends BaseContentBlock
             $contentBlockCurrentVersion = ContentBlockCurrentVersion::createNew($contentBlock, $lang);
         }
         
-        if ($contentBlockCurrentVersion->Content_block_version_id == $contentBlockVersion->id) 
+        if ($contentBlockCurrentVersion->content_block_version_id == $contentBlockVersion->id) 
     {
             // this version is already the current one
             return $contentBlockCurrentVersion;

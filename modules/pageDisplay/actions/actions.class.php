@@ -49,7 +49,8 @@ class pageDisplayActions extends sfActions
   {
     $page = $page = PageTable::getInstance()->findOneById($request->getParameter('id'));
     $this->forward404Unless($page, 'No such page');
-    $sitetree = SitetreeTable::getInstance()->findOneById($page->sitetree_id, false);
+    
+    $sitetree = SitetreeTable::getInstance()->findOneById($page->sitetree_id);
     $this->forward404Unless($sitetree, 'No sitetree');
 
     $siteManager = siteManager::getInstance();

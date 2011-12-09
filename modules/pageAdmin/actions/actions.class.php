@@ -54,8 +54,9 @@ class pageAdminActions extends sfActions
     }
 
     $this->routeName = $routeName;
-    $this->sitetree = $sitetree;
-    $this->form = $form;
+    $this->site      = $site;
+    $this->sitetree  = $sitetree;
+    $this->form      = $form;
   }
 
   /**

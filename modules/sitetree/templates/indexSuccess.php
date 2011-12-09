@@ -1,6 +1,10 @@
 <?php
 $treeNodes = $sf_data->getRaw('treeNodes');
 
+slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array(
+  'breadcrumbs' => array(link_to('Sitetree', 'sitetree/index'))
+)));
+
 // use this to store a global var for our tree rendering functions
 sfConfig::set('site_hack_entireSitetree', $treeNodes);
 ?>
@@ -8,6 +12,10 @@ sfConfig::set('site_hack_entireSitetree', $treeNodes);
 <div id="sf_admin_container">
 
   <h1>Sitetree</h1>
+  
+  <div id="sf_admin_header">
+    <p>Click on the page name to edit the content; and the pencil icon to edit the properties (and image) of each page.</p>
+  </div>
 
   <?php if ($sf_user->hasFlash('error')) : ?>
     <div class="error"><?php echo $sf_user->getFlash('error'); ?></div>
@@ -37,7 +45,7 @@ sfConfig::set('site_hack_entireSitetree', $treeNodes);
             
             if ('sitetree/index' != $moduleDefinition['admin_url'])
             {
-              $out = '<span class="lnk left">' . link_to(
+              $out = '<span class="lnk">' . link_to(
                 $name,
                 $moduleDefinition['admin_url'] . "?routeName=$sitetree->route_name&site=$sitetree->site"
               ) . "</span>";
@@ -70,14 +78,14 @@ sfConfig::set('site_hack_entireSitetree', $treeNodes);
           
           if (empty($class)) $class = 'blank';
           
-          $out .= '<span class="right nodeinfo '.trim($class).'">'.trim($content).'&nbsp;</span>';
+          $out .= '<span class="nodeinfo '.trim($class).'">'.trim($content).'&nbsp;</span>';
           
-          $out .= '<span class="right">';
-          if (!$sitetree->getNode()->isRoot() && !$sitetree->is_locked) $out .= '<a href="' . url_for('sitetree/delete?id='.$sitetree->id) . '" class="ui-icon ui-icon-close delete_sitetree" title="delete"><img src="/sfDoctrinePlugin/images/delete.png" /></a>';
-          if ($sitetree->is_deleted && $canAdmin) $out .= '<a href="' . url_for('sitetree/restore?id='.$sitetree->id) . '" class="ui-icon ui-icon-check" title="restore"><img src="/sfDoctrinePlugin/images/tick.png" /></a>';
-          if (!$sitetree->is_deleted) $out .= '<a href="' . url_for('sitetree/edit?id='.$sitetree->id) . '" class="ui-icon ui-icon-pencil" title="edit"><img src="/sfDoctrinePlugin/images/edit.png" /></a>';
-          if (!$sitetree->is_deleted) $out .= '<a href="' . url_for('sitetree/create?parent='.$sitetree->id) . '" class="ui-icon ui-icon-plus" title="add"><img src="/sfDoctrinePlugin/images/new.png" /></a>';
-          if (!$sitetree->is_active && !$sitetree->is_deleted) $out .= '<a href="' . url_for('sitetree/publish?id='.$sitetree->id) . '" class="ui-icon ui-icon-star" title="publish"><img src="/sfDoctrinePlugin/images/list.png" /></a>';
+          $out .= '<span class="sitetree_actions">';
+          if (!$sitetree->getNode()->isRoot() && !$sitetree->is_locked) $out .= '<a href="' . url_for('sitetree/delete?id='.$sitetree->id) . '" title="delete"><img src="/sfDoctrinePlugin/images/delete.png" /></a>';
+          if ($sitetree->is_deleted && $canAdmin) $out .= '<a href="' . url_for('sitetree/restore?id='.$sitetree->id) . '" title="restore"><img src="/sfDoctrinePlugin/images/tick.png" /></a>';
+          if (!$sitetree->is_deleted) $out .= '<a href="' . url_for('sitetree/edit?id='.$sitetree->id) . '" title="edit properties"><img src="/sfDoctrinePlugin/images/edit.png" /></a>';
+          if (!$sitetree->is_deleted) $out .= '<a href="' . url_for('sitetree/create?parent='.$sitetree->id) . '" title="add child page"><img src="/sfDoctrinePlugin/images/new.png" /></a>';
+          if (!$sitetree->is_active && !$sitetree->is_deleted) $out .= '<a href="' . url_for('sitetree/publish?id='.$sitetree->id) . '" title="publish page"><img src="/sfDoctrinePlugin/images/list.png" /></a>';
           $out .= '</span>';
       
           return $out;

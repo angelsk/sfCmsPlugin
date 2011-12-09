@@ -49,7 +49,7 @@ abstract class PluginContentBlockVersion extends BaseContentBlockVersion
         $contentBlockCurrentVersion->lang = $lang;
         $contentBlockCurrentVersion->ContentBlock = $contentBlock;
         $contentBlockCurrentVersion->Version = $contentBlockVersion;
-        $contentBlockCurrentVersion->Content_block_version_id = $contentBlockVersion->id;
+        $contentBlockCurrentVersion->content_block_version_id = $contentBlockVersion->id;
         $contentBlockCurrentVersion->save();
 
         return $contentBlockVersion;

@@ -31,7 +31,10 @@ $formTarget = ($sf_data->offsetExists('formTarget') ? $sf_data->getRaw('formTarg
 
 <div style="width:90%;" id="content_block_tabs_<?php echo $contentBlock->identifier; ?>">
   <script type="text/javascript">
-    $(document).ready(function () { $('#content_block_tabs_<?php echo $contentBlock->identifier; ?>').tabs(); });
+    $(document).addEvent('domready', function () 
+    { 
+     // @TODO: $('content_block_tabs_<?php echo $contentBlock->identifier; ?>').tabs(); 
+    });
   </script>
   
   <ul>
@@ -83,7 +86,7 @@ $formTarget = ($sf_data->offsetExists('formTarget') ? $sf_data->getRaw('formTarg
           <tbody>
               <?php foreach ($versionHistoryArray as $version): ?>
                   <tr>
-                      <td><?php echo format_datetime($version['created_at']) ?></td>
+                      <td><?php echo date('d/M/Y H:i', strtotime($version['created_at'])); ?></td>
                       <td><?php echo (is_array($version['CreatedBy']) ? $version['CreatedBy']['username'] : '') ?></td>
                       <td>
                           <?php if ($version['id'] == $currentContentBlockVersion->id) : ?>

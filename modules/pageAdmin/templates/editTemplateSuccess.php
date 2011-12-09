@@ -53,7 +53,7 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array(
     <fieldset class="fld_submit">
       <?php
       $moduleDefinition = $sitetree->getModuleDefinition();
-      $url = $moduleDefinition['admin_url'] . "?routeName=$sitetree->route_name";
+      $url = $moduleDefinition['admin_url'] . "?routeName=$sitetree->route_name&site=$sitetree->site";
       ?>
        
       <input type="submit" value="Save" class="btn_save frm_submit" />

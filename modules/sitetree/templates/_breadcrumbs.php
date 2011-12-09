@@ -25,7 +25,7 @@ if (isset($sitetree))
         }
         else 
         {
-          $allBreadCrumbs[] = link_to($parent->getTitle(), $moduleDefinition['admin_url'] . "?routeName=$parent->route_name");
+          $allBreadCrumbs[] = link_to($parent->getTitle(), $moduleDefinition['admin_url'] . "?routeName=$parent->route_name&site=$parent->site");
         }
       }
       else 
@@ -39,7 +39,7 @@ if (isset($sitetree))
   $allBreadCrumbs = array_reverse($allBreadCrumbs);
 }
 
-$allBreadCrumbs = array_merge(array(link_to('Admin', '@homepage')), $allBreadCrumbs, $breadcrumbs);
+$allBreadCrumbs = array_merge($allBreadCrumbs, $breadcrumbs);
 ?>
 
 <div id="breadcrumbs">

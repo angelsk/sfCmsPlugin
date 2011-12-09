@@ -209,7 +209,7 @@ abstract class PluginSitetree extends BaseSitetree
 
     $moduleDefinition = $this->getModuleDefinition();
 
-    return $moduleDefinition['admin_url'] . "?routeName=$this->route_name";
+    return $moduleDefinition['admin_url'] . "?routeName=$this->route_name&site=$this->site";
   }
   
   /**

@@ -58,6 +58,10 @@ Sitetree:
     I18n:                   # adding in multilingual support just in case
       fields: [title, html_title, html_keywords, html_description, link_title]
       length: 5
+    # allow sitetree to have an image assigned to it
+    sfImagePoolable:
+      multiple: false
+      tag:      [sitetree]
       
   options:
     symfony:               

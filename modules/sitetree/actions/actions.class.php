@@ -25,9 +25,9 @@ class sitetreeActions extends sfActions
     $this->redirect($url);
   }
   
-   /**
+  /**
    * Executes index action
-    */
+   */
   public function executeIndex(sfWebRequest $request) 
   {
     $manager           = siteManager::getInstance();
@@ -96,7 +96,7 @@ class sitetreeActions extends sfActions
         {
           // redirect to the managing module editing action
           $moduleDefinition = $sitetree->getModuleDefinition();
-          $moduleEditUrl = "{$moduleDefinition['admin_url']}?routeName=$sitetree->route_name";
+          $moduleEditUrl = "{$moduleDefinition['admin_url']}?routeName=$sitetree->route_name&site=$sitetree->site";
           $this->redirect($moduleEditUrl);
         } 
         else 

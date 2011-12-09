@@ -30,7 +30,7 @@ if ($sitetree = $sf_data->getRaw('sitetree'))
     echo '<span class="site_sitetree_not_published">' . __('Not live') . '</span>';
   }
 
-  echo link_to('Edit sitetree node', 'sitetree/edit?id=' . $sitetree->id);
+  echo link_to('Edit sitetree properties', 'sitetree/edit?id=' . $sitetree->id);
 
   if ($sitetree->is_active) 
   {
@@ -40,7 +40,7 @@ if ($sitetree = $sf_data->getRaw('sitetree'))
       
       if ($url) 
       {
-        echo "| <a href='"  . esc_entities($url) . "' target=\"_blank\">View page on frontend</a>";
+        echo "&nbsp; | <a href='"  . esc_entities($url) . "' target=\"_blank\">View page on frontend</a>";
       }
       
       if ($sf_data->offsetExists('item')) 
@@ -60,7 +60,7 @@ if ($sitetree = $sf_data->getRaw('sitetree'))
           
           if ($url) 
           {
-            echo " | <a href='"  . esc_entities($url) . "' target=\"_blank\">View item on frontend</a>";
+            echo "&nbsp; | <a href='"  . esc_entities($url) . "' target=\"_blank\">View item on frontend</a>";
           }
         }
       }

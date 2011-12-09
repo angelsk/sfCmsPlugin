@@ -5,6 +5,9 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array('sitetree' => $sit
 
 $isNew = !($sitetree->id > 0);
 $culture = $sf_user->getCulture();
+
+use_javascripts_for_form($form);
+use_stylesheets_for_form($form);
 ?>
 
 <div id="sf_admin_container">

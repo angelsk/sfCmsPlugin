@@ -11,7 +11,7 @@ class ContentBlockTypeHTMLForm extends ContentBlockTypeForm
     parent::configure(); 
     
     $this->widgetSchema['value'] = new sfWidgetFormTextareaTinyMCE(array('width'=>500, 'config'=>$this->getConfig()));
-    $this->validatorSchema['value'] = new enhancedValidatorString($this->getValidatorOptions(), array('max_length'=>'Character limit of %max_length% characters exceeded. Text was %current_length% characters long (excluding HTML markup)'));
+    $this->validatorSchema['value'] = new sfEnhancedValidatorString($this->getValidatorOptions(), array('max_length'=>'Character limit of %max_length% characters exceeded. Text was %current_length% characters long (excluding HTML markup)'));
     $this->widgetSchema->setLabel('value','&nbsp;');
   }
   
