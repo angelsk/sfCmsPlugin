@@ -15,7 +15,7 @@ class ContentGroupTypeListingItem extends ContentGroupType
      * @return Listing
      */
     public function getListing() 
-	{
+  {
         return $this->getListingItem()->Listing;
     }
     
@@ -28,7 +28,7 @@ class ContentGroupTypeListingItem extends ContentGroupType
      * @param Listing $ListingItem
      */
     public function setListingItem($ListingItem) 
-	{
+  {
         $this->listingItem = $ListingItem;
     }
     
@@ -38,14 +38,14 @@ class ContentGroupTypeListingItem extends ContentGroupType
      * @return ListingItem
      */
     public function getListingItem() 
-	{
+  {
         if ($this->listingItem === null) 
-		{
+    {
             $itemClass = $this->ContentGroup->type_options;
             $this->listingItem = Doctrine::getTable($itemClass)->findOneByContentGroupId($this->ContentGroup->id);
             
             if (!$this->listingItem) 
-			{
+      {
                 throw new sfException("Missing a Listing item");
             }
         }
@@ -57,16 +57,16 @@ class ContentGroupTypeListingItem extends ContentGroupType
      * @see ContentGroupType
      */
     public function getContentBlockDefinitions() 
-	{
-        $type = $this->getListing()->type;
-        return ListingManager::getInstance()->getItemContentBlockDefinitions($type);
+  {
+        $template = $this->getListing()->template;
+        return ListingManager::getInstance()->getItemContentBlockDefinitions($template);
     }
     
     /**
      * @see ContentGroupType
      */
     public function getEditUrl() 
-	{
+  {
         $listId = $this->getListingItem()->Listing_id;
         $itemId = $this->getListingItem()->id;
         
@@ -77,7 +77,7 @@ class ContentGroupTypeListingItem extends ContentGroupType
      * @see ContentGroupType
      */
     public function getPreviewUrl() 
-	{
+  {
         $listId = $this->getListingItem()->Listing_id;
         $itemId = $this->getListingItem()->id;
         
@@ -85,7 +85,7 @@ class ContentGroupTypeListingItem extends ContentGroupType
     }
     
     public function getName() 
-	{
+  {
         return $this->getSitetree()->getTitle() . ' > ' . $this->getListingItem()->getTitle();
     }
     
@@ -93,7 +93,7 @@ class ContentGroupTypeListingItem extends ContentGroupType
      * @see ContentGroupType
      */
     public function getSitetree() 
-	{
+  {
         $listing = $this->getListing();
         
         return SitetreeTable::getInstance()->findOneById($listing->sitetree_id);
@@ -103,7 +103,7 @@ class ContentGroupTypeListingItem extends ContentGroupType
      * @see ContentGroupType
      */
     public function handleContentGroupChanged() 
-	{
+  {
         $this->getListingItem()->handleContentChanged();
     }
 }

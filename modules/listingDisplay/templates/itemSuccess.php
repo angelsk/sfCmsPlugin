@@ -22,28 +22,28 @@ $contentManager = listingManager::getInstance();
           - jqplugins/jquery.imagetool-1.1.min.js
           - jqplugins/jquery.ezpz_tooltip.min.js
  */
-if ($stylesheets = $contentManager->getTypeDefinitionParameter($listing->type, 'item_stylesheets')) {
+if ($stylesheets = $contentManager->getTemplateDefinitionParameter($listing->template, 'item_stylesheets')) {
   foreach ($stylesheets as $stylesheet) use_stylesheet($stylesheet);
 }
 
-if ($javascripts = $contentManager->getTypeDefinitionParameter($listing->type, 'item_javascripts')) {
+if ($javascripts = $contentManager->getTemplateDefinitionParameter($listing->template, 'item_javascripts')) {
   foreach ($javascripts as $javascript) use_javascript($javascript);
 }
 
 // Template
 if ($useCache) {
-	if (!site_cache($cacheName)) {
+  if (!site_cache($cacheName)) {
         // load all content versions efficiently in one db query
-	    $contentGroup->loadAllContentBlocksForRender();
-	    
-	    // include our template.
+      $contentGroup->loadAllContentBlocksForRender();
+      
+      // include our template.
         require($templateFileLocation);
-		site_cache_save();
-	}
+    site_cache_save();
+  }
 } else {
     // load all content versions efficiently in one db query
-	$contentGroup->loadAllContentBlocksForRender();
-	
+  $contentGroup->loadAllContentBlocksForRender();
+  
     // include our template.
     require($templateFileLocation);
 }

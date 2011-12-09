@@ -33,21 +33,21 @@ $culture = $sf_user->getCulture();
   <div id="sf_admin_content">
     <div class="sf_admin_form">
 
-    	<?php echo $form->renderFormTag(url_for('sitetree/edit'.(!$isNew ? '?id='.$sitetree->getId() : ''))); ?>
+      <?php echo $form->renderFormTag(url_for('sitetree/edit'.(!$isNew ? '?id='.$sitetree->getId() : ''))); ?>
         <?php 
         echo $form->renderGlobalErrors(); 
         echo $form->renderHiddenFields();
         ?>
       
-    		<fieldset id="sf_fieldset_none">
+        <fieldset id="sf_fieldset_none">
           <div class="sf_admin_form_row">
-    				<div>
-    					<label>Unique identifier</label>
-    					<div class="content"><strong><?php echo $sitetree->route_name ?></strong></div>
-    				</div>
+            <div>
+              <label>Unique identifier</label>
+              <div class="content"><strong><?php echo $sitetree->route_name ?></strong></div>
+            </div>
           </div>
           
-  				<?php foreach ($form as $idx => $widget):
+          <?php foreach ($form as $idx => $widget):
             if (!$widget->isHidden()) : ?>
               <?php if ($culture == $idx) : // embedded translation form ?>
               
@@ -80,13 +80,13 @@ $culture = $sf_user->getCulture();
               <?php endif;
             endif; 
           endforeach; ?>
-    		</fieldset>
+        </fieldset>
         
         <ul class="sf_admin_actions">
           <li class="sf_admin_action_list"><?php echo link_to('Back to list', 'sitetree/index'); ?></li>
           <li class="sf_admin_action_save"><input type="submit" value="Save"></li>
         </ul>
-    	</form>
+      </form>
     </div>
   </div>
 </div>

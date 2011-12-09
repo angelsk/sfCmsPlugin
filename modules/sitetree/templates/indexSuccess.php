@@ -39,7 +39,7 @@ sfConfig::set('site_hack_entireSitetree', $treeNodes);
             {
               $out = '<span class="lnk left">' . link_to(
                 $name,
-                $moduleDefinition['admin_url'] . "?routeName=$sitetree->route_name"
+                $moduleDefinition['admin_url'] . "?routeName=$sitetree->route_name&site=$sitetree->site"
               ) . "</span>";
             }
           }

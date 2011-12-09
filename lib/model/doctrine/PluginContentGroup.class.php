@@ -11,8 +11,8 @@
  * @version    SVN: $Id: Builder.php 7490 2010-03-29 19:53:27Z jwage $
  */
 abstract class PluginContentGroup extends BaseContentGroup 
-{	
-	/**
+{  
+  /**
      * Use getContentGroupType() to access this
      *
      * @var ContentGroupType
@@ -39,7 +39,7 @@ abstract class PluginContentGroup extends BaseContentGroup
      * @return ContentGroup
      */
     public static function createNew($type, $typeOptions='') 
-	{
+  {
         $group = new ContentGroup();
         $group->type = $type;
         $group->type_options = $typeOptions;
@@ -55,7 +55,7 @@ abstract class PluginContentGroup extends BaseContentGroup
      * @param string $v
      */
     public function setCurrentLang($v) 
-	{
+  {
         $this->currentLang = $v;
     }
     
@@ -66,25 +66,25 @@ abstract class PluginContentGroup extends BaseContentGroup
      * @return string
      */
     public function getCurrentLang() 
-	{
+  {
         if ($this->currentLang === null) 
-		{
+    {
             throw new sfException("You must set the current language before you can use this Content group.");
         }
         return $this->currentLang;
     }
-	
-	/**
+  
+  /**
      * @return ContentGroupType
      */
     public function getContentGroupType() 
-	{
+  {
         if ($this->typeObj === null) 
-		{
+    {
             $class = 'ContentGroupType' . $this->type;
 
             if (!class_exists($class)) 
-			{
+      {
                 throw new sfException("There is no type class, " . $class);
             }
 
@@ -96,14 +96,14 @@ abstract class PluginContentGroup extends BaseContentGroup
         return $this->typeObj;
     }
     
-	/**
+  /**
      * Get the Content blocks from this Content group in the order they
      * are in the definition array.
      *
      * It also initialises the group.
      */
     public function getOrderedBlocks($checkBlockDefinitions = false) 
-	{
+  {
         $this->initialiseBlocks($checkBlockDefinitions);
         $contentBlocks = $this->ContentBlocks;
 
@@ -111,18 +111,18 @@ abstract class PluginContentGroup extends BaseContentGroup
         $blocksByIdentifier = array();
         
         if (!empty($contentBlocks)) 
-		{
-	        foreach ($contentBlocks as $contentBlock) 
-			{
-	            $blocksByIdentifier[$contentBlock->identifier] = $contentBlock;
-	        }
+    {
+          foreach ($contentBlocks as $contentBlock) 
+      {
+              $blocksByIdentifier[$contentBlock->identifier] = $contentBlock;
+          }
         }
 
         // make ordered array
         $orderedBlocks = array();
         
         foreach ($this->getBlockDefinitions() as $identifier => $defn) 
-		{
+    {
             $contentBlock = $blocksByIdentifier[$identifier];
             $contentBlock->ContentGroup = $this;
             $orderedBlocks[$identifier] = $contentBlock;
@@ -139,45 +139,45 @@ abstract class PluginContentGroup extends BaseContentGroup
      * After calling this, $this->ContentBlocks can be used reliably.
      */
     public function initialiseBlocks($checkBlockDefinitions = false) 
-	{
+  {
         $blockDefinitions = $this->getBlockDefinitions($checkBlockDefinitions);
         $currentBlocks = $this->getContentBlocks();
 
         // get identifiers of current Content blocks
         $currentBlockIdentifiers = array();
         if (!empty($currentBlocks)) 
-		{
-	        foreach ($currentBlocks as $contentBlock) 
-			{
-	            $currentBlockIdentifiers[] = $contentBlock->identifier;
-	        }
+    {
+          foreach ($currentBlocks as $contentBlock) 
+      {
+              $currentBlockIdentifiers[] = $contentBlock->identifier;
+          }
         }
 
         // get identifiers from block definitions
         $intendedBlockIdentifiers = array();
         if (!empty($blockDefinitions)) 
-		{
-	        foreach ($blockDefinitions as $blockDefinition) 
-			{
-	            $intendedBlockIdentifiers[] = $blockDefinition['identifier'];
-	        }
+    {
+          foreach ($blockDefinitions as $blockDefinition) 
+      {
+              $intendedBlockIdentifiers[] = $blockDefinition['identifier'];
+          }
         }
         
         // create new Content blocks for new template
         if (count($identifiersToCreate = array_diff($intendedBlockIdentifiers, $currentBlockIdentifiers)) > 0) 
-		{
+    {
             $this->createBlocks($identifiersToCreate);
         }
         
         // check current Content block matches definition
         if (count($identifiersToCheck = array_intersect($intendedBlockIdentifiers, $currentBlockIdentifiers)) > 0) 
-		{
+    {
             $this->checkBlocks($identifiersToCheck);
         }
         
         // remove old Content blocks - i.e changed template
         if (count($identifiersToRemove = array_diff($currentBlockIdentifiers, $intendedBlockIdentifiers)) > 0) 
-		{
+    {
             $this->removeBlocks($identifiersToRemove);
         }
     }
@@ -186,31 +186,31 @@ abstract class PluginContentGroup extends BaseContentGroup
      * Get an array of Content block definitions for this group
      */
     public function getBlockDefinitions($checkBlockDefinitions = false) 
-	{
+  {
         if (!$this->blockDefinitions) 
-		{
+    {
             $definitions = $this->getContentGroupType()->getContentBlockDefinitions();
             
             if (!empty($definitions)) 
-			{
+      {
               foreach ($definitions as $identifier => $definition) 
-			  {
+        {
                   $definitions[$identifier] = $this->tidyBlockDefinition($identifier, $definition);
               }
             }
             else 
-			{
-            	// No Content blocks for page
-            	$definitions = array();
+      {
+              // No Content blocks for page
+              $definitions = array();
             }
             
             $this->blockDefinitions = $definitions;
         }
 
         if ($checkBlockDefinitions) 
-		{
+    {
             foreach ($this->blockDefinitions as $identifier => $definition) 
-			{
+      {
                 $this->checkBlockDefinition($identifier, $definition);
             }
         }
@@ -218,7 +218,7 @@ abstract class PluginContentGroup extends BaseContentGroup
         return $this->blockDefinitions;
     }
     
-	/**
+  /**
      * Tidy block definitions up
      *
      * @param string $identifier
@@ -226,9 +226,9 @@ abstract class PluginContentGroup extends BaseContentGroup
      * @return array
      */
     public function tidyBlockDefinition($identifier, $definition) 
-	{
+  {
         if (!isset($definition['identifier'])) 
-		{
+    {
             $definition['identifier'] = $identifier;
         }
         
@@ -243,19 +243,19 @@ abstract class PluginContentGroup extends BaseContentGroup
      * @param array $definition
      */
     public function checkBlockDefinition($identifier, $definition) 
-	{
+  {
         if (strlen($identifier) < 2 || strlen($identifier) > 50) 
-		{
+    {
             throw new sfException("Identifier must be between 2 and 50 characters long");
         }
         
         if ($definition['identifier'] != $identifier) 
-		{
+    {
             throw new sfException("Identifier in definition must match identifier from array key");
         }
         
         if (!isset($definition['name'])) 
-		{
+    {
             throw new sfException("You must provide a name");
         }
     }
@@ -266,9 +266,9 @@ abstract class PluginContentGroup extends BaseContentGroup
      * @param array[string] $identifiers
      */
     public function createBlocks($identifiers) 
-	{
+  {
         foreach ($identifiers as $identifier) 
-		{
+    {
             $this->createBlockForIdentifier($identifier);
         }
     }
@@ -280,7 +280,7 @@ abstract class PluginContentGroup extends BaseContentGroup
      * @param string $identifier
      */
     public function createBlockForIdentifier($identifier) 
-	{
+  {
         $contentBlock = ContentBlock::createFromIdentifier($identifier, $this);
         $this->ContentBlocks[] = $contentBlock;
     }
@@ -291,9 +291,9 @@ abstract class PluginContentGroup extends BaseContentGroup
      * @param array[string] $identifiers
      */
     public function checkBlocks($identifiers) 
-	{
+  {
         foreach ($identifiers as $identifier) 
-		{
+    {
             $this->checkBlockForIdentifier($identifier);
         }
     }
@@ -304,12 +304,12 @@ abstract class PluginContentGroup extends BaseContentGroup
      * @param string $identifier
      */
     public function checkBlockForIdentifier($identifier) 
-	{
+  {
         $contentBlock = $this->getBlockByIdentifier($identifier);
         $definition = $this->getBlockDefinition($contentBlock);
 
         if ($contentBlock->type != $definition['type']) 
-		{
+    {
             // The type of the Content block in the database is not the correct type.
             // we must delete it and make another
             $this->removeBlockForIdentifier($identifier);
@@ -323,9 +323,9 @@ abstract class PluginContentGroup extends BaseContentGroup
      * @param array[string] $identifiers
      */
     public function removeBlocks($identifiers) 
-	{
+  {
         foreach ($identifiers as $identifier) 
-		{
+    {
             $this->removeBlockForIdentifier($identifier);
         }
     }
@@ -336,11 +336,11 @@ abstract class PluginContentGroup extends BaseContentGroup
      * @param string $identifier
      */
     public function removeBlockForIdentifier($identifier) 
-	{
+  {
         foreach ($this->ContentBlocks as $key => $contentBlock) 
-		{
+    {
             if ($contentBlock->identifier == $identifier) 
-			{
+      {
                 $this->ContentBlocks->remove($key);
                 $contentBlock->delete();
                 $contentBlock->free();
@@ -350,28 +350,28 @@ abstract class PluginContentGroup extends BaseContentGroup
         }
     }
     
-	/**
+  /**
      * Get the definition array for the given Content block
      *
      * @param mixed $blockOrIdentifier
      * @return array
      */
     public function getBlockDefinition($blockOrIdentifier) 
-	{
+  {
         if ($blockOrIdentifier instanceof ContentBlock) 
-		{
+    {
             $identifier = $blockOrIdentifier->identifier;
         } 
-		else 
-		{
+    else 
+    {
             $identifier = $blockOrIdentifier;
         }
 
         $blockDefinitions = $this->getBlockDefinitions();
         foreach ($blockDefinitions as $definition) 
-		{
+    {
             if ($definition['identifier'] == $identifier) 
-			{
+      {
                 return $definition;
             }
         }
@@ -386,11 +386,11 @@ abstract class PluginContentGroup extends BaseContentGroup
      * @return ContentBlock
      */
     public function getBlockByIdentifier($identifier) 
-	{
+  {
         foreach ($this->ContentBlocks as $contentBlock) 
-		{
+    {
             if ($contentBlock->identifier == $identifier) 
-			{
+      {
                 return $contentBlock;
             }
         }
@@ -398,7 +398,7 @@ abstract class PluginContentGroup extends BaseContentGroup
         return null;
     }
     
-	/**
+  /**
      * Initialise the Content blocks for rendering
      *
      * Does not load up Content blocks/current versions at all - use
@@ -408,20 +408,20 @@ abstract class PluginContentGroup extends BaseContentGroup
      * @param string $lang
      */
     public function initialiseForRender($lang) 
-	{
+  {
         $this->setCurrentLang($lang);
     }
     
-	/**
+  /**
      * Load Content blocks and current versions for rendering
      */
     public function loadAllContentBlocksForRender() 
-	{
+  {
         $lang = $this->getCurrentLang();
         $contentBlocks = ContentBlockTable::getInstance()->loadAllCurrentVersions($this->id, $lang);
         
         foreach ($contentBlocks as $contentBlock) 
-		{
+    {
             // We have to link the ContentBlock back to this group - it needs to know about the group for its definition
             $contentBlock->ContentGroup = $this;
             
@@ -439,7 +439,7 @@ abstract class PluginContentGroup extends BaseContentGroup
         $this->ContentBlocks = $contentBlocks;
     }
     
-	/**
+  /**
      * Render a Content block
      *
      * @param string $identifier
@@ -447,62 +447,62 @@ abstract class PluginContentGroup extends BaseContentGroup
      * @return string
      */
     public function renderContent($identifier, $extraParams = array()) 
-	{
+  {
         if (!$contentBlock = $this->getBlockByIdentifier($identifier)) 
-		{
-    		return '';
-    	}
-    	
-    	if (!$contentBlockVersion = $contentBlock->getCurrentVersion()) 
-		{
-    		return '';
-    	}
+    {
+        return '';
+      }
+      
+      if (!$contentBlockVersion = $contentBlock->getCurrentVersion()) 
+    {
+        return '';
+      }
 
-    	$contentBlockVersion->mergeParameters($extraParams);
+      $contentBlockVersion->mergeParameters($extraParams);
 
         if (siteManager::getInstance()->getRenderFromRequest()) 
-		{
+    {
             // we are in preview mode - render from the request
             $request = sfContext::getInstance()->getRequest();
             
             return $contentBlockVersion->getContentBlockType()->renderFromRequest($request);
         } 
-		else 
-		{
+    else 
+    {
             return $contentBlockVersion->getContentBlockType()->render();
         }
     }
     
-	/**
-	 * Delete this Content group and all associated Content
-	 *
-	 * @param Doctrine_Connection $conn
-	 */
-	public function delete(Doctrine_Connection $conn = null) 
-	{
-	    foreach ($this->ContentBlocks as $contentBlock) 
-		{
-	        // delete all of the ContentBlock versions
-	        $allVersions = $contentBlock->Versions;
-	        foreach ($allVersions as $version) 
-			{
-	            $version->delete();
-	            $version->free();
-	        }
+  /**
+   * Delete this Content group and all associated Content
+   *
+   * @param Doctrine_Connection $conn
+   */
+  public function delete(Doctrine_Connection $conn = null) 
+  {
+      foreach ($this->ContentBlocks as $contentBlock) 
+    {
+          // delete all of the ContentBlock versions
+          $allVersions = $contentBlock->Versions;
+          foreach ($allVersions as $version) 
+      {
+              $version->delete();
+              $version->free();
+          }
 
-	        // delete the current version stuff
-	    	$allCVersions = $contentBlock->CurrentVersions;
-	        foreach ($allCVersions as $cVersion) 
-			{
-	            $cVersion->delete();
-	            $cVersion->free();
-	        }
+          // delete the current version stuff
+        $allCVersions = $contentBlock->CurrentVersions;
+          foreach ($allCVersions as $cVersion) 
+      {
+              $cVersion->delete();
+              $cVersion->free();
+          }
 
-	        // finally, delete the ContentBlock itself
-	        $contentBlock->delete();
+          // finally, delete the ContentBlock itself
+          $contentBlock->delete();
             $contentBlock->free();
-	    }
+      }
 
-	    parent::delete($conn);
-	}
+      parent::delete($conn);
+  }
 }

@@ -16,13 +16,13 @@ class ContentGroupTypeListing extends ContentGroupType
      * @return listing
      */
     public function getContentBlockListing() 
-	{
+  {
         if ($this->listing === null) 
-		{
+    {
             $this->listing = ListingTable::getInstance()->findOneByContentGroupId($this->ContentGroup->id);
             
             if (!$this->listing) 
-			{
+      {
                 throw new sfException("Missing a listing");
             }
         }
@@ -34,7 +34,7 @@ class ContentGroupTypeListing extends ContentGroupType
      * @see ContentGroupType
      */
     public function getContentBlockDefinitions() 
-	{
+  {
         $type = $this->getContentBlockListing()->type;
 
         return listingManager::getInstance()->getTemplateContentBlockDefinitions($type);
@@ -44,7 +44,7 @@ class ContentGroupTypeListing extends ContentGroupType
      * @see ContentGroupType
      */
     public function getEditUrl() 
-	{
+  {
         return 'listingAdmin/edit?id=' . $this->getContentBlockListing()->id;
     }    
     
@@ -52,7 +52,7 @@ class ContentGroupTypeListing extends ContentGroupType
      * @see ContentGroupType
      */
     public function getPreviewUrl() 
-	{
+  {
         //todo: named routes
         return 'listingDisplay/preview?id=' . $this->getContentBlockListing()->id;
     }
@@ -61,7 +61,7 @@ class ContentGroupTypeListing extends ContentGroupType
      * @see ContentGroupType
      */
     public function getSitetree() 
-	{
+  {
         $listing = $this->getContentBlockListing();
         
         return sitetreeTable::getInstance()->findOneById($listing->sitetree_id);
@@ -71,7 +71,7 @@ class ContentGroupTypeListing extends ContentGroupType
      * @see ContentGroupType
      */
     public function handleContentBlockGroupChanged() 
-	{
+  {
         $this->getContentBlockListing()->handleContentChanged();
     }
 }

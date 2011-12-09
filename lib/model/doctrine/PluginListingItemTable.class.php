@@ -13,30 +13,30 @@ abstract class PluginListingItemTable extends Doctrine_Table
      * @return object listingItemTable
      */
     public static function getInstance() 
-	{
+  {
         return Doctrine_Core::getTable('ListingItem');
     }
     
     /**
      * Get active items with a certain status
      * 
-     * @param string $type Listing type
+     * @param string $template Listing template
      * @param string $status Status to retrieve
      * @param int $limit Number of active items to get
      * @return Doctrine_Collection
      */
-    public function getItemsWithStatus($type, $status, $limit) 
-	{
-    	$order = listingManager::getInstance()->getListItemOrdering($type);
-    	
-    	$query = $this->createQuery('i')
-    				  ->innerJoin('i.Translation t INDEXBY lang')
-    				  ->innerJoin('i.Listing l')
-    				  ->innerJoin('l.Sitetree s')
-    				  ->where('i.status = ? AND i.is_active = ?', array($status, true))
-    				  ->limit($limit)
-    				  ->orderBy($order);
-    				  
-    	return $query->execute();
+    public function getItemsWithStatus($template, $status, $limit) 
+  {
+      $order = listingManager::getInstance()->getListItemOrdering($template);
+      
+      $query = $this->createQuery('i')
+              ->innerJoin('i.Translation t INDEXBY lang')
+              ->innerJoin('i.Listing l')
+              ->innerJoin('l.Sitetree s')
+              ->where('i.status = ? AND i.is_active = ?', array($status, true))
+              ->limit($limit)
+              ->orderBy($order);
+              
+      return $query->execute();
     }
 }

@@ -4,8 +4,8 @@ Listing:
   columns:
     # link this into the sitetree
     sitetree_id:                  { type: integer, notnull: true }
-    # The type of the listing page, corresponds to the key from the definition in app/yml    
-    type:                         { type: string, size: 50, notnull: true }
+    # The template for the listing page, corresponds to the key from the definition in app/yml    
+    template:                     { type: string, size: 50, notnull: true }
     # Should the user be able to order the items manually for this listing?
     # If false, the order from the listing pager / config will be used.
     use_custom_order:             { type: boolean, default: false, notnull: true }

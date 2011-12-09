@@ -28,7 +28,7 @@ abstract class ContentGroupType
      * @return ContentGroup
      */
     public function getContentGroup() 
-	{
+  {
         return $this->ContentGroup;
     }
 
@@ -41,11 +41,11 @@ abstract class ContentGroupType
      * @param ContentGroup $ContentGroup
      */
     public function setContentGroup($ContentGroup) 
-	{
+  {
         $this->ContentGroup = $ContentGroup;
     }
     
-	/**
+  /**
      * Get the Content block definitions for this Content group.
      * 
      * This is an array of Content block definition arrays, indexed by slugs.  Each 
@@ -102,7 +102,7 @@ abstract class ContentGroupType
      * @return string[]
      */
     public function getCultures() 
-	{
+  {
         // return cultures for the sitetree's site
         $sitetree = $this->getSitetree();
         $siteDef = siteManager::getInstance()->getSite();
@@ -110,7 +110,7 @@ abstract class ContentGroupType
         $cultures = array();
         
         foreach ($cultures as $culture) 
-		{
+    {
             $cultures[$culture] = $culture;
         }
         
@@ -123,6 +123,6 @@ abstract class ContentGroupType
      * It can be used to clear frontend cache files etc.
      */
     public function handleContentGroupChanged() 
-	{  
+  {  
     }
 }

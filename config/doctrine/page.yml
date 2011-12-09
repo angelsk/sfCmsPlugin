@@ -15,7 +15,7 @@ Page:
       local: content_group_id
       foreign: id
       type: one
-    sitetree:
+    Sitetree:
       class: Sitetree
       local: sitetree_id
       foreign: id

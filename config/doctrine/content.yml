@@ -64,7 +64,7 @@ ContentBlock:
 ContentBlockCurrentVersion:
   columns:
     content_block_id:             { type: integer }
-    lang:               		      { type: string, size: 5 }
+    lang:                         { type: string, size: 5 }
     content_block_version_id:     { type: integer }
         
   relations:
@@ -99,7 +99,7 @@ ContentBlockVersion:
   columns:
     id:                           { type: integer, primary: true, autoincrement: true }  
     content_block_id:             { type: integer }
-    lang:               		      { type: string, size: 5 }
+    lang:                         { type: string, size: 5 }
     value:                        { type: clob }
     
   relations:

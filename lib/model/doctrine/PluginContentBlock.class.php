@@ -12,7 +12,7 @@
  */
 abstract class PluginContentBlock extends BaseContentBlock 
 {
-	/**
+  /**
      * The definition array for this Content block
      *
      * @var array
@@ -35,7 +35,7 @@ abstract class PluginContentBlock extends BaseContentBlock
      * @return ContentBlock
      */
     public static function createFromIdentifier($identifier, $contentGroup) 
-	{        
+  {        
         $definition = $contentGroup->getBlockDefinition($identifier);
         $contentBlock = new ContentBlock();
         $contentBlock->setDefinition($definition);
@@ -47,26 +47,26 @@ abstract class PluginContentBlock extends BaseContentBlock
         return $contentBlock;  
     }
     
-	/**
+  /**
      * Make the given version the current one
      *
      * @param ContentBlockVersion $contentBlockVersion
      * @return ContentBlockCurrentVersion
      */
     public function makeVersionCurrent($contentBlockVersion) 
-	{
+  {
         $lang = $contentBlockVersion->lang;
         
         // load up the ContentBlockVersion for this ContentBlock/lang
         $contentBlockCurrentVersion = ContentBlockCurrentVersionTable::getInstance()->findCurrentVersion($this->id, $lang);
         
         if (!$contentBlockCurrentVersion) 
-		{
+    {
             $contentBlockCurrentVersion = ContentBlockCurrentVersion::createNew($contentBlock, $lang);
         }
         
         if ($contentBlockCurrentVersion->Content_block_version_id == $contentBlockVersion->id) 
-		{
+    {
             // this version is already the current one
             return $contentBlockCurrentVersion;
         }
@@ -89,7 +89,7 @@ abstract class PluginContentBlock extends BaseContentBlock
      * @param array $v
      */
     public function setDefinition($v) 
-	{
+  {
         $this->definition = $v;
     }
     
@@ -99,9 +99,9 @@ abstract class PluginContentBlock extends BaseContentBlock
      * @return array
      */
     public function getDefinition() 
-	{
+  {
         if ($this->definition === null) 
-		{
+    {
             $this->definition = $this->ContentGroup->getBlockDefinition($this->identifier);
         }
         
@@ -116,7 +116,7 @@ abstract class PluginContentBlock extends BaseContentBlock
      * @return mixed
      */
     public function getDefinitionParam($name, $default = null) 
-	{
+  {
         $definition = $this->getDefinition();
         
         return (isset($definition[$name]) ? $definition[$name] : $default);
@@ -129,7 +129,7 @@ abstract class PluginContentBlock extends BaseContentBlock
      * @return boolean
      */
     public function useLang() 
-	{
+  {
         return $this->getDefinitionParam('use_lang', true);
     }
     
@@ -140,7 +140,7 @@ abstract class PluginContentBlock extends BaseContentBlock
      * @return string
      */
     public function getCurrentLang() 
-	{
+  {
         return ($this->useLang() ? $this->ContentGroup->getCurrentLang() : null);
     }
 
@@ -150,7 +150,7 @@ abstract class PluginContentBlock extends BaseContentBlock
      * @return ContentBlockVersion
      */
     public function getCurrentVersion() 
-	{
+  {
         $lang = $this->getCurrentLang();
     
         return $this->getVersionForLang($lang);
@@ -162,7 +162,7 @@ abstract class PluginContentBlock extends BaseContentBlock
      * @return ContentBlockVersion
      */
     public function getNewestVersion() 
-	{
+  {
         $lang = $this->getCurrentLang();
     
         return $this->getNewestVersionForLang($lang);
@@ -174,10 +174,10 @@ abstract class PluginContentBlock extends BaseContentBlock
      * @return ContentBlockVersion
      */
     public function getSpecifiedVersion($versionId) 
-	{
-    	$lang = $this->getCurrentLang();
-    	
-    	return $this->getSpecifiedVersionForLang($lang, $versionId);
+  {
+      $lang = $this->getCurrentLang();
+      
+      return $this->getSpecifiedVersionForLang($lang, $versionId);
     }
     
     /**
@@ -187,20 +187,20 @@ abstract class PluginContentBlock extends BaseContentBlock
      * @return ContentBlockVersion
      */
     public function getVersionForLang($lang) 
-	{  
+  {  
         $isLoaded = ($lang === null ? (!is_array($this->currentVersionsCache)) : isset($this->currentVersionsCache[$lang]));
         
         if (!$isLoaded) 
-		{
+    {
             $id = $this->id;
             $contentBlockVersion = ContentBlockVersionTable::getInstance()->getCurrentVersion($id, $lang);
             
             if ($contentBlockVersion) 
-			{
+      {
                 $contentBlockVersion->ContentBlock = $this;
             } 
             else 
-			{
+      {
                 $contentBlockVersion = ContentBlockVersion::createInitialVersion($this, $lang);
             }
             
@@ -208,11 +208,11 @@ abstract class PluginContentBlock extends BaseContentBlock
         } 
 
         if ($lang === null) 
-		{
+    {
             return $this->currentVersionsCache;
         } 
         else 
-		{
+    {
             return $this->currentVersionsCache[$lang];
         }
     } 
@@ -224,17 +224,17 @@ abstract class PluginContentBlock extends BaseContentBlock
      * @return ContentBlockVersion
      */
     public function getNewestVersionForLang($lang) 
-	{
+  {
         $id = $this->id;
         $contentBlockVersion = ContentBlockVersionTable::getInstance()->getNewestVersion($id, $lang);
         
         if ($contentBlockVersion) 
-		{
+    {
             $contentBlockVersion->ContentBlock = $this;
             return $contentBlockVersion;
         } 
         else 
-		{
+    {
             return null;
         }
     }
@@ -247,17 +247,17 @@ abstract class PluginContentBlock extends BaseContentBlock
      * @return ContentBlockVersion
      */
     public function getSpecifiedVersionForLang($lang, $versionId) 
-	{
-    	$id = $this->id;
+  {
+      $id = $this->id;
         $contentBlockVersion = ContentBlockVersionTable::getInstance()->getSpecifiedVersion($id, $lang, $versionId);
         
         if ($contentBlockVersion) 
-		{
+    {
             $contentBlockVersion->ContentBlock = $this;
             return $contentBlockVersion;
         } 
         else 
-		{
+    {
             return null;
         }
     }
@@ -269,18 +269,18 @@ abstract class PluginContentBlock extends BaseContentBlock
      * @param string $lang
      */
     public function setCurrentVersionsCache($contentBlockVersion, $lang = null) 
-	{
+  {
         if ($lang === null) 
-		{
+    {
             $this->currentVersionsCache = $contentBlockVersion;
         } 
         else 
-		{
+    {
             $this->currentVersionsCache[$lang] = $contentBlockVersion;
         }
     }
     
-	/**
+  /**
      * Get an efficient version history as an array
      *
      * @param string $lang
@@ -288,16 +288,16 @@ abstract class PluginContentBlock extends BaseContentBlock
      * @return array
      */
     public function getEfficientVersionHistoryWithUsers($lang, $limit = 10) 
-	{
+  {
         return ContentBlockVersionTable::getInstance()->getEfficientVersionHistoryWithUsers($this->id, $lang, $limit);
     }
     
-	/**
+  /**
      * @param boolean $deep
      * @see Doctrine_Record::free()
      */
     public function free($deep = false) 
-	{
+  {
         unset($this->currentVersionsCache);
         parent::free($deep);
     }

@@ -12,7 +12,7 @@
  */
 abstract class PluginContentBlockVersion extends BaseContentBlockVersion 
 {
-	/**
+  /**
      * @var ContentBlockType
      */
     protected $typeObj = null;
@@ -32,7 +32,7 @@ abstract class PluginContentBlockVersion extends BaseContentBlockVersion
       $this->CurrentVersion = clone $this->CurrentVersion;
     }
     
-	/**
+  /**
      * Make a new version and create the "current version" entry
      *
      * @param ContentBlock $contentBlock
@@ -40,7 +40,7 @@ abstract class PluginContentBlockVersion extends BaseContentBlockVersion
      * @return ContentBlockVersion
      */
     public static function createInitialVersion($contentBlock, $lang) 
-	{
+  {
         // make version for the current lang
         $contentBlockVersion = self::createVersion($contentBlock, $lang);
 
@@ -55,13 +55,13 @@ abstract class PluginContentBlockVersion extends BaseContentBlockVersion
         return $contentBlockVersion;
     }
     
- 	/**
+   /**
      * @param ContentBlock $contentBlock
      * @param string $lang
      * @return ContentBlockVersion
      */
     public static function createVersion($contentBlock, $lang) 
-	{
+  {
         $contentBlockVersion = new ContentBlockVersion();
         $contentBlockVersion->lang = $lang;
         $contentBlockVersion->ContentBlock = $contentBlock;
@@ -78,13 +78,13 @@ abstract class PluginContentBlockVersion extends BaseContentBlockVersion
      * @return ContentBlockType
      */
     public function getContentBlockType() 
-	{
+  {
         if ($this->typeObj === null) 
-		{
+    {
             $class = 'ContentBlockType' . $this->ContentBlock->type;
 
             if (!class_exists($class)) 
-			{
+      {
                 throw new sfException("There is no type class, " . $class);
             }
             
@@ -94,11 +94,11 @@ abstract class PluginContentBlockVersion extends BaseContentBlockVersion
         return $this->typeObj;
     }
     
-	/**
+  /**
      * Is this the currently live version?
      */
     public function isCurrent() 
-	{
+  {
         return ($this->ContentBlock->getVersionForLang($this->lang)->id == $this->id);
     }
 
@@ -106,7 +106,7 @@ abstract class PluginContentBlockVersion extends BaseContentBlockVersion
      * Is this the newest Content block version for this Content block/lang?
      */
     public function isNewest() 
-	{
+  {
         return ($this->ContentBlock->getNewestVersionForLang($this->lang)->id == $this->id);
     }
     
@@ -117,7 +117,7 @@ abstract class PluginContentBlockVersion extends BaseContentBlockVersion
      * @param array $params
      */
     public function mergeParameters($params) 
-	{
+  {
         // Allow priority for new params if Content block rendered several times on page
         $this->additionalParameters = $params + $this->additionalParameters;
     }
@@ -128,10 +128,10 @@ abstract class PluginContentBlockVersion extends BaseContentBlockVersion
      * @return array
      */
     public function getDefinition() 
-	{
-    	$contentBlockDefn = $this->ContentBlock->getDefinition();
+  {
+      $contentBlockDefn = $this->ContentBlock->getDefinition();
 
-    	if ($contentBlockDefn) return array_merge($contentBlockDefn, $this->additionalParameters);
-    	else return $this->additionalParameters;
+      if ($contentBlockDefn) return array_merge($contentBlockDefn, $this->additionalParameters);
+      else return $this->additionalParameters;
     }
 }

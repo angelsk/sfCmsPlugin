@@ -16,13 +16,13 @@ class ContentGroupTypePage extends ContentGroupType
      * @return page
      */
     public function getPage() 
-	{
+  {
         if ($this->page === null) 
-		{
+    {
             $this->page = PageTable::getInstance()->findOneByContentGroupId($this->ContentGroup->id);
             
             if (!$this->page) 
-			{
+      {
                 throw new sfException("Missing a page");
             }
         }
@@ -34,7 +34,7 @@ class ContentGroupTypePage extends ContentGroupType
      * @see ContentGroupType
      */
     public function getContentBlockDefinitions() 
-	{
+  {
         $templateSlug = $this->getPage()->template;
         return pageManager::getInstance()->getTemplateBlockDefinitions($templateSlug);
     }
@@ -43,7 +43,7 @@ class ContentGroupTypePage extends ContentGroupType
      * @see ContentGroupType
      */
     public function getEditUrl() 
-	{
+  {
         return 'pageAdmin/edit?id=' . $this->getPage()->id;
     }
     
@@ -51,7 +51,7 @@ class ContentGroupTypePage extends ContentGroupType
      * @see ContentGroupType
      */
     public function getPreviewUrl() 
-	{
+  {
         return 'pageDisplay/preview?id=' . $this->getPage()->id;
     }
     
@@ -59,7 +59,7 @@ class ContentGroupTypePage extends ContentGroupType
      * @see ContentGroupType
      */
     public function getSitetree() 
-	{
+  {
         $page = $this->getPage();
         $sitetree = SitetreeTable::getInstance()->findOneById($page->sitetree_id);
         
@@ -70,8 +70,8 @@ class ContentGroupTypePage extends ContentGroupType
      * @see ContentGroupType
      */
     public function handleContentGroupChanged() 
-	{
-    	$this->getPage()->handleContentChanged();
+  {
+      $this->getPage()->handleContentChanged();
         siteManager::getInstance()->getCache()->remove('ContentGroup.' . $this->ContentGroup->id);
     }
 }

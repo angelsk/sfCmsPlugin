@@ -4,44 +4,44 @@ $allBreadCrumbs = array();
 
 if (isset($sitetree)) 
 {
-	$sitetree = $sf_data->getRaw('sitetree');
-	
-	$allBreadCrumbs[] = $sitetree->getTitle();
+  $sitetree = $sf_data->getRaw('sitetree');
+  
+  $allBreadCrumbs[] = $sitetree->getTitle();
 
-	if (!$sitetree->getNode()->isRoot()) 
-	{
-		$parent = $sitetree;
-		
-		while (!$parent->getNode()->isRoot()) 
-		{
-			$parent = $parent->getNode()->getParent();
-			
-			if ($parent->isManagedModule()) 
-			{
-				$moduleDefinition = $parent->getModuleDefinition();
-				if (isset($editNode)) 
-				{
-				  $allBreadCrumbs[] = link_to($parent->getTitle(), "sitetree/edit?id=$parent->id");
-				}
-				else 
-				{
-				  $allBreadCrumbs[] = link_to($parent->getTitle(), $moduleDefinition['admin_url'] . "?routeName=$parent->route_name");
-				}
-			}
-			else 
-			{
-				$allBreadCrumbs[] = $parent->getTitle();
-			}
-		}
-	}
-	
-	$allBreadCrumbs[] = link_to('Sitetree', 'sitetree/index');
-	$allBreadCrumbs = array_reverse($allBreadCrumbs);
+  if (!$sitetree->getNode()->isRoot()) 
+  {
+    $parent = $sitetree;
+    
+    while (!$parent->getNode()->isRoot()) 
+    {
+      $parent = $parent->getNode()->getParent();
+      
+      if ($parent->isManagedModule()) 
+      {
+        $moduleDefinition = $parent->getModuleDefinition();
+        if (isset($editNode)) 
+        {
+          $allBreadCrumbs[] = link_to($parent->getTitle(), "sitetree/edit?id=$parent->id");
+        }
+        else 
+        {
+          $allBreadCrumbs[] = link_to($parent->getTitle(), $moduleDefinition['admin_url'] . "?routeName=$parent->route_name");
+        }
+      }
+      else 
+      {
+        $allBreadCrumbs[] = $parent->getTitle();
+      }
+    }
+  }
+  
+  $allBreadCrumbs[] = link_to('Sitetree', 'sitetree/index');
+  $allBreadCrumbs = array_reverse($allBreadCrumbs);
 }
 
 $allBreadCrumbs = array_merge(array(link_to('Admin', '@homepage')), $allBreadCrumbs, $breadcrumbs);
 ?>
 
 <div id="breadcrumbs">
-	<?php echo implode(' &gt; ', $allBreadCrumbs); ?>
+  <?php echo implode(' &gt; ', $allBreadCrumbs); ?>
 </div>
