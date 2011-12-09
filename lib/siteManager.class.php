@@ -444,8 +444,8 @@ class siteManager
   {
     if ($toApplication == $this->getManagedApp())
     {
-      // If the url returned doesn't already contain http:// - because of site magic in the front web controller
-      if (false !== strpos($generatedUrl, 'http://')) 
+      // If the url returned doesn't already contain http(s):// - because of site magic in the front web controller
+      if (false !== strpos($generatedUrl, 'http')) 
       {
         // Absolute URL, but still has admin. in
         if (false !== strpos($generatedUrl, 'admin.')) 
@@ -475,7 +475,7 @@ class siteManager
         // need to add in the hostname without the "admin." (if appropriate)
         $hostName   = $_SERVER['HTTP_HOST'];
         $hostName   = str_replace('admin.', '', $hostName);
-        return 'http://' . $hostName . $generatedUrl;
+        return 'http://' . $hostName . $generatedUrl; // @TODO: http(s)
       }
     }
     else 
