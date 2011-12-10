@@ -133,3 +133,5 @@ ListingItem:
     I18n:
       fields: [title]
       length: 5
+    sfImagePoolable:  
+      multiple: false

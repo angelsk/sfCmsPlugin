@@ -57,7 +57,7 @@ abstract class PluginListingItemFormFilter extends BaseListingItemFormFilter
       $query->addWhere('i.is_active = ?', array((bool)$filter['is_active']));
     }
 
-    if ('' != $filter['status'])
+    if (isset($filter['status']) && '' != $filter['status'])
     {
       $query->addWhere('i.status = ?', array($filter['status']));
     }

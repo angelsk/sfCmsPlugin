@@ -13,6 +13,9 @@ sfContext::getInstance()->getResponse()->setTitle(htmlentities('Editing item' . 
 slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array(
   'sitetree' => $sitetree
 )));
+
+use_javascripts_for_form($form);
+use_stylesheets_for_form($form);
 ?>
 
 <div class="item_control">
@@ -87,7 +90,9 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array(
     <br class="clear" /><br />
   
     <script type="text/javascript">
-      $(document).ready( function() { $('#listing_item_<?php echo $item->slug; ?>_tabs').tabs(); } );
+      $(document).addEvent('domready', function() { 
+        //$('listing_item_<?php echo $item->slug; ?>_tabs').tabs(); 
+      });
     </script>
   
     <div id="listing_item_<?php echo $item->slug; ?>_tabs">

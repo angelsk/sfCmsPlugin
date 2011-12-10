@@ -46,10 +46,12 @@
   <p><em>*</em> Only categories with no items can be deleted / Only active categories can be assigned to items (and only ones with items are available on the frontend).</p>
   
   <script type="text/javascript">
-      $(document).ready( function() {
-          $('.delete_cat').click( function() {
+      $(document).addEvent('domready', function() {
+        $$('.delete_cat').each(function(el) {
+          el.addEvent('click', function() {
             return confirm('Are you sure you want to delete this category - it cannot be undone');
-        } );  
+          });
+        });  
       });
     </script>
 <?php else : ?>

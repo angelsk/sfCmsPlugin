@@ -85,8 +85,8 @@ class listingItemPager extends sfDoctrineSuperPager
     }
     
     $out[] = array(($item->is_active ? '<span class="ui-icon ui-icon-check"></span>' : '&nbsp;'));
-    $out[] = array(format_datetime($item->created_at, 'f') . '<br /> by ' . $item->CreatedBy->username);
-    $out[] = array(format_datetime($item->updated_at, 'f') . '<br /> by ' . $item->UpdatedBy->username);
+    $out[] = array(date('d/M/Y H:i', strtotime($item->created_at)) . '<br /> by ' . $item->CreatedBy->username);
+    $out[] = array(date('d/M/Y H:i', strtotime($item->updated_at)) . '<br /> by ' . $item->UpdatedBy->username);
     
     $editOut = '<ul class="sf_admin_td_actions">';
     $editOut .= '<li class="sf_admin_action_edit" style="display:block;">' . link_to(

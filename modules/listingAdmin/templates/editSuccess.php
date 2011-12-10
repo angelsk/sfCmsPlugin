@@ -32,7 +32,9 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array('sitetree' => $sit
   <br />
   
   <script type="text/javascript">
-    $(document).ready(function() { $('#listing_<?php echo $sitetree->route_name; ?>_tabs').tabs(); });  
+    $(document).addEvent('domready', function() {
+       //$('listing_<?php echo $sitetree->route_name; ?>_tabs').tabs(); 
+    });  
   </script>
   
   <div id="listing_<?php echo $sitetree->route_name; ?>_tabs">
@@ -73,10 +75,12 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array('sitetree' => $sit
       </div>
       
       <script type="text/javascript">
-        $(document).ready( function() {
-            $('.btn_remove').click( function() {
+        $(document).addEvent('domready', function() {
+          $$('.btn_remove').each(function(el) { 
+            el.addEvent('click', function() {
               return confirm('Are you sure you want to delete this item - it cannot be undone');
-          } );  
+         		 }); 
+          }); 
         });
       </script>
   </div>
