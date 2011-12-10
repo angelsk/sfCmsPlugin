@@ -71,7 +71,7 @@ class listingAdminActions extends sfActions
 
     $this->forward404Unless($listing);
 
-    $sitetree = SitetreeTable::getInstance()->findOneById($listing->id);
+    $sitetree = SitetreeTable::getInstance()->findOneById($listing->sitetree_id);
 
     $contentGroup = $listing->ContentGroup;
     $contentGroup->setCurrentLang($this->getUser()->getCulture());
