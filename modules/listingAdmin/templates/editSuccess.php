@@ -50,7 +50,7 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array('sitetree' => $sit
           <div class="notice"><?php echo $sf_user->getFlash('listing_notice'); ?></div>
         <?php endif; ?>
             
-        <p>These are the items in our list.  The ordering here is the same as the ordering used on the frontend of the site (<?php echo $listingManager->getListItemOrdering($listing->template); ?>).</p>
+        <p>These are the items in our list.  The ordering here is the same as the ordering used on the frontend of the site (<?php echo $listing->use_custom_order ? 'manually' : $listingManager->getListItemOrdering($listing->template); ?>).</p>
       
         <?php echo super_pager_render($pager, $url, $pagerAjaxUrl); ?>
           
