@@ -84,7 +84,7 @@ abstract class PluginPage extends BasePage
     
     if ($javascripts = $contentManager->getTemplateDefinitionAttribute($templateSlug, 'javascripts'))
     {
-      foreach ($javascripts as $javascript) $response->addJavascript($javascript);
+      foreach ($javascripts as $javascript) $response->addJavascript($javascript, 'last');
     }
 
     $partialVariables['page']         = $this;

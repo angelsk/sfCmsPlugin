@@ -39,6 +39,7 @@
 
 .folderTree li {
   clear: both;
+  position: relative;
 }
 
 .folderTree .lnk {
@@ -47,12 +48,14 @@
 }
 
 .folderTree .nodeinfo {
-  width: 150px;
   padding: 2px;
   margin-left: 20px;
   position: absolute;
   right: 100px;
   top: 0;
+  text-align: right;
+  width: auto;
+  margin-right: 10px;
 }
 
 .folderTree .nodeinfo.blank {

@@ -97,7 +97,7 @@ abstract class PluginListing extends BaseListing
     
     if ($javascripts = $manager->getTemplateDefinitionParameter($template, 'javascripts'))
     {
-      foreach ($javascripts as $javascript) $response->addJavascript($javascript);
+      foreach ($javascripts as $javascript) $response->addJavascript($javascript, 'last');
     }
 
     $partialVariables['useCache']     = $useCache;

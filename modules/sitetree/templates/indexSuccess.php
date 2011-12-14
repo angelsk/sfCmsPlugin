@@ -81,7 +81,7 @@ sfConfig::set('site_hack_entireSitetree', $treeNodes);
           $out .= '<span class="nodeinfo '.trim($class).'">'.trim($content).'&nbsp;</span>';
           
           $out .= '<span class="sitetree_actions">';
-          if (!$sitetree->getNode()->isRoot() && !$sitetree->is_locked) $out .= '<a href="' . url_for('sitetree/delete?id='.$sitetree->id) . '" title="delete"><img src="/sfDoctrinePlugin/images/delete.png" /></a>';
+          if (!$sitetree->getNode()->isRoot() && !$sitetree->is_locked) $out .= '<a href="' . url_for('sitetree/delete?id='.$sitetree->id) . '" title="delete" class="delete_sitetree"><img src="/sfDoctrinePlugin/images/delete.png" /></a>';
           if ($sitetree->is_deleted && $canAdmin) $out .= '<a href="' . url_for('sitetree/restore?id='.$sitetree->id) . '" title="restore"><img src="/sfDoctrinePlugin/images/tick.png" /></a>';
           if (!$sitetree->is_deleted) $out .= '<a href="' . url_for('sitetree/edit?id='.$sitetree->id) . '" title="edit properties"><img src="/sfDoctrinePlugin/images/edit.png" /></a>';
           if (!$sitetree->is_deleted) $out .= '<a href="' . url_for('sitetree/create?parent='.$sitetree->id) . '" title="add child page"><img src="/sfDoctrinePlugin/images/new.png" /></a>';
