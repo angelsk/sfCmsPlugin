@@ -62,6 +62,7 @@ class pageDisplayActions extends sfActions
     $siteManager = siteManager::getInstance();
     $contentManager = pageManager::getInstance();
     $siteManager->setCurrentSitetreeNode($sitetree);
+    $sitetree = siteManager::getInstance()->initCurrentSitetreeNode(); // set the meta-data - why not :)
 
     // tell our content blocks to try and render from the request
     siteManager::getInstance()->setRenderFromRequest(true);

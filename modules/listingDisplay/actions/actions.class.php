@@ -125,6 +125,7 @@ class listingDisplayActions extends sfActions
 
     // use this as our currently matched sitetree
     siteManager::getInstance()->setCurrentSitetreeNode($sitetree);
+    $sitetree = siteManager::getInstance()->initCurrentSitetreeNode(); // set the meta-data - why not :)
 
     // load up the item
     $template = $listing->template;
