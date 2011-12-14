@@ -42,7 +42,7 @@ class ContentGroupTypeListingItem extends ContentGroupType
 		if ($this->listingItem === null)
 		{
 			$itemClass = $this->ContentGroup->type_options;
-			$this->listingItem = Doctrine::getTable($itemClass)->findOneByContentGroupId($this->ContentGroup->id);
+			$this->listingItem = Doctrine_Core::getTable($itemClass)->findOneByContentGroupId($this->ContentGroup->id);
 
 			if (!$this->listingItem)
 			{

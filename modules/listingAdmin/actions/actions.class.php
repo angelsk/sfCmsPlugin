@@ -181,7 +181,7 @@ class listingAdminActions extends sfActions
     // load up the item we want to edit
     $template = $listing->template;
     $itemClass = $manager->getListItemClass($template);
-    $item = Doctrine::getTable($itemClass)->findOneById($request->getParameter('id'));
+    $item = Doctrine_Core::getTable($itemClass)->findOneById($request->getParameter('id'));
     $this->forward404Unless($item, 'No item with that id');
 
     $contentGroup = $item->ContentGroup;
@@ -249,14 +249,14 @@ class listingAdminActions extends sfActions
     // load up the item we want to edit
     $template = $listing->template;
     $itemClass = $manager->getListItemClass($template);
-    $item = Doctrine::getTable($itemClass)->findOneById($request->getParameter('id'));
+    $item = Doctrine_Core::getTable($itemClass)->findOneById($request->getParameter('id'));
     $this->forward404Unless($item, 'No item with that id');
 
     // Reset the ordering for the listing, based on current order then creation date
     // Useful for legacy listings and those switched in the midst of items being added
     // @see Doctrine_Template_Orderable
     $item->resetOrder();
-    $item = Doctrine::getTable($itemClass)->findOneById($request->getParameter('id')); // Get new object, so ordr correct
+    $item = Doctrine_Core::getTable($itemClass)->findOneById($request->getParameter('id')); // Get new object, so ordr correct
 
     $direction = $request->getParameter('direction');
     $directions = array('top', 'up', 'down', 'bottom'); // Currently just using up/down
@@ -284,7 +284,7 @@ class listingAdminActions extends sfActions
     // load up the item we want to edit
     $template = $listing->template;
     $itemClass = $manager->getListItemClass($template);
-    $item = Doctrine::getTable($itemClass)->findOneById($request->getParameter('id'));
+    $item = Doctrine_Core::getTable($itemClass)->findOneById($request->getParameter('id'));
     $this->forward404Unless($item, 'No item with that id');
 
     $item->publish();
@@ -311,7 +311,7 @@ class listingAdminActions extends sfActions
     // load up the item we want to edit
     $template = $listing->template;
     $itemClass = $manager->getListItemClass($template);
-    $item = Doctrine::getTable($itemClass)->findOneById($request->getParameter('id'));
+    $item = Doctrine_Core::getTable($itemClass)->findOneById($request->getParameter('id'));
     $this->forward404Unless($item, 'No item with that id');
 
     $item->delete();

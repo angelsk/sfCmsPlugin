@@ -304,7 +304,7 @@ class siteManager
     $routingProxy = $this->getRoutingProxy($router);
     $site         = $this->getCurrentSite();
     
-    $sitetrees    = SitetreeTable::getInstance()->getSitetreeNodes($site, Doctrine::HYDRATE_RECORD, false);
+    $sitetrees    = SitetreeTable::getInstance()->getSitetreeNodes($site, Doctrine_Core::HYDRATE_RECORD, false);
     $junkChar     = $this->getRouteJunkChar();
 
     $urlStack = array();
@@ -767,7 +767,7 @@ class siteManager
    * @param const $hydrationMode Return as array or record
    * @return Doctrine_Collection
    */
-  public function getEntireSitetree($site, $createRootIfNotExist = true, $includeTranslations = true, $hydrationMode = Doctrine::HYDRATE_RECORD) 
+  public function getEntireSitetree($site, $createRootIfNotExist = true, $includeTranslations = true, $hydrationMode = Doctrine_Core::HYDRATE_RECORD) 
   {
     if ($includeTranslations) 
     {
@@ -814,7 +814,7 @@ class siteManager
       $site = $this->getCurrentSite();
     }
     
-    $tree = SitetreeTable::getInstance()->getSitetree($site, $level, Doctrine::HYDRATE_ARRAY);
+    $tree = SitetreeTable::getInstance()->getSitetree($site, $level, Doctrine_Core::HYDRATE_ARRAY);
     $culture = sfContext::getInstance()->getUser()->getCulture();
 
     foreach ($tree as $item) 

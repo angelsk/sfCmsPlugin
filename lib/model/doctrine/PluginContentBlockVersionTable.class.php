@@ -119,6 +119,6 @@ abstract class PluginContentBlockVersionTable extends Doctrine_Table
       $query->addWhere('v.lang = ?', array($lang));
     }
 
-    return $query->execute(array(), Doctrine::HYDRATE_ARRAY);
+    return $query->execute(array(), Doctrine_Core::HYDRATE_ARRAY);
   }
 }

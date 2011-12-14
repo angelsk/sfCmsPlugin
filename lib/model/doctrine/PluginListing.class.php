@@ -12,171 +12,464 @@
  */
 abstract class PluginListing extends BaseListing
 {
-	/**
-	 * Creates an unsaved Listing object from the Sitetree
-	 *
-	 * @param Sitetree $sitetree
-	 * @return Listing
-	 */
-	public static function createFromSitetree($sitetree)
-	{
-		$listing = new Listing();
-		$listing->sitetree_id = $sitetree->id;
+  /**
+   * Creates an unsaved Listing object from the Sitetree
+   *
+   * @param Sitetree $sitetree
+   * @return Listing
+   */
+  public static function createFromSitetree($sitetree)
+  {
+    $listing = new Listing();
+    $listing->sitetree_id = $sitetree->id;
 
-		return $listing;
-	}
+    return $listing;
+  }
 
-	/**
-	 * Update a new Listing with a content group
-	 */
-	public function updateNew()
-	{
-		$group = contentGroup::createNew('Listing');
-		$this->ContentGroup = $group;
-		$this->save();
-	}
+  /**
+   * Update a new Listing with a content group
+   */
+  public function updateNew()
+  {
+    $group = contentGroup::createNew('Listing');
+    $this->ContentGroup = $group;
+    $this->save();
+  }
 
-	/**
-	 * Render one of the fragments for this Listing.
-	 *
-	 * The ContentGroup must be initialised first.
-	 *
-	 * @param string $identifier
-	 * @param array $extraParams
-	 */
-	public function renderContent($identifier, $extraParams = array())
-	{
-		return $this->ContentGroup->renderContent($identifier, $extraParams);
-	}
+  /**
+   * Render the template for this listing
+   *
+   * @param sfWebRequest $request
+   * @param boolean $tryUseCache
+   * @param Sitetree $sitetreeNode
+   * @return string (Partial)
+   */
+  public function render($tryUseCache = false, $request = null, $sitetreeNode = null)
+  {
+    $manager = listingManager::getInstance();
+    $template = $this->template;
+    
+    if (is_null($request)) $request = sfContext::getInstance()->getRequest();
+    if (is_null($sitetreeNode)) $sitetreeNode = $this->Sitetree;
+    
+    if ($request->hasParameter('category'))
+    {
+      $category = ListingCategoryTable::getInstance()->findOneByIdentifier($request->getParameter('category'));
+    }
+    else $category = null;
+    
+    $page = $request->getParameter('page', '');
 
-	/**
-	 * Handle the site events - e.g: routing
-	 *
-	 * @param siteEvent $event
-	 */
-	public static function siteEventHandler($event)
-	{
-		if ($event->getName() == siteEvent::SITETREE_DELETE)
-		{
-			// node has been deleted - delete the Listing
-			$sitetree = $event->getSubject();
-			$listing = ListingTable::getInstance()->findOneBySitetreeId($sitetree->id);
+    $partialVariables = array('sitetree' => $sitetreeNode);
 
-			if (!$listing)
-			{
-				// there is no Listing at this node to delete
-				return;
-			}
+    // init content group
+    $contentGroup = $this->initContentGroup();
 
-			$listing->delete();
-		}
-		else if ($event->getName() == siteEvent::SITETREE_ROUTING)
-		{
-			// handle the routing... i.e: register our routes.
-			$sitetree = $event->getSubject();
-			$params = $event->getParameters();
-			$routingProxy = $params['routingProxy'];
-			$urlStack = $params['urlStack'];
+    // cache
+    $useCache = false;
 
-			$nodeUrl = Sitetree::makeUrl($sitetree, $urlStack);
+    if ($tryUseCache)
+    {
+      // See if we should be using the cache for this template
+      if ($manager->getTemplateDefinitionParameter($template, 'listing_cacheable', false))
+      {
+        $useCache = true;
+        $culture = sfContext::getInstance()->getUser()->getCulture();
+        $categoryIdentifier = ($category ? $category->id : 'nc');
+        $partialVariables['cacheName'] = "listing.{$listing->id}.listing.{$categoryIdentifier}.{$culture}{$page}";
+      }
+    }
 
-			// add in index route
-			$routingProxy->addRoute(
-			$sitetree,
+    // Get a pager for the items
+    if ('' == $page) $page = 1;
+    $partialVariables['pager'] = $this->getInitialisedPager($request, $category, $page);
+
+    // get template file location
+    $partialVariables['templateFileLocation'] = $manager->getListingTemplateFile($template);
+    
+    // Add stylesheets etc to response
+    $response = sfContext::getInstance()->getResponse();
+    
+    if ($stylesheets = $manager->getTemplateDefinitionParameter($template, 'stylesheets'))
+    {
+      foreach ($stylesheets as $stylesheet) $response->addStylesheet($stylesheet, '', array('media' => $media));
+    }
+    
+    if ($javascripts = $manager->getTemplateDefinitionParameter($template, 'javascripts'))
+    {
+      foreach ($javascripts as $javascript) $response->addJavascript($javascript);
+    }
+
+    $partialVariables['useCache']     = $useCache;
+    $partialVariables['listing']      = $this;
+    $partialVariables['category']     = $category;
+    $partialVariables['contentGroup'] = $contentGroup;
+    
+    if (!function_exists('get_partial'))
+    {
+      sfApplicationConfiguration::getActive()->loadHelpers('Partial');
+    }
+
+    return get_partial('listingDisplay/render', $partialVariables);
+  }
+  
+  /**
+   * Render an RSS feed for the listing
+   *
+   * @param sfAtom1Feed or sfRss201Feed $feed
+   * @param string $feedType
+   * @param Sitetree $sitetree
+   * @param sfWebRequest $request
+   * @param boolean $tryUseCache
+   */
+  public function renderRss($feed, $feedType, $sitetree = null, $request = null, $tryUseCache = true)
+  {
+    $manager = listingManager::getInstance();
+    $siteConfig = siteManager::getInstance()->getSite();
+    $template = $this->template;
+    $culture = sfContext::getInstance()->getUser()->getCulture();
+    
+    if (is_null($request)) $request = sfContext::getInstance()->getRequest();
+    if (is_null($sitetreeNode)) $sitetree = $this->Sitetree;
+
+    // cache
+    $useCache = false;
+
+    if ($tryUseCache)
+    {
+      if (sfConfig::get('sf_cache', true)) $useCache = true;
+      $cacheName = "listing.{$listing->id}.{$feedType}.{$culture}";
+    }
+
+    $cache = siteManager::getInstance()->getCache();
+
+    if ($useCache && $cache->has($cacheName))
+    {
+      $feedXml = $cache->get($cacheName);
+    }
+    else
+    {
+      $contentGroup = $this->initContentGroup();
+
+      // Set feed characteristics
+      sfProjectConfiguration::getActive()->loadHelpers(array('Url','Site'));
+
+      $feed->setTitle(xml_character_encode($sitetree->title));
+      $feed->setLink(internal_url_for_sitetree($sitetree));
+      $feed->setLanguage(str_replace('_','-',$culture));
+      $feed->setFeedUrl(internal_url_for_sitetree($sitetree, $feedType));
+
+      $listingConfig = $manager->getTemplateDefinitionParameter($template, 'rss_config');
+
+      if (isset($siteConfig['rss_config']))
+      {
+        // Feed image
+        if (isset($siteConfig['rss_config']['logo']) || isset($siteConfig['rss_config']['favicon']))
+        {
+          $feedImage = new sfFeedImage();
+
+          if (isset($siteConfig['rss_config']['logo']) && is_array($siteConfig['rss_config']['logo']))
+          {
+            $icon = $siteConfig['rss_config']['logo'];
+            $feedImage->setImage('http://'.$request->getHost().$icon['url'], array());
+            $feedImage->setImageX($icon['width']);
+            $feedImage->setImageY($icon['height']);
+            $feedImage->setTitle(xml_character_encode($sitetree->title));
+            $feedImage->setLink(internal_url_for_sitetree($sitetree));
+          }
+
+          if (isset($siteConfig['rss_config']['favicon']))
+          {
+            $feedImage->setFavicon('http://'.$request->getHost().$siteConfig['rss_config']['favicon']);
+          }
+
+          $feed->setImage($feedImage);
+        }
+      }
+
+      // Author
+      if (isset($listingConfig['author'])) $author = $listingConfig['author'];
+      else if (isset($siteConfig['rss_config']) && isset($siteConfig['rss_config']['author'])) $author = $siteConfig['rss_config']['author'];
+
+      if (isset($author))
+      {
+        $feed->setAuthorName(xml_character_encode($author['name']));
+        $feed->setAuthorEmail($author['email']);
+        $feed->setAuthorLink($author['link']);
+      }
+
+      // Get a pager for the items
+      $pager = $this->getInitialisedPager($request, null, 1, true);
+
+      // Create feed from config
+      if (isset($listingConfig['feed']))
+      {
+        if (isset($listingConfig['feed']['description']))
+        {
+          $feed->setDescription(xml_character_encode(strip_tags($listing->renderContent($listingConfig['feed']['description']))));
+        }
+      }
+
+      $descriptionIdentifier = ((isset($listingConfig['item']) && isset($listingConfig['item']['description'])) ? $listingConfig['item']['description'] : false);
+      $contentIdentifier = ((isset($listingConfig['item']) && isset($listingConfig['item']['content'])) ? $listingConfig['item']['content'] : false);
+
+      foreach ($pager->getResults() as $post)
+      {
+        $post->ContentGroup->initialiseForRender($culture);
+
+        $item = new sfFeedItem();
+        $item->setTitle(xml_character_encode($post->Translation[$culture]->get('title')));
+
+        if ($post->ListingCategory) $item->setLink(internal_url_for_sitetree($sitetree, 'category_item', array('slug' => $post->slug, 'category' => $post->ListingCategory->slug)));
+        else $item->setLink(internal_url_for_sitetree($sitetree, 'item', array('slug' => $post->slug)));
+
+        $item->setPubdate(strtotime($post->get('created_at')));
+        $item->setUniqueId($post->getSlug());
+        
+        if ($descriptionIdentifier && ($desc = $post->renderContent($descriptionIdentifier))) $item->setDescription(xml_character_encode(strip_tags($desc)));
+        if ($contentIdentifier) $item->setContent($post->renderContent($contentIdentifier));
+
+        $feed->addItem($item);
+      }
+
+      $feedXml = $feed->toXml();
+
+      if ($useCache) $cache->set($cacheName, $feedXml);
+    }
+    
+    return $feedXml;
+  }
+
+  /**
+   * Initialise and return the ContentGroup for this listing
+   * Also used from ListingItem
+   *
+   * @return contentGroup
+   */
+  public function initContentGroup()
+  {
+    $contentGroup = $this->ContentGroup;
+    $contentGroup->initialiseForRender(sfContext::getInstance()->getUser()->getCulture());
+    return $contentGroup;
+  }
+
+  /**
+   * Initialse and return our pager
+   *
+   * @param listingManager $manager
+   * @param Listing $listing
+   * @param ListingCategory $category
+   * @param boolean $isRss
+   * @return sfDoctrineSuperPager
+   */
+  protected function getInitialisedPager($request, $category, $page, $isRss = false)
+  {
+    $manager = listingManager::getInstance();
+    $template = $this->template;
+    $pagerClass = $manager->getDisplayPagerClass($template);
+
+    // make our pager
+    $pager = new $pagerClass($this);
+
+    // do the page number
+    $maxPerPage = $this->results_per_page;
+
+    if ($page == 0)
+    { 
+      // page == 0 means view all
+      $page = 1;
+      $maxPerPage = 0;
+    }
+
+    $pager->setPage($page);
+
+    // restrict to items from this content listing
+    $this->addListItemRestrictions($pager, $category);
+
+    // add in ordering clause
+    $q = $pager->getQuery();
+
+    if ($this->use_custom_order)
+    {
+      $q->orderBy('ordr');
+    }
+    elseif ($isRss)
+    {
+      $q->orderBy($manager->getRssItemOrdering($template));
+    }
+    else
+    {
+      $q->orderBy($manager->getListItemOrdering($template));
+    }
+
+    $pager->setMaxPerPage($maxPerPage);
+
+    // get the pager to add the filter form values
+    $pager->addFilterValuesToQuery($request);
+
+    // do the pager query
+    $pager->init();
+
+    return $pager;
+  }
+  
+  /**
+   * Restrict the pager to items from this content listing and only published items!
+   *
+   * @param sfDoctrineSuperPager $pager
+   * @param ListingCategory $category
+   */
+  protected function addListItemRestrictions($pager, $category = null)
+  {
+    $pager->getQuery()->addWhere('listing_id = ? AND is_active = ? AND is_hidden = ?', array($this->id, true, false));
+
+    if ($category)
+    {
+      $pager->getQuery()->addWhere('listing_category_id = ?', array($category->id));
+    }
+  }
+
+  /**
+   * Render one of the fragments for this Listing.
+   *
+   * The ContentGroup must be initialised first.
+   *
+   * @param string $identifier
+   * @param array $extraParams
+   */
+  public function renderContent($identifier, $extraParams = array())
+  {
+    return $this->ContentGroup->renderContent($identifier, $extraParams);
+  }
+
+  /**
+   * Handle the site events - e.g: routing
+   *
+   * @param siteEvent $event
+   */
+  public static function siteEventHandler($event)
+  {
+    if ($event->getName() == siteEvent::SITETREE_DELETE)
+    {
+      // node has been deleted - delete the Listing
+      $sitetree = $event->getSubject();
+      $listing = ListingTable::getInstance()->findOneBySitetreeId($sitetree->id);
+
+      if (!$listing)
+      {
+        // there is no Listing at this node to delete
+        return;
+      }
+
+      $listing->delete();
+    }
+    else if ($event->getName() == siteEvent::SITETREE_ROUTING)
+    {
+      // handle the routing... i.e: register our routes.
+      $sitetree = $event->getSubject();
+      $params = $event->getParameters();
+      $routingProxy = $params['routingProxy'];
+      $urlStack = $params['urlStack'];
+
+      $nodeUrl = Sitetree::makeUrl($sitetree, $urlStack);
+
+      // add in index route
+      $routingProxy->addRoute(
+      $sitetree,
         '',
-			$nodeUrl,
-			array('module' => 'listingDisplay', 'action' => 'index')
-			);
+      $nodeUrl,
+      array('module' => 'listingDisplay', 'action' => 'index')
+      );
 
-			// add in item route
-			$routingProxy->addRoute(
-			$sitetree,
+      // add in item route
+      $routingProxy->addRoute(
+      $sitetree,
         'item',
-			$nodeUrl . '/item/:slug',
-			array('module' => 'listingDisplay', 'action' => 'item')
-			);
+      $nodeUrl . '/item/:slug',
+      array('module' => 'listingDisplay', 'action' => 'item')
+      );
 
-			// add in category routes
-			$routingProxy->addRoute(
-			$sitetree,
+      // add in category routes
+      $routingProxy->addRoute(
+      $sitetree,
         'category_item',
-			$nodeUrl . '/:category/item/:slug',
-			array('module' => 'listingDisplay', 'action' => 'item')
-			);
+      $nodeUrl . '/:category/item/:slug',
+      array('module' => 'listingDisplay', 'action' => 'item')
+      );
 
-			$routingProxy->addRoute(
-			$sitetree,
+      $routingProxy->addRoute(
+      $sitetree,
         'category',
-			$nodeUrl . '/:category',
-			array('module' => 'listingDisplay', 'action' => 'index')
-			);
+      $nodeUrl . '/:category',
+      array('module' => 'listingDisplay', 'action' => 'index')
+      );
 
-			// add in pagination route
-			$routingProxy->addRoute(
-			$sitetree,
+      // add in pagination route
+      $routingProxy->addRoute(
+      $sitetree,
             'page',
-			$nodeUrl . '/page/:page',
-			array('module' => 'listingDisplay', 'action' => 'index')
-			);
+      $nodeUrl . '/page/:page',
+      array('module' => 'listingDisplay', 'action' => 'index')
+      );
 
-			$routingProxy->addRoute(
-			$sitetree,
+      $routingProxy->addRoute(
+      $sitetree,
             'category_page',
-			$nodeUrl . '/:category/page/:page',
-			array('module' => 'listingDisplay', 'action' => 'index')
-			);
+      $nodeUrl . '/:category/page/:page',
+      array('module' => 'listingDisplay', 'action' => 'index')
+      );
 
-			// rss route
-			$routingProxy->addRoute(
-			$sitetree,
+      // rss route
+      $routingProxy->addRoute(
+      $sitetree,
             'rss',
-			$nodeUrl . '/rss',
-			array('module' => 'listingDisplay', 'action' => 'rss')
-			);
+      $nodeUrl . '/rss',
+      array('module' => 'listingDisplay', 'action' => 'rss')
+      );
 
-			// atom route
-			$routingProxy->addRoute(
-			$sitetree,
+      // atom route
+      $routingProxy->addRoute(
+      $sitetree,
             'atom',
-			$nodeUrl . '/atom',
-			array('module' => 'listingDisplay', 'action' => 'atom')
-			);
-		}
-	}
+      $nodeUrl . '/atom',
+      array('module' => 'listingDisplay', 'action' => 'atom')
+      );
+    }
+  }
 
-	/**
-	 * Handle when the content for this Listing (eg. content blocks or properties) has changed.
-	 */
-	public function handleContentChanged()
-	{
-		// This removes the cached pages from both the Listing and the items (and rss feed)
-		siteManager::getInstance()->getCache()->removePattern("Listing.{$this->id}.*");
-	}
+  /**
+   * Handle when the content for this Listing (eg. content blocks or properties) has changed.
+   */
+  public function handleContentChanged()
+  {
+    // This removes the cached pages from both the Listing and the items (and rss feed)
+    siteManager::getInstance()->getCache()->removePattern("Listing.{$this->id}.*");
+  }
 
-	/**
-	 * Delete
-	 *
-	 * @param Doctrine_Connection $conn
-	 */
-	public function delete(Doctrine_Connection $conn = null)
-	{
-		// delete all of the associated Listing items first
-		$manager = listingManager::getInstance();
-		$itemClass = $manager->getListItemClass($this->template);
-		$items = Doctrine_Query::create()
-		->from($itemClass)
-		->where('listing_id = ?', array($listing->id))
-		->execute();
+  /**
+   * Delete
+   *
+   * @param Doctrine_Connection $conn
+   */
+  public function delete(Doctrine_Connection $conn = null)
+  {
+    // delete all of the associated Listing items first
+    $manager = listingManager::getInstance();
+    $itemClass = $manager->getListItemClass($this->template);
+    $items = Doctrine_Query::create()
+    ->from($itemClass)
+    ->where('listing_id = ?', array($listing->id))
+    ->execute();
 
-		foreach ($items as $item)
-		{
-			$item->delete();
-		}
+    foreach ($items as $item)
+    {
+      $item->delete();
+    }
 
-		// delete associated Listing contentGroup
-		$this->ContentGroup->delete();
+    // delete associated Listing contentGroup
+    $this->ContentGroup->delete();
 
-		// finally, delete the Listing
-		parent::delete($conn);
-	}
+    // finally, delete the Listing
+    parent::delete($conn);
+  }
 }

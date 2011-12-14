@@ -34,7 +34,7 @@ class PluginSitetreeTable extends Doctrine_Table
           
     if ($checkIsActive) $query->andWhere('s.is_active = ?', array(true));
 
-    return $query->execute(array(), Doctrine::HYDRATE_RECORD)->getFirst();
+    return $query->execute(array(), Doctrine_Core::HYDRATE_RECORD)->getFirst();
   }
     
     
@@ -72,7 +72,7 @@ class PluginSitetreeTable extends Doctrine_Table
    * @param boolean $includeInactive
    * @return mixed
    */
-  public function getSitetreeNodes($site, $hydrationMode = Doctrine::HYDRATE_RECORD, $includeInactive = true) 
+  public function getSitetreeNodes($site, $hydrationMode = Doctrine_Core::HYDRATE_RECORD, $includeInactive = true) 
   {
     $query = $this->createQuery('s')
           ->where('s.site = ?', array($site))
