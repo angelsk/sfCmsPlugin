@@ -40,13 +40,7 @@ use_stylesheets_for_form($form);
     <div class="sf_admin_form">
   
       <?php if ($form->hasErrors()): ?>
-        <div class="ui-widget">
-        <div class="ui-state-error ui-corner-all" style="margin: 10px; padding: 7px 0px 0px 7px;"> 
-          <p><span class="ui-icon ui-icon-alert left"></span> 
-          Please correct the following errors</p>
-        </div>
-        </div>
-        <br />
+        <div class="error">Please correct the following errors</div>
       <?php endif; ?>
     
         <?php echo $form->renderFormTag(''); ?>
@@ -98,12 +92,12 @@ use_stylesheets_for_form($form);
         <?php if ($item->is_active): ?>
            <form method="post" action="" style="float:left;">
               <input type="hidden" name="publish" value="0" />
-              <input type="submit" value="Unpublish" class="btn_cancel float_l frm_submit" />
+              <input type="submit" value="Unpublish" />
            </form>
         <?php else: //if ($item->is_active): ?>
           <form method="post" action="" style="float:left;">
             <input type="hidden" name="publish" value="1" />
-            <input type="submit" class="btn_publish float_l frm_submit" value="Publish" />
+            <input type="submit" value="Publish" />
           </form>
         <?php endif; //if ($item->is_active): ?>
         <br class="clear" />
@@ -131,25 +125,13 @@ use_stylesheets_for_form($form);
         <div id='item_<?php echo $item->slug; ?>_properties'>
           <div class="content_border_normal">
     
-        <?php if ($form->hasErrors()): ?>
-          <div class="ui-widget">
-          <div class="ui-state-error ui-corner-all" style="margin: 10px; padding: 7px 0px 0px 7px;"> 
-            <p><span class="ui-icon ui-icon-alert left"></span> 
-            Please correct the following errors</p>
-          </div>
-          </div>
-          <br />
-        <?php endif; ?>
-  
-              <?php if ($sf_user->hasFlash('notice')): ?>
-          <div class="ui-widget">
-           <div class="ui-state-highlight ui-corner-all" style="margin: 10px; padding: 7px 0px 0px 7px;"> 
-            <p><span class="ui-icon ui-icon-info left"></span>
-            <?php echo $sf_user->getFlash('notice'); ?></p>
-           </div>
-          </div>
-          <br />
-        <?php endif; ?>
+          <?php if ($form->hasErrors()): ?>
+            <div class="error">Please correct the following errors</div>
+          <?php endif; ?>
+    
+          <?php if ($sf_user->hasFlash('notice')): ?>
+            <div class="notice"><?php echo $sf_user->getFlash('notice'); ?></div>
+          <?php endif; ?>
               
           <?php echo form_tag($url, array('multipart' => $form->isMultipart())); ?>
             <?php 
