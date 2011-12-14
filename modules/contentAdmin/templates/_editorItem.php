@@ -29,20 +29,18 @@ $formTarget = ($sf_data->offsetExists('formTarget') ? $sf_data->getRaw('formTarg
     </ul>
 <?php endif; ?>
 
-<div style="width:90%;" id="content_block_tabs_<?php echo $contentBlock->identifier; ?>">
-  <script type="text/javascript">
-    $(document).addEvent('domready', function () 
-    { 
-     // @TODO: $('content_block_tabs_<?php echo $contentBlock->identifier; ?>').tabs(); 
+<script type="text/javascript">
+  $(document).addEvent('domready', function () 
+  { 
+    new SimpleTabs('content_block_tabs_<?php echo $contentBlock->identifier; ?>', {
+      selector: 'h5'
     });
-  </script>
-  
-  <ul>
-      <li><a href='#edit_<?php echo $contentBlock->identifier; ?>'>Edit</a></li>
-      <li><a href='#history_<?php echo $contentBlock->identifier; ?>'>History</a></li>
-  </ul>
-  
+  });
+</script>
+
+<div style="width:90%;" id="content_block_tabs_<?php echo $contentBlock->identifier; ?>">
   <div class="section">
+    <h5>Edit</h5>
     <div id="edit_<?php echo $contentBlock->identifier; ?>">
         <div class="content_block_editor_control left">
           <table class="noBorder">
@@ -73,6 +71,7 @@ $formTarget = ($sf_data->offsetExists('formTarget') ? $sf_data->getRaw('formTarg
         <br style="clear:both" />
     </div>
   
+    <h5>History</h5> 
     <div id="history_<?php echo $contentBlock->identifier; ?>">
         <table class="content_block_editor_history">
           <thead>

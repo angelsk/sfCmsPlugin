@@ -33,21 +33,15 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array('sitetree' => $sit
   
   <script type="text/javascript">
     $(document).addEvent('domready', function() {
-       //$('listing_<?php echo $sitetree->route_name; ?>_tabs').tabs(); 
+      new SimpleTabs('listing_<?php echo $sitetree->route_name; ?>_tabs', {
+        selector: 'h4'
+      });
     });  
   </script>
   
   <div id="listing_<?php echo $sitetree->route_name; ?>_tabs">
 
-  <ul>
-      <li><a href='#listing_<?php echo $sitetree->route_name; ?>_items'>Items</a></li>
-      <?php if (!isset($defn['use_categories']) || true === $defn['use_categories']) : ?>
-          <li><a href='#listing_<?php echo $sitetree->route_name; ?>_categories'>Categories</a></li>
-      <?php endif; ?>
-    <li><a href='#listing_<?php echo $sitetree->route_name; ?>_content'>Content</a></li>
-    <li><a href='#listing_<?php echo $sitetree->route_name; ?>_properties'>Properties</a></li>
-  </ul>
-  
+  <h4>Items</h4>
   <div id='listing_<?php echo $sitetree->route_name; ?>_items'>
       <div id="sf_admin_container">
         <?php if ($sf_user->hasFlash('listing_notice')): ?>
@@ -86,6 +80,7 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array('sitetree' => $sit
   </div>
   
   <?php if (!isset($defn['use_categories']) || true === $defn['use_categories']) : ?>
+     <h4>Categories</h4>
       <div id='listing_<?php echo $sitetree->route_name; ?>_categories'>
         <div class="content_border_thin">
               <?php
@@ -95,6 +90,7 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array('sitetree' => $sit
     </div>
   <?php endif ?>
 
+  <h4>Content</h4>
   <div id='listing_<?php echo $sitetree->route_name; ?>_content'>
       <div class="content_border_thin">
           <?php
@@ -104,6 +100,7 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array('sitetree' => $sit
       </div>
   </div>
 
+  <h4>Properties</h4>
   <div id='listing_<?php echo $sitetree->route_name; ?>_properties'>
       <div class="content_border_thin">
           <?php if ($sitetree->is_locked) : ?>

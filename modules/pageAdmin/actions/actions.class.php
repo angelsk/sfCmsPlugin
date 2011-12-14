@@ -10,6 +10,11 @@
  */
 class pageAdminActions extends sfActions
 {
+  public function preExecute()
+  {
+    $this->getResponse()->addJavascript('/sfCmsPlugin/js/SimpleTabs.js', 'last');
+  }
+  
   /**
    * Edit a page by routeName
    *

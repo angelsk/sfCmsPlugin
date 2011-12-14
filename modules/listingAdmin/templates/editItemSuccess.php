@@ -91,16 +91,17 @@ use_stylesheets_for_form($form);
   
     <script type="text/javascript">
       $(document).addEvent('domready', function() { 
-        //$('listing_item_<?php echo $item->slug; ?>_tabs').tabs(); 
+        $(document).addEvent('domready', function() {
+          new SimpleTabs('listing_item_<?php echo $item->slug; ?>_tabs', {
+            selector: 'h4'
+          });
+        });
       });
     </script>
   
     <div id="listing_item_<?php echo $item->slug; ?>_tabs">
-      <ul>
-         <li><a href="#item_<?php echo $item->slug; ?>_properties">Properties</a></li>
-          <li><a href="#item_<?php echo $item->slug; ?>_content">Content</a></li>
-      </ul>
   
+      <h4>Properties</h4>
       <div id='item_<?php echo $item->slug; ?>_properties'>
         <div class="content_border_normal">
   
@@ -157,6 +158,8 @@ use_stylesheets_for_form($form);
       </div>
     </div>
   
+  
+    <h4>Content</h4>
     <div id='item_<?php echo $item->slug; ?>_content'>
   
       <div class="content_border_thin">
