@@ -29,9 +29,11 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array(
   </div>
   
   <div id="sf_admin_content">
-    <?php
-    $url = 'sitetree/index';
-    include_component('contentAdmin', 'editor', array('contentGroup' => $contentGroup, 'cancelUrl'=>$url));
-    ?>
+    <div class="sf_admin_form">
+      <?php
+      $url = 'sitetree/index';
+      include_component('contentAdmin', 'editor', array('contentGroup' => $contentGroup, 'cancelUrl'=>$url));
+      ?>
+    </div>
   </div>
 </div>

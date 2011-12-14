@@ -38,17 +38,37 @@ $formTarget = ($sf_data->offsetExists('formTarget') ? $sf_data->getRaw('formTarg
   });
 </script>
 
-<div style="width:90%;" id="content_block_tabs_<?php echo $contentBlock->identifier; ?>">
+<div id="content_block_tabs_<?php echo $contentBlock->identifier; ?>">
   <div class="section">
     <h5>Edit</h5>
     <div id="edit_<?php echo $contentBlock->identifier; ?>">
-      <div class="content_block_editor_control" style="width: 60%; float: left;">
-        <table>
-          <?php echo $contentBlockVersion->getContentBlockType()->editRender($sf_request); ?>
-        </table>
+      <div class="content_block_editor_control" style="width: 78%; float: left;">
+        <?php $form = $contentBlockVersion->getContentBlockType()->editRender($sf_request); ?>
+          
+        <?php 
+        echo $form->renderGlobalErrors(); 
+        echo $form->renderHiddenFields();
+        ?>
+      
+        <?php foreach ($form as $idx => $widget):
+          if (!$widget->isHidden()) : ?>
+          
+            <div class="sf_admin_form_row <?php if ($widget->hasError()) echo 'errors'; ?>">
+              <?php echo $widget->renderError(); ?>
+              <div>
+                <?php $label = $widget->renderLabel(); 
+                $rawLabel = trim(strip_tags($label)); 
+                if (!empty($rawLabel) && '&nbsp;' != $rawLabel) echo $label; ?>
+                <div class="content<?php if (empty($rawLabel) || '&nbsp;' == $rawLabel) echo ' no_label'; ?>"><?php echo $widget->render(); ?></div>
+                <?php if ($help = $widget->renderHelp()) : ?><div class="help"><?php echo str_replace('<br />', '', $help); ?></div><?php endif; ?>
+              </div>
+            </div>
+              
+          <?php endif; 
+        endforeach; ?>
       </div>
       
-      <div class="content_block_editor_messages" style="width: 35%; float: right;">
+      <div class="content_block_editor_messages" style="width: 20%; float: right;">
         <?php if ($contentBlock->getDefinitionParam('help')) : ?>
           <p><?php echo image_tag('/sfCmsPlugin/images/help.png'); ?> <?php echo $contentBlock->getDefinitionParam('help'); ?></p>
         <?php endif; ?>

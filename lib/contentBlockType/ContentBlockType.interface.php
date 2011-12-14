@@ -31,10 +31,10 @@ interface ContentBlockTypeInterface
   /**
    * Render editing HTML - from ContentBlockTypeForm implementation
    * 
-   * Must return HTML for a form control to edit this Content block.  It can make 
-   * use of getFormName().
+   * Returns a form object to render in the editorContent partial
    *
    * @param sfWebRequest $request
+   * @return sfForm
    */
   public function editRender(sfWebRequest $request);  
     

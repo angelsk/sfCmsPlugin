@@ -18,92 +18,26 @@ use_javascripts_for_form($form);
 use_stylesheets_for_form($form);
 ?>
 
-<div class="item_control">
+<div id="sf_admin_container">
 
   <?php if ($isNew) : ?>
-    <h2>Create new item for '<?php echo $sitetree->getTitle(); ?>'</h2>
+    <h1>Create new item for '<?php echo $sitetree->getTitle(); ?>'</h1>
   <?php else : ?>
-    <h2><?php echo $sitetree->getTitle(); ?> - <?php echo $item->getTitle(); ?></h2>
+    <h1><?php echo $sitetree->getTitle(); ?> - <?php echo $item->getTitle(); ?></h1>
   <?php endif; ?>
   
-  <?php echo include_partial('sitetree/sitetreeInfo', array('sitetree'=>$sitetree, 'item'=>$item)); ?>
+  <div id="sf_admin_header">
+    <?php echo include_partial('sitetree/sitetreeInfo', array('sitetree'=>$sitetree, 'item'=>$item)); ?>
+  
 
   <?php if ($isNew): ?>
   
-      <p>Please enter the details for your new list item below. Once it has been created you will be able to choose the images and descriptions.</p>
+    <p>Please enter the details for your new list item below. Once it has been created you will be able to choose the images and descriptions.</p>
+  </div>
   
-    <?php if ($form->hasErrors()): ?>
-      <div class="ui-widget">
-      <div class="ui-state-error ui-corner-all" style="margin: 10px; padding: 7px 0px 0px 7px;"> 
-        <p><span class="ui-icon ui-icon-alert left"></span> 
-        Please correct the following errors</p>
-      </div>
-      </div>
-      <br />
-    <?php endif; ?>
-  
-      <?php echo $form->renderFormTag(''); ?>
-         <fieldset class="fld_float">
-            <table>
-               <tbody>
-                  <?php echo $form ?>
-               </tbody>
-             </table>
-  
-             <input type="submit" class="btn_save float_r frm_submit" value="Save"  />
-         </fieldset>
-      </form>
-     
-  <?php else: ?>
-  
-    <div class="sitetreeInfo">
-      
-      <div class="item-status">
-        <span class="left">This item is: &nbsp;</span>
-        <?php if ($item->is_active): ?>
-           <span class="site_sitetree_published float_l">Live</span>
-        <?php else: //if ($item->is_active): ?>
-          <span class="site_sitetree_not_published float_l">Not live</span>
-        <?php endif; ?>
-        <?php if ($item->is_hidden): ?>
-           <span class="site_sitetree_hidden float_l">Hidden</span>
-        <?php endif; ?>
-        
-        <?php echo link_to('[back to listing page]', 'listingAdmin/edit?id=' . $item->listing_id) ?>
-        <br class="clear" /><br />
-        
-        <?php if ($item->is_active): ?>
-           <form method="post" action="" class="float_l">
-              <input type="hidden" name="publish" value="0" />
-              <input type="submit" value="Unpublish" class="btn_cancel float_l frm_submit" />
-           </form>
-        <?php else: //if ($item->is_active): ?>
-          <form method="post" action="" class="float_l">
-            <input type="hidden" name="publish" value="1" />
-            <input type="submit" class="btn_publish float_l frm_submit" value="Publish" />
-          </form>
-        <?php endif; //if ($item->is_active): ?>
-        
-        <br class="clear" />
-      </div>
-    </div>
-    <br class="clear" /><br />
-  
-    <script type="text/javascript">
-      $(document).addEvent('domready', function() { 
-        $(document).addEvent('domready', function() {
-          new SimpleTabs('listing_item_<?php echo $item->slug; ?>_tabs', {
-            selector: 'h4'
-          });
-        });
-      });
-    </script>
-  
-    <div id="listing_item_<?php echo $item->slug; ?>_tabs">
-  
-      <h4>Properties</h4>
-      <div id='item_<?php echo $item->slug; ?>_properties'>
-        <div class="content_border_normal">
+  <div id="sf_admin_content">
+    
+    <div class="sf_admin_form">
   
       <?php if ($form->hasErrors()): ?>
         <div class="ui-widget">
@@ -114,63 +48,169 @@ use_stylesheets_for_form($form);
         </div>
         <br />
       <?php endif; ?>
-
-            <?php if ($sf_user->hasFlash('notice')): ?>
-        <div class="ui-widget">
-         <div class="ui-state-highlight ui-corner-all" style="margin: 10px; padding: 7px 0px 0px 7px;"> 
-          <p><span class="ui-icon ui-icon-info left"></span>
-          <?php echo $sf_user->getFlash('notice'); ?></p>
-         </div>
-        </div>
-        <br />
-      <?php endif; ?>
-            
-      <?php echo form_tag($url, array('multipart' => $form->isMultipart())); ?>
-            <fieldset class="fld_float">
-               <table>
-                  <tbody>
-                     <?php $translations = array(); ?>
-                     <?php foreach ($item->Translation as $culture => $Translation) : ?>
-                           <?php if (!empty($Translation->title)) $translations[$culture] = $Translation->title; ?>
-                       <?php endforeach; ?>
-                       <?php if (!empty($translations)) : ?>
-                        <tr>
-                          <td>Item title translations</td>
-                    <td>
-                      <?php foreach ($translations as $culture => $Translation) : ?>
-                         <?php echo $culture . ' - ' . $Translation; ?><br />
-                      <?php endforeach; ?>
-                    </td>
-                  </tr>
-               <?php endif; ?>
-                        
-               <?php echo $form ?>
-            </tbody>
-          </table>
-          </fieldset>
-        <fieldset class="fld_submit">
-          <input type="submit" class="btn_save frm_submit" value="Save"  />
-                        
-            <?php echo button_to('Cancel', 'listingAdmin/edit?id=' . $item->listing_id, array('class'=>'btn_cancel frm_submit')); ?>
-        </fieldset>
-       </form>
-  
-      </div>
-    </div>
-  
-  
-    <h4>Content</h4>
-    <div id='item_<?php echo $item->slug; ?>_content'>
-  
-      <div class="content_border_thin">
-          <?php
-         $url = 'listingAdmin/edit?id=' . $item->listing_id;
-         include_component('contentAdmin', 'editor', array('contentGroup' => $contentGroup, 'cancelUrl'=>$url, 'formTarget'=>'#item_'. $item->slug.'_content'));
-         ?>
-      </div>
-      </div>
-    </div>
     
+        <?php echo $form->renderFormTag(''); ?>
+          <?php 
+          echo $form->renderGlobalErrors(); 
+          echo $form->renderHiddenFields();
+          ?>
+          
+          <fieldset id="sf_fieldset_none">
+            <?php foreach ($form as $idx => $widget):
+              if (!$widget->isHidden()) : ?>
+              
+                <div class="sf_admin_form_row <?php if ($widget->hasError()) echo 'errors'; ?>">
+                  <?php echo $widget->renderError(); ?>
+                  <div>
+                    <?php echo $widget->renderLabel(); ?>
+                    <div class="content"><?php echo $widget->render(); ?></div>
+                    <?php if ($help = $widget->renderHelp()) : ?><div class="help"><?php echo str_replace('<br />', '', $help); ?></div><?php endif; ?>
+                  </div>
+                </div>
+                  
+              <?php endif; 
+             endforeach; ?>
+           </fieldset>
+           
+           <ul class="sf_admin_actions">
+             <li class="sf_admin_action_save"><input type="submit" value="Save" /></li>
+             <li class="sf_admin_action_list"><?php echo link_to('Back to listing', 'listingAdmin/edit?id=' . $item->listing_id); ?></li>
+           </ul>
+        </form>
+      </div>
+    </div>
+     
+  <?php else: ?>
+  
+    <div class="sitetreeInfo">
+      <div class="item-status">
+        <span style="float:left;">This item is: &nbsp;</span>
+        <?php if ($item->is_active): ?>
+           <span class="site_sitetree_published" style="float:left;">Live</span>
+        <?php else: //if ($item->is_active): ?>
+          <span class="site_sitetree_not_published" style="float:left;">Not live</span>
+        <?php endif; ?>
+        <?php if ($item->is_hidden): ?>
+           <span class="site_sitetree_hidden" style="float:left;">Hidden</span>
+        <?php endif; ?>
+        
+        <br class="clear" />
+        <?php if ($item->is_active): ?>
+           <form method="post" action="" style="float:left;">
+              <input type="hidden" name="publish" value="0" />
+              <input type="submit" value="Unpublish" class="btn_cancel float_l frm_submit" />
+           </form>
+        <?php else: //if ($item->is_active): ?>
+          <form method="post" action="" style="float:left;">
+            <input type="hidden" name="publish" value="1" />
+            <input type="submit" class="btn_publish float_l frm_submit" value="Publish" />
+          </form>
+        <?php endif; //if ($item->is_active): ?>
+        <br class="clear" />
+      </div>
+    </div>
+  </div>
+  
+  <div id="sf_admin_content">
+    
+    <div class="sf_admin_form">
+  
+      <script type="text/javascript">
+        $(document).addEvent('domready', function() { 
+          $(document).addEvent('domready', function() {
+            new SimpleTabs('listing_item_<?php echo $item->slug; ?>_tabs', {
+              selector: 'h4'
+            });
+          });
+        });
+      </script>
+    
+      <div id="listing_item_<?php echo $item->slug; ?>_tabs">
+    
+        <h4>Properties</h4>
+        <div id='item_<?php echo $item->slug; ?>_properties'>
+          <div class="content_border_normal">
+    
+        <?php if ($form->hasErrors()): ?>
+          <div class="ui-widget">
+          <div class="ui-state-error ui-corner-all" style="margin: 10px; padding: 7px 0px 0px 7px;"> 
+            <p><span class="ui-icon ui-icon-alert left"></span> 
+            Please correct the following errors</p>
+          </div>
+          </div>
+          <br />
+        <?php endif; ?>
+  
+              <?php if ($sf_user->hasFlash('notice')): ?>
+          <div class="ui-widget">
+           <div class="ui-state-highlight ui-corner-all" style="margin: 10px; padding: 7px 0px 0px 7px;"> 
+            <p><span class="ui-icon ui-icon-info left"></span>
+            <?php echo $sf_user->getFlash('notice'); ?></p>
+           </div>
+          </div>
+          <br />
+        <?php endif; ?>
+              
+          <?php echo form_tag($url, array('multipart' => $form->isMultipart())); ?>
+            <?php 
+            echo $form->renderGlobalErrors(); 
+            echo $form->renderHiddenFields();
+            ?>
+          
+            <fieldset id="sf_fieldset_none">
+              <?php $translations = array(); ?>
+               <?php foreach ($item->Translation as $culture => $Translation) : ?>
+                 <?php if (!empty($Translation->title)) $translations[$culture] = $Translation->title; ?>
+              <?php endforeach; ?>
+              <?php if (!empty($translations)) : ?>
+                <div class="sf_admin_form_row">
+                  <label>Item title translations</label>
+                  <div class="content">
+                    <?php foreach ($translations as $culture => $Translation) : ?>
+                       <?php echo $culture . ' - ' . $Translation; ?><br />
+                    <?php endforeach; ?>
+                  </div>
+                </div>
+              <?php endif; ?>
+            
+              <?php foreach ($form as $idx => $widget):
+                if (!$widget->isHidden()) : ?>
+                
+                  <div class="sf_admin_form_row <?php if ($widget->hasError()) echo 'errors'; ?>">
+                    <?php echo $widget->renderError(); ?>
+                    <div>
+                      <?php echo $widget->renderLabel(); ?>
+                      <div class="content"><?php echo $widget->render(); ?></div>
+                      <?php if ($help = $widget->renderHelp()) : ?><div class="help"><?php echo str_replace('<br />', '', $help); ?></div><?php endif; ?>
+                    </div>
+                  </div>
+                    
+                <?php endif; 
+              endforeach; ?>
+            </fieldset>
+             <ul class="sf_admin_actions">
+               <li class="sf_admin_action_save"><input type="submit" value="Save" /></li>
+               <li class="sf_admin_action_list"><?php echo link_to('Back to listing', 'listingAdmin/edit?id=' . $item->listing_id); ?></li>
+             </ul>
+           </form>
+  
+          </div>
+        </div>
+    
+        <h4>Content</h4>
+        <div id='item_<?php echo $item->slug; ?>_content'>
+      
+          <div class="content_border_thin">
+            <?php
+            $url = 'listingAdmin/edit?id=' . $item->listing_id;
+            include_component('contentAdmin', 'editor', array('contentGroup' => $contentGroup, 'cancelUrl'=>$url, 'formTarget'=>'#item_'. $item->slug.'_content'));
+            ?>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+      
   <?php endif; ?>
 
 </div>

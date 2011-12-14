@@ -12,40 +12,38 @@ $formTarget = ($sf_data->offsetExists('formTarget') ? $sf_data->getRaw('formTarg
   <div class="notice"><?php echo $sf_user->getFlash('content_notice'); ?></div>
 <?php endif; ?>
 
-<div class="sf_admin_form">
-  <form id="<?php echo $formId ?>" method="post" action="<?php echo $formTarget; ?>" enctype="multipart/form-data">
-    <fieldset class="sitetreeInfo">
-      <span style="float:left;">Load versions: &nbsp;</span>
-      <input type="submit" name="live_versions" value="Currently live" class="btn_load frm_submit" />
-      <input type="submit" name="new_versions" value="Newest" class="btn_load frm_submit" />
-    </fieldset>
-    
-    <fieldset>
-      <input type="hidden" name="content_group_id" value="<?php echo $contentGroup->id; ?>" />
-      <input type="hidden" name="sf_culture" value="<?php echo $sf_user->getCulture(); ?>" />
-      <input type="hidden" name="lang" value="<?php echo esc_entities($lang); ?>" />
-      
-      <div class='content_block_editor_items'>
-        <?php foreach ($contentBlocks as $contentBlock): ?>
-          <?php $contentBlockVersion = $contentBlockVersions[$contentBlock->identifier]; ?>
-
-          <?php include_partial('contentAdmin/editorItem', array('contentGroup' => $contentGroup, 'contentBlock' => $contentBlock, 'contentBlockVersion' => $contentBlockVersion, 'formTarget' => $formTarget)); ?>
-        <?php endforeach; ?>
-      </div>
-    </fieldset>
-
-    <div style="display: none;" class="content_block_editor_loading"><img src="/sfCmsPlugin/images/ajax-bar.gif" alt="Loading..." /></div>
-
-    <ul class="sf_admin_actions">
-      <li class="sf_admin_action_preview"><input type="submit" name="preview" id="<?php echo $formId ?>Preview" value="Preview" /></li>
-      <li class="sf_admin_action_save"><input type="submit" name="save" value="Save version" /></li>
-      <li class="sf_admin_action_save_and_add"><input type="submit" name="save_and_publish" value="Save and publish" /></li>
-      <?php if (isset($cancelUrl)) echo '<li class="sf_admin_action_list">' . link_to('Back to sitetree', $cancelUrl) . '</li>'; ?>
-    </ul>
+<form id="<?php echo $formId ?>" method="post" action="<?php echo $formTarget; ?>" enctype="multipart/form-data">
+  <fieldset class="sitetreeInfo">
+    <span style="float:left;">Load versions: &nbsp;</span>
+    <input type="submit" name="live_versions" value="Currently live" class="btn_load frm_submit" />
+    <input type="submit" name="new_versions" value="Newest" class="btn_load frm_submit" />
+  </fieldset>
   
-    <iframe style="margin-left: -25%; width: 150%; height: 500px; margin-top: 20px;" name="<?php echo $formId ?>Iframe" id="<?php echo $formId ?>Iframe"></iframe>
-  </form>
-</div>
+  <fieldset>
+    <input type="hidden" name="content_group_id" value="<?php echo $contentGroup->id; ?>" />
+    <input type="hidden" name="sf_culture" value="<?php echo $sf_user->getCulture(); ?>" />
+    <input type="hidden" name="lang" value="<?php echo esc_entities($lang); ?>" />
+    
+    <div class='content_block_editor_items'>
+      <?php foreach ($contentBlocks as $contentBlock): ?>
+        <?php $contentBlockVersion = $contentBlockVersions[$contentBlock->identifier]; ?>
+
+        <?php include_partial('contentAdmin/editorItem', array('contentGroup' => $contentGroup, 'contentBlock' => $contentBlock, 'contentBlockVersion' => $contentBlockVersion, 'formTarget' => $formTarget)); ?>
+      <?php endforeach; ?>
+    </div>
+  </fieldset>
+
+  <div style="display: none;" class="content_block_editor_loading"><img src="/sfCmsPlugin/images/ajax-bar.gif" alt="Loading..." /></div>
+
+  <ul class="sf_admin_actions">
+    <li class="sf_admin_action_preview"><input type="submit" name="preview" id="<?php echo $formId ?>Preview" value="Preview" /></li>
+    <li class="sf_admin_action_save"><input type="submit" name="save" value="Save version" /></li>
+    <li class="sf_admin_action_save_and_add"><input type="submit" name="save_and_publish" value="Save and publish" /></li>
+    <?php if (isset($cancelUrl)) echo '<li class="sf_admin_action_list">' . link_to('Back', $cancelUrl) . '</li>'; ?>
+  </ul>
+
+  <iframe style="margin-left: -25%; width: 150%; height: 600px; margin-top: 20px; border: none;" name="<?php echo $formId ?>Iframe" id="<?php echo $formId ?>Iframe"></iframe>
+</form>
 
 <script type="text/javascript">
   $(document).addEvent('domready', function () 

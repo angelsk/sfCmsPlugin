@@ -59,9 +59,10 @@ class listingAdminActions extends sfActions
       }
     }
 
-    $this->routeName = $routeName;
-    $this->sitetree = $sitetree;
-    $this->form = $form;
+    $this->routeName  = $routeName;
+    $this->sitetree   = $sitetree;
+    $this->form       = $form;
+    $this->site       = $site;
   }
 
   /**
@@ -82,7 +83,7 @@ class listingAdminActions extends sfActions
     $contentGroup->setCurrentLang($this->getUser()->getCulture());
 
     $manager = listingManager::getInstance();
-    $form = new listingForm($listing);
+    $form = new ListingForm($listing);
 
     if ($request->isMethod(sfWebRequest::POST) && $request->hasParameter('listing'))
     {

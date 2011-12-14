@@ -103,7 +103,7 @@ class listingDisplayActions extends sfActions
   {
     $listing = ListingTable::getInstance()->findOneById($request->getParameter('listId'));
     $this->forward404Unless($listing, "No listing could be found with id='{$request->getParameter('listId')}'");
-    $sitetree = SitetreeTable::getInstance()->findOneById($listing->sitetree_id, false);
+    $sitetree = SitetreeTable::getInstance()->findOneById($listing->sitetree_id);
     $this->forward404Unless($sitetree, 'No sitetree');
 
     // use this as our currently matched sitetree

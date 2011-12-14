@@ -331,13 +331,10 @@ if (!function_exists('super_pager_render_form')) {
 		$url = url_for($url);
 
 		$out = "<form method='get' action='$url' id='{$pager->getId()}FilterForm'>";
-		$out .= "<fieldset>";
 		$out .= "<table>";
 		$out .= $form->__toString();
 		$out .= "<tr><td colspan='2'><input type='submit' name='submit' value='Filter results' /></td></tr>";
 		$out .= "</table>";
-
-		$out .= "</fieldset>";
 		$out .= "</form>";
 		return $out;
 	}

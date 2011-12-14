@@ -85,8 +85,8 @@ class listingItemPager extends sfDoctrineSuperPager
     }
     
     $out[] = array(($item->is_active ? '<span class="ui-icon ui-icon-check"></span>' : '&nbsp;'));
-    $out[] = array(date('d/M/Y H:i', strtotime($item->created_at)) . '<br /> by ' . $item->CreatedBy->username);
-    $out[] = array(date('d/M/Y H:i', strtotime($item->updated_at)) . '<br /> by ' . $item->UpdatedBy->username);
+    $out[] = array(date('d/M/Y H:i', strtotime($item->created_at)) . ' by ' . $item->CreatedBy->username);
+    $out[] = array(date('d/M/Y H:i', strtotime($item->updated_at)) . ' by ' . $item->UpdatedBy->username);
     
     $editOut = '<ul class="sf_admin_td_actions">';
     $editOut .= '<li class="sf_admin_action_edit" style="display:block;">' . link_to(
@@ -97,7 +97,7 @@ class listingItemPager extends sfDoctrineSuperPager
     
     if (!$item->is_active) 
     {
-      $editOut .= '<li class="sf_admin_action_new" style="display:block;">' . link_to(
+      $editOut .= '<li class="sf_admin_action_publish" style="display:block;">' . link_to(
         "Publish",
         'listingAdmin/publishItem?listId=' . $listId . '&id=' . $item->id,
         array('class' => 'btn_publish')

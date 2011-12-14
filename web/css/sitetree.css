@@ -1,3 +1,11 @@
+#sf_admin_container .sf_admin_form_row .content.no_label {
+  padding-left: 0px !important;
+}
+
+#sf_admin_container .content_block_editor_control .sf_admin_form_row {
+  border-bottom: none;
+}
+
 .folderTree {
   overflow: hidden;
   margin: 5px;
@@ -100,8 +108,9 @@
 .tab-wrapper {
   padding: 1em 1.5em;
   margin: 0;
-  border: 1px solid #eee;
   clear: both;
+  background: white;
+  border: 1px solid #DDD;
 }
 
 .tab-menu {

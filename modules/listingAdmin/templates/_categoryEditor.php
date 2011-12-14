@@ -63,12 +63,7 @@
 <h2><?php echo ($editCategoryName) ? "Edit category '{$editCategoryName}'" : 'Add new category'; ?></h2>
 
 <?php if ($form->hasErrors()): ?>
-  <div class="ui-widget">
-  <div class="ui-state-error ui-corner-all" style="margin: 10px; padding: 7px 0px 0px 7px;"> 
-    <p><span class="ui-icon ui-icon-alert left"></span> 
-    Please correct the following errors</p>
-  </div>
-  </div>
+  <div class="error">Please correct the following errors</div>
 <?php endif; ?>
 
 

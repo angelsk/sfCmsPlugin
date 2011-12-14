@@ -24,7 +24,7 @@ class ContentBlockTypeText extends ContentBlockType
       $form->bind($request->getParameter($field));
     }
 
-    return $form->render();
+    return $form;
   }
 
   /**

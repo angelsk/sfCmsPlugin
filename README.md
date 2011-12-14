@@ -780,7 +780,7 @@ Below is the standard implementation, which can obviously be tweaked, depending 
        * @see ContentBlockType/ContentBlockTypeInterface::editRender()
        * 
        * @param sfWebRequest $request
-       * @return string
+       * @return sfForm
        */
       public function editRender(sfWebRequest $request) 
       {
@@ -793,7 +793,7 @@ Below is the standard implementation, which can obviously be tweaked, depending 
             $form->bind($request->getParameter($field)); 
           }
       
-          return $form->render();
+          return $form;
       }
 
       /**

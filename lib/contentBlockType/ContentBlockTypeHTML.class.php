@@ -7,8 +7,6 @@
  */
 class ContentBlockTypeHTML extends ContentBlockType
 {
-	public $form;
-
 	/**
 	 * @see ContentBlockType/ContentBlockTypeInterface::editRender()
 	 *
@@ -17,43 +15,29 @@ class ContentBlockTypeHTML extends ContentBlockType
 	 */
 	public function editRender(sfWebRequest $request)
 	{
-		$field = $this->getFormName();
-		$this->form = new ContentBlockTypeHTMLForm($this);
+	  $field = $this->getFormName();
+    $form = new ContentBlockTypeHTMLForm($this);
+	  
+	  // add javascript and stylesheets for form
+    $response = sfContext::getInstance()->getResponse();
 
+    foreach ($form->getJavascripts() as $file)
+    {
+      $response->addJavascript($file);
+    }
+     
+    foreach ($form->getStylesheets() as $file => $media)
+    {
+      $response->addStylesheet($file, '', array('media' => $media));
+    }
+	  
 		if ($request->hasParameter($field)
 		&& ($request->hasParameter('save') || $request->hasParameter('save_and_publish') || $request->hasParameter('preview')))
 		{
-			$this->form->bind($request->getParameter($field));
+			$form->bind($request->getParameter($field));
 		}
 
-		return $this->form->render();
-	}
-
-	/**
-	 * @see ContentBlockType/ContentBlockTypeInterface::editRenderJavascript()
-	 * @see ContentBlockTypeHTMLForm::getConfig()
-	 *
-	 * @param sfWebRequest $request
-	 * @return string
-	 */
-	public function editRenderJavascript(sfWebRequest $request)
-	{
-		// add javascript and stylesheets for form
-		$response = sfContext::getInstance()->getResponse();
-
-		foreach ($this->form->getJavascripts() as $file)
-		{
-			$response->addJavascript($file);
-		}
-		 
-	 	$response = sfContext::getInstance()->getResponse();
-
-	 	foreach ($this->form->getStylesheets() as $file => $media)
-	 	{
-	 		$response->addStylesheet($file, '', array('media' => $media));
-	 	}
-
-		return '';
+		return $form;
 	}
 
 	/**
