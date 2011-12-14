@@ -15,7 +15,7 @@ class sitemapActions extends sfActions
     $manager = siteManager::getInstance();
     $sitetreeNode = $manager->initCurrentSitetreeNode();
     
-    $this->entireSitetree = $manager->getEntireSitetree();
+    $this->entireSitetree = $manager->getEntireSitetree($sitetreeNode->site);
     $this->sitetree = $sitetreeNode;
   }
   
