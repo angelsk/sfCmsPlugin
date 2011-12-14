@@ -24,7 +24,7 @@ class listingItemPager extends sfDoctrineSuperPager
       $cols[] = array('name' => 'Move');
     }
 
-    $this->useCategories = $manager->getTemplateDefinitionParameter($listing->template, 'with_category', false);
+    $this->useCategories = $manager->getTemplateDefinitionParameter($listing->template, 'use_categories', true);
 
     if ($this->useCategories)
     {
