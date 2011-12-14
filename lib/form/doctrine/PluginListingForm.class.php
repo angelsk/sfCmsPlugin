@@ -28,5 +28,7 @@ abstract class PluginListingForm extends BaseListingForm
     $this->widgetSchema->setLabel('results_per_page', 'Results per page <em>*</em>');
     $this->widgetSchema->setLabel('template', 'Template <em>*</em>');
     $this->widgetSchema->setLabel('rss_url','External RSS url');
+    
+    $this->widgetSchema->setHelp('results_per_page', 'Set to 9999 if no pagination');
 	}
 }

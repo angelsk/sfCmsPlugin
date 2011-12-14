@@ -29,7 +29,7 @@ class listingAdminComponents extends sfComponents
     {
       $catId = $request->getParameter('editCategory');
       $category = listingCategoryTable::getInstance()->findOneById($catId);
-      $form = new listingCategoryForm($category);
+      $form = new ListingCategoryForm($category);
       
       if ($request->hasParameter('listing_category')) 
       {
@@ -47,8 +47,9 @@ class listingAdminComponents extends sfComponents
     // Add new
     else 
     {
-      $form = new listingCategoryForm();
-      $form->setDefault('listing_id', $listing->id);
+      $category = new ListingCategory();
+      $category->set('Listing', $listing);
+      $form = new ListingCategoryForm($category);
       
       if ($request->isMethod(sfWebRequest::POST) && $request->hasParameter('listing_category')) 
       {
@@ -57,7 +58,7 @@ class listingAdminComponents extends sfComponents
         if ($form->isValid()) 
         {
           $form->save();
-          $form = new listingCategoryForm();
+          $form = new ListingCategoryForm();
           $this->getUser()->setFlash('notice', 'Category added');
         }
       }
