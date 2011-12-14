@@ -482,20 +482,20 @@ abstract class PluginContentGroup extends BaseContentGroup
 	{
 		foreach ($this->ContentBlocks as $contentBlock)
 		{
+		  // delete the current version stuff
+      $allCVersions = $contentBlock->CurrentVersions;
+      foreach ($allCVersions as $cVersion)
+      {
+        $cVersion->delete();
+        $cVersion->free();
+      }
+		  
 			// delete all of the ContentBlock versions
 			$allVersions = $contentBlock->Versions;
 			foreach ($allVersions as $version)
 			{
 				$version->delete();
 				$version->free();
-			}
-
-			// delete the current version stuff
-			$allCVersions = $contentBlock->CurrentVersions;
-			foreach ($allCVersions as $cVersion)
-			{
-				$cVersion->delete();
-				$cVersion->free();
 			}
 
 			// finally, delete the ContentBlock itself

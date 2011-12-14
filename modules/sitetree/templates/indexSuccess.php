@@ -43,7 +43,7 @@ sfConfig::set('site_hack_entireSitetree', $treeNodes);
           {
             $moduleDefinition = $sitetree->getModuleDefinition();
             
-            if ('sitetree/index' != $moduleDefinition['admin_url'])
+            if ('sitetree/index' != $moduleDefinition['admin_url'] && !$sitetree->is_deleted)
             {
               $out = '<span class="lnk">' . link_to(
                 $name,

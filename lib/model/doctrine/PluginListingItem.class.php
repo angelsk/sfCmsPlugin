@@ -153,9 +153,6 @@ abstract class PluginListingItem extends BaseListingItem
 
   public function delete(Doctrine_Connection $conn = null)
   {
-    // delete associated item content group
-    $this->ContentGroup->delete();
-
     // delete translations
     $translations = $this->Translation;
     foreach ($translations as $lang => $translation)
@@ -166,5 +163,8 @@ abstract class PluginListingItem extends BaseListingItem
 
     // delete the item:
     parent::delete($conn);
+    
+    // delete associated item content group
+    $this->ContentGroup->delete();
   }
 }

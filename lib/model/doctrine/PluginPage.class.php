@@ -163,9 +163,9 @@ abstract class PluginPage extends BasePage
    */
   public function delete(Doctrine_Connection $conn = null)
   {
+    parent::delete($conn);
+    
     // delete associated contentGroup
     $this->ContentGroup->delete();
-
-    parent::delete($conn);
   }
 }

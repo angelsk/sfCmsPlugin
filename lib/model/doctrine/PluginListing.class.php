@@ -376,63 +376,63 @@ abstract class PluginListing extends BaseListing
       // add in index route
       $routingProxy->addRoute(
       $sitetree,
-        '',
-      $nodeUrl,
-      array('module' => 'listingDisplay', 'action' => 'index')
+            '',
+            $nodeUrl,
+            array('module' => 'listingDisplay', 'action' => 'index')
       );
 
       // add in item route
       $routingProxy->addRoute(
       $sitetree,
-        'item',
-      $nodeUrl . '/item/:slug',
-      array('module' => 'listingDisplay', 'action' => 'item')
+            'item',
+            $nodeUrl . '/item/:slug',
+            array('module' => 'listingDisplay', 'action' => 'item')
       );
 
       // add in category routes
       $routingProxy->addRoute(
       $sitetree,
-        'category_item',
-      $nodeUrl . '/:category/item/:slug',
-      array('module' => 'listingDisplay', 'action' => 'item')
+            'category_item',
+            $nodeUrl . '/:category/item/:slug',
+            array('module' => 'listingDisplay', 'action' => 'item')
       );
 
       $routingProxy->addRoute(
       $sitetree,
-        'category',
-      $nodeUrl . '/:category',
-      array('module' => 'listingDisplay', 'action' => 'index')
+            'category',
+            $nodeUrl . '/:category',
+            array('module' => 'listingDisplay', 'action' => 'index')
       );
 
       // add in pagination route
       $routingProxy->addRoute(
       $sitetree,
             'page',
-      $nodeUrl . '/page/:page',
-      array('module' => 'listingDisplay', 'action' => 'index')
+            $nodeUrl . '/page/:page',
+            array('module' => 'listingDisplay', 'action' => 'index')
       );
 
       $routingProxy->addRoute(
       $sitetree,
             'category_page',
-      $nodeUrl . '/:category/page/:page',
-      array('module' => 'listingDisplay', 'action' => 'index')
+            $nodeUrl . '/:category/page/:page',
+            array('module' => 'listingDisplay', 'action' => 'index')
       );
 
       // rss route
       $routingProxy->addRoute(
       $sitetree,
             'rss',
-      $nodeUrl . '/rss',
-      array('module' => 'listingDisplay', 'action' => 'rss')
+            $nodeUrl . '/rss',
+            array('module' => 'listingDisplay', 'action' => 'rss')
       );
 
       // atom route
       $routingProxy->addRoute(
       $sitetree,
             'atom',
-      $nodeUrl . '/atom',
-      array('module' => 'listingDisplay', 'action' => 'atom')
+            $nodeUrl . '/atom',
+            array('module' => 'listingDisplay', 'action' => 'atom')
       );
     }
   }
@@ -457,19 +457,25 @@ abstract class PluginListing extends BaseListing
     $manager = listingManager::getInstance();
     $itemClass = $manager->getListItemClass($this->template);
     $items = Doctrine_Query::create()
-    ->from($itemClass)
-    ->where('listing_id = ?', array($listing->id))
-    ->execute();
+                ->from($itemClass)
+                ->where('listing_id = ?', array($this->id))
+                ->execute();
 
     foreach ($items as $item)
     {
       $item->delete();
     }
-
-    // delete associated Listing contentGroup
-    $this->ContentGroup->delete();
+    
+    // delete categories
+    foreach ($this->ListingCategory as $category)
+    {
+      $category->delete();
+    }
 
     // finally, delete the Listing
     parent::delete($conn);
+    
+    // delete associated Listing contentGroup
+    $this->ContentGroup->delete();
   }
 }

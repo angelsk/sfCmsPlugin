@@ -296,6 +296,9 @@ abstract class PluginSitetree extends BaseSitetree
     }
     else if (sfContext::getInstance()->getUser()->isSuperAdmin()) 
     {
+      $event = new siteEvent($this, siteEvent::SITETREE_DELETE);
+      $this->dispatchSiteEvent($event);
+      
       parent::delete($conn);
       
       // delete translations
@@ -305,9 +308,6 @@ abstract class PluginSitetree extends BaseSitetree
         $translation->delete();
         $translation->free(); 
       }
-  
-      $event = new siteEvent($this, siteEvent::SITETREE_DELETE);
-      $this->dispatchSiteEvent($event);
     }
   }
   
