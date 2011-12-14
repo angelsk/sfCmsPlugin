@@ -10,24 +10,28 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array(
 )));
 ?>
 
-<div class="item_control">
+<div id="sf_admin_container">
 
-  <h2><?php echo $sitetree->getTitle(); ?></h2>
+  <h1><?php echo $sitetree->getTitle(); ?></h1>
   
-  <?php echo include_partial('sitetree/sitetreeInfo', array('sitetree'=>$sitetree)); ?>
-  
-  <div class='sitetreeInfo'>
-    Template is
-    <span class="site_sitetree_<?php if (!$sitetree->is_active) echo 'not_'; ?>published">
-      '<?php $defn = pageManager::getInstance()->getTemplateDefinition($page->template); echo $defn['name']; ?>'
-    </span>
-    <?php if (!$sitetree->is_locked) : ?>
-      [<?php echo link_to('change template', 'pageAdmin/editTemplate?id=' . $page->id)?>]
-    <?php endif; ?>
+  <div id="sf_admin_header">
+    <?php echo include_partial('sitetree/sitetreeInfo', array('sitetree'=>$sitetree)); ?>
+    
+    <div class='sitetreeInfo'>
+      Template is
+      <span class="site_sitetree_<?php if (!$sitetree->is_active) echo 'not_'; ?>published">
+        <?php $defn = pageManager::getInstance()->getTemplateDefinition($page->template); echo $defn['name']; ?>
+      </span>
+      <?php if (!$sitetree->is_locked) : ?>
+        [<?php echo link_to('change template', 'pageAdmin/editTemplate?id=' . $page->id)?>]
+      <?php endif; ?>
+    </div>
   </div>
-
-  <?php
-  $url = 'sitetree/index';
-  include_component('contentAdmin', 'editor', array('contentGroup' => $contentGroup, 'cancelUrl'=>$url));
-  ?>
+  
+  <div id="sf_admin_content">
+    <?php
+    $url = 'sitetree/index';
+    include_component('contentAdmin', 'editor', array('contentGroup' => $contentGroup, 'cancelUrl'=>$url));
+    ?>
+  </div>
 </div>

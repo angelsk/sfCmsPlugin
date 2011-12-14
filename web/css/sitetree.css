@@ -93,6 +93,10 @@
   color: #00B585;
 }
 
+.content_block_editor_items {
+  padding: 1em; 
+}
+
 .tab-wrapper {
   padding: 1em 1.5em;
   margin: 0;
