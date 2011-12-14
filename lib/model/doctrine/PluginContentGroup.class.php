@@ -338,15 +338,31 @@ abstract class PluginContentGroup extends BaseContentGroup
 	public function removeBlockForIdentifier($identifier)
 	{
 		foreach ($this->ContentBlocks as $key => $contentBlock)
-		{
-			if ($contentBlock->identifier == $identifier)
-			{
-				$this->ContentBlocks->remove($key);
-				$contentBlock->delete();
-				$contentBlock->free();
+    {
+      if ($contentBlock->identifier == $identifier)
+      {
+        // delete the current version stuff
+        $allCVersions = $contentBlock->CurrentVersions;
+        foreach ($allCVersions as $cVersion)
+        {
+          $cVersion->delete();
+          $cVersion->free();
+        }
+        
+        // delete all of the ContentBlock versions
+        $allVersions = $contentBlock->Versions;
+        foreach ($allVersions as $version)
+        {
+          $version->delete();
+          $version->free();
+        }
+  
+        $this->ContentBlocks->remove($key);
+        $contentBlock->delete();
+        $contentBlock->free();
 
-				return;
-			}
+        return;
+      }
 		}
 	}
 
