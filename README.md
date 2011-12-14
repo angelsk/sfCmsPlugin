@@ -512,7 +512,7 @@ It makes no sense to have a listing without content, so the basic listing uses t
 
           article:
             name: Article (with Category)
-            with_category: true
+            use_categories: true  # this is the default
         
             item_status:
               - featured
