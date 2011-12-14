@@ -98,7 +98,13 @@ abstract class PluginListingItem extends BaseListingItem
       sfApplicationConfiguration::getActive()->loadHelpers('Partial');
     }
 
-    return get_partial('listingDisplay/render', $partialVariables);
+    // This is ugly - but we don't want the partial to be escaped as it contains HTML
+    $strategy = sfConfig::get('sf_escaping_strategy');
+    sfConfig::set('sf_escaping_strategy', false);
+    $content = get_partial('listingDisplay/render', $partialVariables);
+    sfConfig::set('sf_escaping_strategy', $strategy);
+    
+    return $content;
   }
   
 

@@ -95,7 +95,13 @@ abstract class PluginPage extends BasePage
       sfApplicationConfiguration::getActive()->loadHelpers('Partial');
     }
 
-    return get_partial('pageDisplay/render', $partialVariables);
+    // This is ugly - but we don't want the partial to be escaped as it contains HTML
+    $strategy = sfConfig::get('sf_escaping_strategy');
+    sfConfig::set('sf_escaping_strategy', false);
+    $content = get_partial('pageDisplay/render', $partialVariables);
+    sfConfig::set('sf_escaping_strategy', $strategy);
+    
+    return $content;
   }
   
   
