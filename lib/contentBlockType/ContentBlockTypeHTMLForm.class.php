@@ -9,8 +9,20 @@ class ContentBlockTypeHTMLForm extends ContentBlockTypeForm
 	public function configure()
 	{
 		parent::configure();
-
-		$this->widgetSchema['value'] = new sfWidgetFormTextareaMooEditable($this->getConfig());
+		
+		$definition = $this->getObject()->getContentBlockVersion()->getDefinition();
+		
+		if (isset($definition['with_image']) && true == $definition['with_image'])
+		{
+		  $tag = (isset($definition['tag']) ? $definition['tag'] : '');
+		  
+		  sfImagePoolUtil::addImagePoolMooEditable($this, 'value', $tag);
+		}
+    else 
+    {
+		  $this->widgetSchema['value'] = new sfWidgetFormTextareaMooEditable($this->getConfig());
+    }
+    
 		$this->validatorSchema['value'] = new sfEnhancedValidatorString($this->getValidatorOptions(), array('max_length'=>'Character limit of %max_length% characters exceeded. Text was %current_length% characters long (excluding HTML markup)'));
 		$this->widgetSchema->setLabel('value','&nbsp;');
 	}
@@ -64,4 +76,33 @@ class ContentBlockTypeHTMLForm extends ContentBlockTypeForm
 	{
 		return 'ContentBlockTypeHTML';
 	}
+	
+	
+  public function getJavaScripts()
+  {
+    $js = parent::getJavascripts();
+    
+    $definition = $this->getObject()->getContentBlockVersion()->getDefinition();
+    
+    if (isset($definition['with_image']) && true == $definition['with_image'])
+    {
+      $js = array_merge($js, array('/sfImagePoolPlugin/js/MooEditable.ImagePool.js'));
+    }
+    
+    return $js;
+  }
+
+  public function getStylesheets()
+  {
+    $css = parent::getStylesheets();
+    
+    $definition = $this->getObject()->getContentBlockVersion()->getDefinition();
+    
+    if (isset($definition['with_image']) && true == $definition['with_image'])
+    {
+      $css = array_merge($css, array('/sfImagePoolPlugin/css/MooEditable.ImagePool.css'=>'all'));
+    }
+    
+    return $css;
+  }
 }
