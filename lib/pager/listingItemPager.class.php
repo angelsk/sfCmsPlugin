@@ -77,13 +77,13 @@ class listingItemPager extends sfDoctrineSuperPager
     if ($this->listing->use_custom_order)
     {
       // include the ordering buttons
-      $directions = array('up'=>'desc', 'down'=>'asc');
+      $directions = array('up', 'down');
       $bit = '';
 
-      foreach ($directions as $direction => $image)
+      foreach ($directions as $direction)
       {
         $bit .= link_to(
-        image_tag('/sfDoctrinePlugin/images/'.$image.'.png'),
+        image_tag('/sfCmsPlugin/images/'.$direction.'.png'),
           'listingAdmin/moveItem?listId=' . $listId . '&direction=' . $direction . '&id=' . $item->id,
         array('title' => 'move ' . $direction)
         );
@@ -97,7 +97,7 @@ class listingItemPager extends sfDoctrineSuperPager
       $out[] = array($item->ListingCategory->title);
     }
 
-    $out[] = array(($item->is_active ? '<span class="ui-icon ui-icon-check"></span>' : '&nbsp;'));
+    $out[] = array(($item->is_active ? '<img src="/sfCmsPlugin/images/tick.png" />' : '&nbsp;'));
     $out[] = array(date('d/M/Y H:i', strtotime($item->created_at)) . ' by ' . $item->CreatedBy->username);
     $out[] = array(date('d/M/Y H:i', strtotime($item->updated_at)) . ' by ' . $item->UpdatedBy->username);
 

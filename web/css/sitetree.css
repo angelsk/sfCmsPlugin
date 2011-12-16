@@ -51,22 +51,38 @@
   padding: 2px;
   margin-left: 20px;
   position: absolute;
-  right: 100px;
+  right: 125px;
   top: 0;
   text-align: right;
   width: auto;
   margin-right: 10px;
+  color: #5bb838;
 }
-
+.folderTree .nodeinfo.hidden {
+  color: #666;
+}
+.folderTree .nodeinfo.locked {
+  color: #0085c5;
+}
+.folderTree .nodeinfo.notpublished,
+.folderTree .nodeinfo.deleted {
+  color: #ff0000;
+}
 .folderTree .nodeinfo.blank {
   
 }
 
 .folderTree .sitetree_actions {
-  width: 100px;
+  width: 120px;
   position: absolute;
   top: 0;
   right: 0;
+}
+
+.folderTree .sitetree_actions .spacer {
+  display:inline-block;
+  width:16px;
+  height:16px;
 }
 
 #breadcrumbs {
@@ -88,18 +104,17 @@
   text-transform: uppercase;
   font-weight: bold;
   padding-right: 10px;
+  color: #5bb838;
+}
+.site_sitetree_locked {
   color: #0085c5;
 }
-
-.site_sitetree_locked,
 .site_sitetree_hidden {
   color: #000;
 }
-
 .site_sitetree_not_published {
   color: #ff0000;
 }
-
 .site_sitetree_editing {
   color: #00B585;
 }

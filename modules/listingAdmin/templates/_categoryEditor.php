@@ -25,10 +25,10 @@
             (<?php echo $count['hidden']?> hidden)
           </td>
           <td>
-            <span><a href="?upCategory=<?php echo $category->id . '#'.$formTarget; ?>" title="Move up"><?php echo image_tag('/sfDoctrinePlugin/images/desc.png'); ?></a></span>
-            <span><a href="?downCategory=<?php echo $category->id . '#'.$formTarget; ?>" title="Move down"><?php echo image_tag('/sfDoctrinePlugin/images/asc.png'); ?></a></span>
+            <span><a href="?upCategory=<?php echo $category->id . '#'.$formTarget; ?>" title="Move up"><?php echo image_tag('/sfCmsPlugin/images/up.png'); ?></a></span>
+            <span><a href="?downCategory=<?php echo $category->id . '#'.$formTarget; ?>" title="Move down"><?php echo image_tag('/sfCmsPlugin/images/down.png'); ?></a></span>
           </td>
-          <td>&nbsp;<?php if ($category->is_active) : ?><img alt="Checked" title="Checked" src="/sfDoctrinePlugin/images/tick.png"><?php endif; ?></td>
+          <td>&nbsp;<?php if ($category->is_active) : ?><img alt="Checked" title="Checked" src="/sfCmsPlugin/images/tick.png"><?php endif; ?></td>
           <td>
             <span style="background: url(/sfDoctrinePlugin/images/edit.png) no-repeat 0px 0px; padding-left: 20px;"><a href="?editCategory=<?php echo $category->id . '#'.$formTarget; ?>">Edit</a></span>
             <?php if (0 == $total) : ?><span style="background: url(/sfDoctrinePlugin/images/delete.png) no-repeat 0px 0px; padding-left: 20px;"><a href="?deleteCategory=<?php echo $category->id . '#'.$formTarget; ?>" class="delete_cat">Delete</a></span><?php endif; ?>

@@ -81,11 +81,49 @@ sfConfig::set('site_hack_entireSitetree', $treeNodes);
           $out .= '<span class="nodeinfo '.trim($class).'">'.trim($content).'&nbsp;</span>';
           
           $out .= '<span class="sitetree_actions">';
-          if (!$sitetree->getNode()->isRoot() && !$sitetree->is_locked) $out .= '<a href="' . url_for('sitetree/delete?id='.$sitetree->id) . '" title="delete" class="delete_sitetree"><img src="/sfDoctrinePlugin/images/delete.png" /></a>';
-          if ($sitetree->is_deleted && $canAdmin) $out .= '<a href="' . url_for('sitetree/restore?id='.$sitetree->id) . '" title="restore"><img src="/sfDoctrinePlugin/images/tick.png" /></a>';
-          if (!$sitetree->is_deleted) $out .= '<a href="' . url_for('sitetree/edit?id='.$sitetree->id) . '" title="edit properties"><img src="/sfDoctrinePlugin/images/edit.png" /></a>';
-          if (!$sitetree->is_deleted) $out .= '<a href="' . url_for('sitetree/create?parent='.$sitetree->id) . '" title="add child page"><img src="/sfDoctrinePlugin/images/new.png" /></a>';
-          if (!$sitetree->is_active && !$sitetree->is_deleted) $out .= '<a href="' . url_for('sitetree/publish?id='.$sitetree->id) . '" title="publish page"><img src="/sfDoctrinePlugin/images/list.png" /></a>';
+          
+          $node = $sitetree->getNode();
+          $isRoot = $node->isRoot();
+          $spacer = '<span class="spacer">&nbsp;</span>';
+          
+          if (!$isRoot)
+          {
+            $out .= '<a href="' . url_for('sitetree/changeParent?id='.$sitetree->id) . '" title="change parent"><img src="/sfCmsPlugin/images/parent.png" /></a>';
+          }
+          else $out .= $spacer;
+          if (!$isRoot && $node->hasPrevSibling()) 
+          {
+            $out .= '<a href="' . url_for('sitetree/move?direction=up&id='.$sitetree->id) . '" title="move up"><img src="/sfCmsPlugin/images/up.png" /></a>';
+          }
+          else $out .= $spacer;
+          if (!$isRoot && $node->hasNextSibling()) 
+          {
+            $out .= '<a href="' . url_for('sitetree/move?direction=down&id='.$sitetree->id) . '" title="move down"><img src="/sfCmsPlugin/images/down.png" /></a>';
+          }
+          else $out .= $spacer;
+          if (!$isRoot && !$sitetree->is_locked) 
+          {
+            $out .= '<a href="' . url_for('sitetree/delete?id='.$sitetree->id) . '" title="delete" class="delete_sitetree"><img src="/sfCmsPlugin/images/cross.png" /></a>';
+          }
+          else $out .= $spacer;
+          if ($sitetree->is_deleted && $canAdmin) 
+          {
+            $out .= '<a href="' . url_for('sitetree/restore?id='.$sitetree->id) . '" title="restore"><img src="/sfCmsPlugin/images/restore.png" /></a>';
+          }
+          if (!$sitetree->is_deleted) 
+          {
+            $out .= '<a href="' . url_for('sitetree/edit?id='.$sitetree->id) . '" title="edit properties"><img src="/sfCmsPlugin/images/edit.png" /></a>';
+          }
+          else $out .= $spacer;
+          if (!$sitetree->is_deleted) 
+          {
+            $out .= '<a href="' . url_for('sitetree/create?parent='.$sitetree->id) . '" title="add child page"><img src="/sfCmsPlugin/images/add.png" /></a>';
+          }
+          else $out .= $spacer;
+          if (!$sitetree->is_active && !$sitetree->is_deleted) 
+          {
+            $out .= '<a href="' . url_for('sitetree/publish?id='.$sitetree->id) . '" title="publish page"><img src="/sfCmsPlugin/images/publish.png" /></a>';
+          }
           $out .= '</span>';
       
           return $out;

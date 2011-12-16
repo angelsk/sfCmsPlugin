@@ -264,7 +264,12 @@ class siteManager
     $parameters = $config['routing']['param']['cache']['param'];
 
     $cache = new $class($parameters);
-    $cache->clean();
+    
+    try 
+    {
+      $cache->clean();
+    }
+    catch (Exception $e) { }
   }
 
   /**
@@ -272,7 +277,11 @@ class siteManager
    */
   public function clearCrossAppCache() 
   {
-    $this->getCache()->removePattern('ca.*');
+    try 
+    {
+      $this->getCache()->removePattern('ca.*');
+    }
+    catch (Exception $e) { }
   }
 
   /**
@@ -805,21 +814,32 @@ class siteManager
   /**
    * Get a list of live sitetree nodes in route_name=>title pairs for a dropdown etc.
    *
+   * @param string $site
+   * @param int $level
+   * @param boolean $justActive
+   * @param array $excludeRange - optional left right range to exclude
    * @return array
    */
-  public function getSitetreeForForm($site = null, $level = null) 
+  public function getSitetreeForForm($site = null, $level = null, $justActive = true, $excludeRange = array()) 
   {
     if ($site === null) 
     {
       $site = $this->getCurrentSite();
     }
     
-    $tree = SitetreeTable::getInstance()->getSitetree($site, $level, Doctrine_Core::HYDRATE_ARRAY);
+    $tree = SitetreeTable::getInstance()->getSitetree($site, $level, Doctrine_Core::HYDRATE_ARRAY, $justActive);
     $culture = sfContext::getInstance()->getUser()->getCulture();
 
     foreach ($tree as $item) 
     {
-      $out[$item['route_name']] = str_repeat(':: ', $item['level']) . @$item['Translation'][$culture]['title'];
+      // This bit basically excludes a selected node + children from the list
+      if (!empty($excludeRange) && $item['lft'] >= $excludeRange['lft'] && $item['rgt'] <= $excludeRange['rgt'])
+      {
+        $include = false;
+      }
+      else $include = true;
+      
+      if ($include) $out[$item['route_name']] = str_repeat(':: ', $item['level']) . @$item['Translation'][$culture]['title'];
     }
     
     return $out;

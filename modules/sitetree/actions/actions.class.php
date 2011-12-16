@@ -148,14 +148,14 @@ class sitetreeActions extends sfActions
         if ($this->getUser()->isSuperAdmin() && $sitetree->is_deleted) 
         {
           // Perm delete page
-          $sitetree->delete();
+          $sitetree->processDelete();
           siteManager::getInstance()->sitetreeChanged();
 
           $this->getUser()->setFlash('notice', '"'.$title.'" PERMANENTLY deleted');
         }
         else 
         {
-          $sitetree->delete();
+          $sitetree->processDelete();
           siteManager::getInstance()->sitetreeChanged();
   
           $this->getUser()->setFlash('notice', '"'.$title.'" (and children) deleted');
@@ -199,5 +199,76 @@ class sitetreeActions extends sfActions
     }
 
     $this->redirect('sitetree/index');
+  }
+  
+  /**
+   * Move page up or down within its siblings
+   * 
+   * @param sfWebRequest $request
+   */
+  public function executeMove(sfWebRequest $request) 
+  {
+    $direction = $request->getParameter('direction');
+    $sitetree = SitetreeTable::getInstance()->findOneById($request->getParameter('id'));
+    $this->forward404Unless($sitetree, 'No sitetree to move');
+    
+    $node = $sitetree->getNode();
+    
+    switch ($direction)
+    {
+      case 'up':
+        if ($node->hasPrevSibling())
+        {
+          $prev = $node->getPrevSibling();
+          $node->moveAsPrevSiblingOf($prev);
+          
+          $this->getUser()->setFlash('notice', "$sitetree->title swapped with $prev->title in sitetree");
+        }
+        break;
+      case 'down':
+        if ($node->hasNextSibling())
+        {
+          $next = $node->getNextSibling();
+          $node->moveAsNextSiblingOf($next);
+          
+          $this->getUser()->setFlash('notice', "$sitetree->title swapped with $next->title in sitetree");
+        }
+        break;
+    }
+
+    siteManager::getInstance()->sitetreeChanged();
+    $this->redirect('sitetree/index');
+  }
+  
+  /**
+   * Change parent of sitetree node
+   * 
+   * @param sfWebRequest $request
+   */
+  public function executeChangeParent(sfWebRequest $request)
+  {
+    $sitetree = SitetreeTable::getInstance()->findOneById($request->getParameter('id'));
+    $this->forward404Unless($sitetree);
+
+    $form = new changeSitetreeForm($sitetree);
+
+    if (($request->isMethod(sfWebRequest::POST) || $request->isMethod(sfWebRequest::PUT)) && $request->hasParameter('sitetree')) 
+    {
+      // form was submitted
+      $form->bind($request->getParameter('sitetree'));
+
+      if ($form->isValid()) 
+      {
+        $form->save();
+        
+        // tell the manager the sitetree has changed so we can refresh the cache
+        siteManager::getInstance()->sitetreeChanged();
+        
+        $this->getUser()->setFlash('notice', "'$sitetree->title' has been relocated");
+        $this->redirect('sitetree/index');
+      }
+    }
+
+    $this->form = $form;
   }
 }

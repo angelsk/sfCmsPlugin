@@ -284,11 +284,12 @@ abstract class PluginSitetree extends BaseSitetree
   
   /**
    * Delete this sitetree node
+   * This should be called from any external code rather than delete();
    * 
    * Check whether set as deleted first - if not, then soft delete
    * If is and user is superadmin - delete permenantly
    */
-  public function delete(Doctrine_Connection $conn = null)
+  public function processDelete(Doctrine_Connection $conn = null)
   {
     if (!$this->is_deleted) 
     {
@@ -299,7 +300,9 @@ abstract class PluginSitetree extends BaseSitetree
       $event = new siteEvent($this, siteEvent::SITETREE_DELETE);
       $this->dispatchSiteEvent($event);
       
-      parent::delete($conn);
+      // Make sure delete sitetreeNode as otherwise there will be nesting issues
+      // this calls parent::delete();
+      $this->deleteNode();
       
       // delete translations
       $translations = $this->Translation;
@@ -310,6 +313,7 @@ abstract class PluginSitetree extends BaseSitetree
       }
     }
   }
+  
   
   /**
    * Restore a soft deleted sitetree node

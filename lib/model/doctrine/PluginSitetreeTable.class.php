@@ -43,21 +43,27 @@ class PluginSitetreeTable extends Doctrine_Table
    *  
    * @param string $site The current site
    * @param int $level
-   * @param const $hydrationMode
+   * @param int $hydrationMode
+   * @param boolean $justActive - only include active nodes
    */
-  public function getSitetree($site, $level = null, $hydrationMode) 
+  public function getSitetree($site, $level = null, $hydrationMode, $justActive = true) 
   {
     $culture = sfContext::getInstance()->getUser()->getCulture();
 
     $query = $this->createQuery('s')
-           ->select('s.route_name, s.level, t.title')
+           ->select('s.route_name, s.level, t.title, s.lft, s.rgt')
            ->leftJoin('s.Translation t ON (s.id = t.id AND t.lang = ?) INDEXBY t.lang', array($culture))
-           ->where('s.site = ? AND s.is_active = ? AND s.is_deleted = ?', array($site, true, false))
+           ->where('s.site = ? AND s.is_deleted = ?', array($site, false))
            ->orderBy('s.lft');
     
     if (!is_null($level)) 
     {
       $query->addWhere('s.level <= ?', $level);
+    }
+    
+    if ($justActive)
+    {
+      $query->andWhere('s.is_active = ?', true);
     }
     
     return $query->execute(array(), $hydrationMode);
