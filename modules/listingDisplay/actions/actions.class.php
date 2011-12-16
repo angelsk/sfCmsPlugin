@@ -34,7 +34,7 @@ class listingDisplayActions extends sfActions
     }
 
     // try and render
-    $this->setVar('content', $listing->render(true, $request, $sitetreeNode), true);
+    $this->setVar('content', $listing->render(true, $request, $sitetree), true);
   }
 
   /**
