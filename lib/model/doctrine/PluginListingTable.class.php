@@ -13,7 +13,7 @@ abstract class PluginListingTable extends Doctrine_Table
      * @return object ListingTable
      */
     public static function getInstance() 
-	{
+  {
         return Doctrine_Core::getTable('Listing');
     }
 }

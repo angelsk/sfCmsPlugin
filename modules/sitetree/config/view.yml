@@ -1,4 +1,5 @@
 default:
-  stylesheets:
+  stylesheets:  
+    - /sfCmsPlugin/css/sitetree.css
     - /sfDoctrinePlugin/css/global.css
     - /sfDoctrinePlugin/css/default.css

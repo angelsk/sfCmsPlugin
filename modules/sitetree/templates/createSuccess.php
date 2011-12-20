@@ -1,9 +1,11 @@
 <?php
 slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array(
-	'breadcrumbs' => array(link_to('Sitetree', 'sitetree/index'))
+  'breadcrumbs' => array(link_to('Sitetree', 'sitetree/index'))
 )));
 
 $culture = $sf_user->getCulture();
+use_javascripts_for_form($form);
+use_stylesheets_for_form($form);
 ?>
 
 <div id="sf_admin_container">
@@ -11,15 +13,15 @@ $culture = $sf_user->getCulture();
   <h1>Create new page</h1>
 
   <div id="sf_admin_header">
-  	<p>Creating as a child of: <?php echo $parent->getTitle(); ?></p>
+    <p>Creating as a child of: <?php echo $parent->getTitle(); ?></p>
   
-  	<?php if (!$sf_user->isSuperAdmin()) 
-  	{
-  		echo '<p>You are not a sitetree administrator, so you cannot lock or unlock nodes.</p>';
-  	} ?>
+    <?php if (!$sf_user->isSuperAdmin()) 
+    {
+      echo '<p>You are not a sitetree administrator, so you cannot lock or unlock nodes.</p>';
+    } ?>
   </div>
 
-	<?php if ($form->hasErrors()) : ?>
+  <?php if ($form->hasErrors()) : ?>
     <div class="error">The sitetree node has not been saved due to some errors.</div>
   <?php endif; ?>
 

@@ -140,7 +140,7 @@ function rss_for_sitetree($sitetree)
   {
     return $listing->getRssUrl();
   }
-  else if (listingManager::getInstance()->getRssEnabled($listing->type)) 
+  else if (listingManager::getInstance()->getRssEnabled($listing->template)) 
   {
     return url_for(internal_url_for_sitetree($sitetree, 'rss'), true);
   }
@@ -178,7 +178,7 @@ function atom_for_sitetree($sitetree)
   {
     return $listing->getRssUrl();
   }
-  else if (listingManager::getInstance()->getRssEnabled($listing->type)) 
+  else if (listingManager::getInstance()->getRssEnabled($listing->template)) 
   {
     return url_for(internal_url_for_sitetree($sitetree, 'atom'), true);
   }

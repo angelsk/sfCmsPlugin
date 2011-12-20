@@ -13,3 +13,5 @@ all:
  
     available_modules:
       - sitemap
+      - pageDisplay
+      - listingDisplay

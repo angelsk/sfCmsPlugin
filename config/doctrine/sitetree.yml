@@ -2,8 +2,7 @@
 
 Sitetree:
   columns:
-    id:                     { type: integer, primary: true, autoincrement: true }
-    site:                   { type: string(3) }
+    site:                   { type: string, size: 3 }
     
     # a name for the route, unique for each site (generally automatically generated)
     route_name:             { type: string, size: 255, notnull: true }
@@ -59,8 +58,11 @@ Sitetree:
     I18n:                   # adding in multilingual support just in case
       fields: [title, html_title, html_keywords, html_description, link_title]
       length: 5
+    # allow sitetree to have an image assigned to it
+    sfImagePoolable:
+      multiple: false
+      tag:      [sitetree]
       
   options:
-    symfony:                # some classes don't need these
+    symfony:               
       filter: false
-      #form: false

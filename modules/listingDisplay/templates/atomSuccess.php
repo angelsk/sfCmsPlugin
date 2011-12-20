@@ -1,5 +1,1 @@
-<?php 
-$feed = $sf_data->getRaw('feedXml'); 
-
-echo $feed;
-?>
+<?php echo feedXml; ?>

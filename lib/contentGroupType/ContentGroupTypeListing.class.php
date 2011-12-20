@@ -3,75 +3,75 @@
 /**
  * ContentBlocks for the intro of a listing page
  */
-class ContentGroupTypeListing extends ContentGroupType 
+class ContentGroupTypeListing extends ContentGroupType
 {
-    /**
-     * @var listing
-     */
-    protected $listing = null;
-    
-    /**
-     * Get the listing that this Content group is for
-     *
-     * @return listing
-     */
-    public function getContentBlockListing() 
-	{
-        if ($this->listing === null) 
-		{
-            $this->listing = ListingTable::getInstance()->findOneByContentGroupId($this->ContentGroup->id);
-            
-            if (!$this->listing) 
-			{
-                throw new sfException("Missing a listing");
-            }
-        }
-        
-        return $this->listing;
-    }
-    
-    /**
-     * @see ContentGroupType
-     */
-    public function getContentBlockDefinitions() 
-	{
-        $type = $this->getContentBlockListing()->type;
+	/**
+	 * @var listing
+	 */
+	protected $listing = null;
 
-        return listingManager::getInstance()->getTemplateContentBlockDefinitions($type);
-    }
-    
-    /**
-     * @see ContentGroupType
-     */
-    public function getEditUrl() 
+	/**
+	 * Get the listing that this Content group is for
+	 *
+	 * @return listing
+	 */
+	public function getContentBlockListing()
 	{
-        return 'listingAdmin/edit?id=' . $this->getContentBlockListing()->id;
-    }    
-    
-    /**
-     * @see ContentGroupType
-     */
-    public function getPreviewUrl() 
+		if ($this->listing === null)
+		{
+			$this->listing = ListingTable::getInstance()->findOneByContentGroupId($this->ContentGroup->id);
+
+			if (!$this->listing)
+			{
+				throw new sfException("Missing a listing");
+			}
+		}
+
+		return $this->listing;
+	}
+
+	/**
+	 * @see ContentGroupType
+	 */
+	public function getContentBlockDefinitions()
 	{
-        //todo: named routes
-        return 'listingDisplay/preview?id=' . $this->getContentBlockListing()->id;
-    }
-    
-    /**
-     * @see ContentGroupType
-     */
-    public function getSitetree() 
+		$template = $this->getContentBlockListing()->template;
+
+		return listingManager::getInstance()->getTemplateContentBlockDefinitions($template);
+	}
+
+	/**
+	 * @see ContentGroupType
+	 */
+	public function getEditUrl()
 	{
-        $listing = $this->getContentBlockListing();
-        
-        return sitetreeTable::getInstance()->findOneById($listing->sitetree_id);
-    }
-    
-    /**
-     * @see ContentGroupType
-     */
-    public function handleContentBlockGroupChanged() 
+		return 'listingAdmin/edit?id=' . $this->getContentBlockListing()->id;
+	}
+
+	/**
+	 * @see ContentGroupType
+	 */
+	public function getPreviewUrl()
 	{
-        $this->getContentBlockListing()->handleContentChanged();
-    }
+		//todo: named routes
+		return 'listingDisplay/preview?id=' . $this->getContentBlockListing()->id;
+	}
+
+	/**
+	 * @see ContentGroupType
+	 */
+	public function getSitetree()
+	{
+		$listing = $this->getContentBlockListing();
+
+		return sitetreeTable::getInstance()->findOneById($listing->sitetree_id);
+	}
+
+	/**
+	 * @see ContentGroupType
+	 */
+	public function handleContentBlockGroupChanged()
+	{
+		$this->getContentBlockListing()->handleContentChanged();
+	}
 }

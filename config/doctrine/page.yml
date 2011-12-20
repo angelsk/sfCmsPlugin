@@ -2,18 +2,12 @@
 
 Page:
   columns:
-    id:                           { type: integer, primary: true, autoincrement: true }  
     # link this into the sitetree
     sitetree_id:                  { type: integer, notnull: true }
     # the name of the template we're using
     template:                     { type: string, size: 50, notnull: true }
     # This is the content block group being used to render this page
     content_group_id:             { type: integer }
-  
-  indexes:
-    site_route:
-      fields: route_name
-      type: unique
       
   relations:
     ContentGroup:
@@ -21,7 +15,7 @@ Page:
       local: content_group_id
       foreign: id
       type: one
-    sitetree:
+    Sitetree:
       class: Sitetree
       local: sitetree_id
       foreign: id
@@ -34,6 +28,5 @@ Page:
       listener: siteBlamableListener
 
   options:
-    symfony:                # some classes don't need these
+    symfony:                
       filter: false
-      #form: false

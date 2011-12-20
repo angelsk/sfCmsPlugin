@@ -13,7 +13,7 @@ abstract class PluginContentBlockTable extends Doctrine_Table
      * @return object ContentBlockTable
      */
     public static function getInstance() 
-	{
+  {
         return Doctrine_Core::getTable('ContentBlock');
     }
     
@@ -21,11 +21,11 @@ abstract class PluginContentBlockTable extends Doctrine_Table
      * Load Content blocks and current versions for rendering
      */
     public function loadAllCurrentVersions($id, $lang) 
-	{
-    	$query = $this->createQuery('b')
-        			  ->innerJoin('b.Versions bv')
-        			  ->innerJoin('bv.CurrentVersion cv')
-        			  ->where('b.Content_group_id = ? AND (bv.lang = ? OR bv.lang IS NULL) AND (cv.lang = ? OR cv.lang IS NULL)', array($id, $lang, $lang));
+  {
+      $query = $this->createQuery('b')
+                ->innerJoin('b.Versions bv')
+                ->innerJoin('bv.CurrentVersion cv')
+                ->where('b.Content_group_id = ? AND (bv.lang = ? OR bv.lang IS NULL) AND (cv.lang = ? OR cv.lang IS NULL)', array($id, $lang, $lang));
         
         return $query->execute();
     }

@@ -10,7 +10,7 @@
  */
 abstract class PluginListingItemTranslationFormFilter extends BaseListingItemTranslationFormFilter 
 {
-	public function configure() 
-	{
-  	}
+  public function configure() 
+  {
+    }
 }

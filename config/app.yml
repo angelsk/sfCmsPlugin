@@ -11,6 +11,8 @@ all:
       
     available_modules:  
       - sitemap
+      - pageDisplay
+      - listingDisplay
       
     default_site:               en  # define locally
       
@@ -22,3 +24,16 @@ all:
     routing_proxy_class:        siteRoutingProxyImpl
     manager_class:              siteManager
     
+    # page stuff
+    page_manager_class:         pageManager
+    page_template_dir:          %SF_ROOT_DIR%/templates/page
+    
+    # define your own templates locally
+    #page_templates:
+    
+    # listing stuff
+    listing_manager_class:      listingManager
+    listing_template_dir:       %SF_ROOT_DIR%/templates/listing
+    
+    # define your own templates locally
+    #listing_templates:

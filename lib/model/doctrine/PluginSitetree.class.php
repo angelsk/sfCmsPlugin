@@ -209,7 +209,7 @@ abstract class PluginSitetree extends BaseSitetree
 
     $moduleDefinition = $this->getModuleDefinition();
 
-    return $moduleDefinition['admin_url'] . "?routeName=$this->route_name";
+    return $moduleDefinition['admin_url'] . "?routeName=$this->route_name&site=$this->site";
   }
   
   /**
@@ -284,11 +284,12 @@ abstract class PluginSitetree extends BaseSitetree
   
   /**
    * Delete this sitetree node
+   * This should be called from any external code rather than delete();
    * 
    * Check whether set as deleted first - if not, then soft delete
    * If is and user is superadmin - delete permenantly
    */
-  public function delete(Doctrine_Connection $conn = null)
+  public function processDelete(Doctrine_Connection $conn = null)
   {
     if (!$this->is_deleted) 
     {
@@ -296,7 +297,12 @@ abstract class PluginSitetree extends BaseSitetree
     }
     else if (sfContext::getInstance()->getUser()->isSuperAdmin()) 
     {
-      parent::delete($conn);
+      $event = new siteEvent($this, siteEvent::SITETREE_DELETE);
+      $this->dispatchSiteEvent($event);
+      
+      // Make sure delete sitetreeNode as otherwise there will be nesting issues
+      // this calls parent::delete();
+      $this->deleteNode();
       
       // delete translations
       $translations = $this->Translation;
@@ -305,11 +311,9 @@ abstract class PluginSitetree extends BaseSitetree
         $translation->delete();
         $translation->free(); 
       }
-  
-      $event = new siteEvent($this, siteEvent::SITETREE_DELETE);
-      $this->dispatchSiteEvent($event);
     }
   }
+  
   
   /**
    * Restore a soft deleted sitetree node

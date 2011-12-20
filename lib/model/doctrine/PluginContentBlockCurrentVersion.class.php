@@ -11,20 +11,20 @@
  * @version    SVN: $Id: Builder.php 7490 2010-03-29 19:53:27Z jwage $
  */
 abstract class PluginContentBlockCurrentVersion extends BaseContentBlockCurrentVersion 
-{	
-	/**
-	 * Create unsaved current version for Content block
-	 *
-	 * @param ContentBlock $contentBlock
-	 * @param string $lang
-	 * @return ContentBlockCurrentVersion
-	 */
-	public static function createNew(ContentBlock $contentBlock, $lang) 
-	{
-		$contentBlockCurrentVersion = new ContentBlockCurrentVersion();
-		$contentBlockCurrentVersion->lang = $lang;
-		$contentBlockCurrentVersion->ContentBlock = $contentBlock;
-		
-		return $contentBlockCurrentVersion;
-	}
+{  
+  /**
+   * Create unsaved current version for Content block
+   *
+   * @param ContentBlock $contentBlock
+   * @param string $lang
+   * @return ContentBlockCurrentVersion
+   */
+  public static function createNew(ContentBlock $contentBlock, $lang) 
+  {
+    $contentBlockCurrentVersion = new ContentBlockCurrentVersion();
+    $contentBlockCurrentVersion->lang = $lang;
+    $contentBlockCurrentVersion->ContentBlock = $contentBlock;
+    
+    return $contentBlockCurrentVersion;
+  }
 }
