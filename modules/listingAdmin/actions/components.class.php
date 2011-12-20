@@ -58,8 +58,11 @@ class listingAdminComponents extends sfComponents
         if ($form->isValid()) 
         {
           $form->save();
-          $form = new ListingCategoryForm();
           $this->getUser()->setFlash('notice', 'Category added');
+          
+          $category = new ListingCategory();
+          $category->set('Listing', $listing);
+          $form = new ListingCategoryForm($category);
         }
       }
       
