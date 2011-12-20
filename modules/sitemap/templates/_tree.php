@@ -40,7 +40,7 @@ if (!function_exists('default_li_render'))
 
     //set class of 'first' on root node
     $class = '';
-    if($node->getNode()->isRoot()) $class = 'class="first"';
+    if ($node->getNode()->isRoot()) $class = 'class="first"';
 
     return "<li id='node{$identifier[0]}' {$class}>";
   }

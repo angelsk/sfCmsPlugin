@@ -1,0 +1,162 @@
+#sf_admin_container .sf_admin_form_row .content.no_label {
+  padding-left: 0px !important;
+}
+
+#sf_admin_container .content_block_editor_control .sf_admin_form_row {
+  border-bottom: none;
+}
+
+.folderTree {
+  overflow: hidden;
+  margin: 5px;
+  padding: 10px;
+  width: 50%;
+  min-width: 600px;
+}
+
+.folderTree ul {
+  margin: 0 0 0 20px;
+  padding: 0;
+}
+
+.folderTree ul li {
+  border-top: 1px solid #DDD;
+  padding-top: 3px;
+  position: relative;
+}
+
+.folderTree li .lnk {
+  padding-bottom: 5px;
+  overflow: hidden;
+}
+
+.folderTree,
+.folderTree li,
+.folderTree ul,
+.folderTree ul li {
+  list-style-type: none;
+}
+
+.folderTree li {
+  clear: both;
+  position: relative;
+}
+
+.folderTree .lnk {
+  width: 250px;
+  padding: 0 10px;
+}
+
+.folderTree .nodeinfo {
+  padding: 2px;
+  margin-left: 20px;
+  position: absolute;
+  right: 125px;
+  top: 0;
+  text-align: right;
+  width: auto;
+  margin-right: 10px;
+  color: #5bb838;
+}
+.folderTree .nodeinfo.hidden {
+  color: #666;
+}
+.folderTree .nodeinfo.locked {
+  color: #0085c5;
+}
+.folderTree .nodeinfo.notpublished,
+.folderTree .nodeinfo.deleted {
+  color: #ff0000;
+}
+.folderTree .nodeinfo.blank {
+  
+}
+
+.folderTree .sitetree_actions {
+  width: 120px;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.folderTree .sitetree_actions .spacer {
+  display:inline-block;
+  width:16px;
+  height:16px;
+}
+
+#breadcrumbs {
+  
+}
+
+.sitetreeInfo {
+  padding: 10px;
+  margin: 0px 0px 15px;
+  background: white;
+  border: 1px solid #DDD;
+}
+
+.site_sitetree_locked,
+.site_sitetree_hidden,
+.site_sitetree_published,
+.site_sitetree_not_published,
+.site_sitetree_editing {
+  text-transform: uppercase;
+  font-weight: bold;
+  padding-right: 10px;
+  color: #5bb838;
+}
+.site_sitetree_locked {
+  color: #0085c5;
+}
+.site_sitetree_hidden {
+  color: #000;
+}
+.site_sitetree_not_published {
+  color: #ff0000;
+}
+.site_sitetree_editing {
+  color: #00B585;
+}
+
+.content_block_editor_items {
+  padding: 1em; 
+}
+
+.tab-wrapper {
+  padding: 1em 1.5em;
+  margin: 0;
+  clear: both;
+  background: white;
+  border: 1px solid #DDD;
+}
+
+.tab-menu {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow: auto;
+}
+
+.tab-menu li {
+  margin: 0;
+  padding: 0;
+  float: left;
+  line-height: 2em;
+  list-style-type: none;
+}
+
+.tab-menu li a {
+  padding: 0 .5em;
+  font-weight: bold;
+}
+
+.tab-menu li a:hover,
+.tab-menu li a:focus { 
+  
+}
+
+.tab-menu li.tab-selected a {
+  text-decoration: none;
+  color: inherit;
+}

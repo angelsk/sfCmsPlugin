@@ -10,7 +10,7 @@
  */
 abstract class PluginListingCategoryTranslationForm extends BaseListingCategoryTranslationForm 
 {
-	public function configure() 
-	{
-	}
+  public function configure() 
+  {
+  }
 }

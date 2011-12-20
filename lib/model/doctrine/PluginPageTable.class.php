@@ -13,7 +13,7 @@ abstract class PluginPageTable extends Doctrine_Table
      * @return object PageTable
      */
     public static function getInstance() 
-	{
+  {
         return Doctrine_Core::getTable('Page');
     }
 }

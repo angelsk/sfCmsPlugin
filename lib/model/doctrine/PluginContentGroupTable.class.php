@@ -13,7 +13,7 @@ abstract class PluginContentGroupTable extends Doctrine_Table
      * @return object ContentGroupTable
      */
     public static function getInstance() 
-	{
+  {
         return Doctrine_Core::getTable('ContentGroup');
     }
 }

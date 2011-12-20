@@ -29,85 +29,107 @@ $formTarget = ($sf_data->offsetExists('formTarget') ? $sf_data->getRaw('formTarg
     </ul>
 <?php endif; ?>
 
-<div style="width:90%;" id="content_block_tabs_<?php echo $contentBlock->identifier; ?>">
-	<script type="text/javascript">
-		$(document).ready(function () { $('#content_block_tabs_<?php echo $contentBlock->identifier; ?>').tabs(); });
-	</script>
-	
-	<ul>
-	    <li><a href='#edit_<?php echo $contentBlock->identifier; ?>'>Edit</a></li>
-	    <li><a href='#history_<?php echo $contentBlock->identifier; ?>'>History</a></li>
-	</ul>
-	
-	<div class="section">
-		<div id="edit_<?php echo $contentBlock->identifier; ?>">
-		    <div class="content_block_editor_control left">
-		    	<table class="noBorder">
-	            	<?php echo $contentBlockVersion->getContentBlockType()->editRender($sf_request); ?>
-	            </table>
-		    </div>
-		    
-		    <div class="content_block_editor_messages right" style="width: 40%;">
-		        <?php if ($contentBlock->getDefinitionParam('help')) : ?>
-		            <p><span class="ui-icon ui-icon-help left"></span> <?php echo $contentBlock->getDefinitionParam('help'); ?></p>
-		        <?php endif; ?>
-	
-	            <?php if ($contentBlock->useLang()): ?>
-	                <p><span class="ui-icon ui-icon-info left"></span> This has different versions for each language</p>
-	            <?php else: ?>
-	                <p><span class="ui-icon ui-icon-info left"></span> This is shared between all languages</p>
-	            <?php endif; ?>
-	
-	            <?php if (!$contentBlockVersion->isCurrent()): ?>
-	                <p class="ui-state-error"><span class="ui-icon ui-icon-alert left"></span> This version is not live</p>
-	            <?php endif; ?>
-	
-	            <?php if (!$contentBlockVersion->isNewest()): ?>
-	                <p class="ui-state-error"><span class="ui-icon ui-icon-alert left"></span> There is a newer version of this content</p>
-	            <?php endif; ?>
-		    </div>
-		    
-		    <br style="clear:both" />
-		</div>
-	
-		<div id="history_<?php echo $contentBlock->identifier; ?>">
-		    <table class="content_block_editor_history">
-			    <thead>
-			        <tr>
-			            <th><?php echo __('Date') ?></th>
-			            <th><?php echo __('User') ?></th>
-			            <th><?php echo __('Status') ?></th>
-			            <td>&nbsp;</td>
-			        </tr>
-			    </thead>
-			    <tbody>
-			        <?php foreach ($versionHistoryArray as $version): ?>
-			            <tr>
-			                <td><?php echo format_datetime($version['created_at']) ?></td>
-			                <td><?php echo (is_array($version['CreatedBy']) ? $version['CreatedBy']['username'] : '') ?></td>
-			                <td>
-			                    <?php if ($version['id'] == $currentContentBlockVersion->id) : ?>
-			                        <span class="site_sitetree_published">Live version</span>
-			                    <?php endif; ?>
-			                    <?php if ($version['id'] == $contentBlockVersion['id']) : ?>
-			                        <span class="site_sitetree_editing">Currently editing</span>
-			                    <?php endif; ?>
-			                </td>
-			                <td>
-			                    <?php if ($version['id'] != $contentBlockVersion['id']) : ?>
-			                    	<form method="post" action="<?php echo $formTarget; ?>">
-			                    		<input type="hidden" name="load_version_block_id" value="<?php echo $contentBlock->id; ?>" />
-			                    		<input type="hidden" name="load_version_id" value="<?php echo $version['id']; ?>" />
-			                        	<input type="submit" class="btn_load frm_submit" name="load_version" value="Load version" />
-			                        </form>
-			                    <?php endif; ?>
-			                </td>
-			            </tr>
-			        <?php endforeach; ?>
-			    </tbody>
-		    </table>
-		</div>
-	  </div>
-	</div>
-	<br style="clear:both" />
+<script type="text/javascript">
+  $(document).addEvent('domready', function () 
+  { 
+    new SimpleTabs('content_block_tabs_<?php echo $contentBlock->identifier; ?>', {
+      selector: 'h5'
+    });
+  });
+</script>
+
+<div id="content_block_tabs_<?php echo $contentBlock->identifier; ?>">
+  <div class="section">
+    <h5>Edit</h5>
+    <div id="edit_<?php echo $contentBlock->identifier; ?>">
+      <div class="content_block_editor_control" style="width: 78%; float: left;">
+        <?php $form = $contentBlockVersion->getContentBlockType()->editRender($sf_request); ?>
+          
+        <?php 
+        echo $form->renderGlobalErrors(); 
+        echo $form->renderHiddenFields();
+        ?>
+      
+        <?php foreach ($form as $idx => $widget):
+          if (!$widget->isHidden()) : ?>
+          
+            <div class="sf_admin_form_row <?php if ($widget->hasError()) echo 'errors'; ?>">
+              <?php echo $widget->renderError(); ?>
+              <div>
+                <?php $label = $widget->renderLabel(); 
+                $rawLabel = trim(strip_tags($label)); 
+                if (!empty($rawLabel) && '&nbsp;' != $rawLabel) echo $label; ?>
+                <div class="content<?php if (empty($rawLabel) || '&nbsp;' == $rawLabel) echo ' no_label'; ?>"><?php echo $widget->render(); ?></div>
+                <?php if ($help = $widget->renderHelp()) : ?><div class="help"><?php echo str_replace('<br />', '', $help); ?></div><?php endif; ?>
+              </div>
+            </div>
+              
+          <?php endif; 
+        endforeach; ?>
+      </div>
+      
+      <div class="content_block_editor_messages" style="width: 20%; float: right;">
+        <?php if ($contentBlock->getDefinitionParam('help')) : ?>
+          <p><?php echo image_tag('/sfCmsPlugin/images/help.png'); ?> <?php echo $contentBlock->getDefinitionParam('help'); ?></p>
+        <?php endif; ?>
+
+        <?php if ($contentBlock->useLang()): ?>
+          <p><?php echo image_tag('/sfCmsPlugin/images/information.png'); ?> This has different versions for each language</p>
+        <?php else: ?>
+          <p><?php echo image_tag('/sfCmsPlugin/images/information.png'); ?> This is shared between all languages</p>
+        <?php endif; ?>
+
+        <?php if (!$contentBlockVersion->isCurrent()): ?>
+          <p><?php echo image_tag('/sfCmsPlugin/images/warning.png'); ?> This version is not live</p>
+        <?php endif; ?>
+
+        <?php if (!$contentBlockVersion->isNewest()): ?>
+          <p><?php echo image_tag('/sfCmsPlugin/images/warning.png'); ?> There is a newer version of this content</p>
+        <?php endif; ?>
+      </div>
+      
+      <br style="clear:both" />
+    </div>
+  
+    <h5>History</h5> 
+    <div id="history_<?php echo $contentBlock->identifier; ?>">
+        <table class="content_block_editor_history">
+          <thead>
+              <tr>
+                  <th><?php echo __('Date') ?></th>
+                  <th><?php echo __('User') ?></th>
+                  <th><?php echo __('Status') ?></th>
+                  <th>&nbsp;</th>
+              </tr>
+          </thead>
+          <tbody>
+            <?php foreach ($versionHistoryArray as $version): ?>
+              <tr>
+                <td><?php echo date('d/M/Y H:i', strtotime($version['created_at'])); ?></td>
+                <td><?php echo (is_array($version['CreatedBy']) ? $version['CreatedBy']['username'] : '') ?></td>
+                <td>
+                  <?php if ($version['id'] == $currentContentBlockVersion->id) : ?>
+                    <span class="site_sitetree_published">Live version</span>
+                  <?php endif; ?>
+                  <?php if ($version['id'] == $contentBlockVersion['id']) : ?>
+                    <span class="site_sitetree_editing">Currently editing</span>
+                  <?php endif; ?>
+                </td>
+                <td>
+                  <?php if ($version['id'] != $contentBlockVersion['id']) : ?>
+                    <form method="post" action="<?php echo $formTarget; ?>">
+                      <input type="hidden" name="load_version_block_id" value="<?php echo $contentBlock->id; ?>" />
+                      <input type="hidden" name="load_version_id" value="<?php echo $version['id']; ?>" />
+                      <input type="submit" class="btn_load frm_submit" name="load_version" value="Load version" />
+                    </form>
+                  <?php endif; ?>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+    </div>
+    </div>
+  </div>
+  <br style="clear:both" />
 </div>

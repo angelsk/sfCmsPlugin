@@ -264,7 +264,12 @@ class siteManager
     $parameters = $config['routing']['param']['cache']['param'];
 
     $cache = new $class($parameters);
-    $cache->clean();
+    
+    try 
+    {
+      $cache->clean();
+    }
+    catch (Exception $e) { }
   }
 
   /**
@@ -272,7 +277,11 @@ class siteManager
    */
   public function clearCrossAppCache() 
   {
-    $this->getCache()->removePattern('ca.*');
+    try 
+    {
+      $this->getCache()->removePattern('ca.*');
+    }
+    catch (Exception $e) { }
   }
 
   /**
@@ -304,7 +313,7 @@ class siteManager
     $routingProxy = $this->getRoutingProxy($router);
     $site         = $this->getCurrentSite();
     
-    $sitetrees    = SitetreeTable::getInstance()->getSitetreeNodes($site, Doctrine::HYDRATE_RECORD, false);
+    $sitetrees    = SitetreeTable::getInstance()->getSitetreeNodes($site, Doctrine_Core::HYDRATE_RECORD, false);
     $junkChar     = $this->getRouteJunkChar();
 
     $urlStack = array();
@@ -403,7 +412,7 @@ class siteManager
       // we already initialised the other context, switch to it now
       sfContext::switchTo($app . $env);
     }
-
+    
     try 
     {
       // make the url
@@ -444,8 +453,8 @@ class siteManager
   {
     if ($toApplication == $this->getManagedApp())
     {
-      // If the url returned doesn't already contain http:// - because of site magic in the front web controller
-      if (false !== strpos($generatedUrl, 'http://')) 
+      // If the url returned doesn't already contain http(s):// - because of site magic in the front web controller
+      if (false !== strpos($generatedUrl, 'http')) 
       {
         // Absolute URL, but still has admin. in
         if (false !== strpos($generatedUrl, 'admin.')) 
@@ -475,7 +484,7 @@ class siteManager
         // need to add in the hostname without the "admin." (if appropriate)
         $hostName   = $_SERVER['HTTP_HOST'];
         $hostName   = str_replace('admin.', '', $hostName);
-        return 'http://' . $hostName . $generatedUrl;
+        return 'http://' . $hostName . $generatedUrl; // @TODO: http(s)
       }
     }
     else 
@@ -767,7 +776,7 @@ class siteManager
    * @param const $hydrationMode Return as array or record
    * @return Doctrine_Collection
    */
-  public function getEntireSitetree($site, $createRootIfNotExist = true, $includeTranslations = true, $hydrationMode = Doctrine::HYDRATE_RECORD) 
+  public function getEntireSitetree($site, $createRootIfNotExist = true, $includeTranslations = true, $hydrationMode = Doctrine_Core::HYDRATE_RECORD) 
   {
     if ($includeTranslations) 
     {
@@ -805,21 +814,32 @@ class siteManager
   /**
    * Get a list of live sitetree nodes in route_name=>title pairs for a dropdown etc.
    *
+   * @param string $site
+   * @param int $level
+   * @param boolean $justActive
+   * @param array $excludeRange - optional left right range to exclude
    * @return array
    */
-  public function getSitetreeForForm($site = null, $level = null) 
+  public function getSitetreeForForm($site = null, $level = null, $justActive = true, $excludeRange = array()) 
   {
     if ($site === null) 
     {
       $site = $this->getCurrentSite();
     }
     
-    $tree = SitetreeTable::getInstance()->getSitetree($site, $level, Doctrine::HYDRATE_ARRAY);
+    $tree = SitetreeTable::getInstance()->getSitetree($site, $level, Doctrine_Core::HYDRATE_ARRAY, $justActive);
     $culture = sfContext::getInstance()->getUser()->getCulture();
 
     foreach ($tree as $item) 
     {
-      $out[$item['route_name']] = str_repeat(':: ', $item['level']) . @$item['Translation'][$culture]['title'];
+      // This bit basically excludes a selected node + children from the list
+      if (!empty($excludeRange) && $item['lft'] >= $excludeRange['lft'] && $item['rgt'] <= $excludeRange['rgt'])
+      {
+        $include = false;
+      }
+      else $include = true;
+      
+      if ($include) $out[$item['route_name']] = str_repeat(':: ', $item['level']) . @$item['Translation'][$culture]['title'];
     }
     
     return $out;
