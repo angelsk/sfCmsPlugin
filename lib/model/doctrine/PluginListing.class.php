@@ -54,7 +54,7 @@ abstract class PluginListing extends BaseListing
     
     if ($request->hasParameter('category'))
     {
-      $category = ListingCategoryTable::getInstance()->findOneByIdentifier($request->getParameter('category'));
+      $category = ListingCategoryTable::getInstance()->findOneBySlug($request->getParameter('category'));
     }
     else $category = null;
     

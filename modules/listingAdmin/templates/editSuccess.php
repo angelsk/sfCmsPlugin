@@ -77,7 +77,8 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array('sitetree' => $sit
       
       <?php if (!isset($defn['use_categories']) || true === $defn['use_categories']) : ?>
         <h4>Categories</h4>
-        <div id='listing_<?php echo $sitetree->route_name; ?>_categories'>
+        
+        <div id="listing_<?php echo $sitetree->route_name; ?>_categories">
           <?php
           echo include_component('listingAdmin', 'categoryEditor', array('listing' => $listing, 'formTarget' => 'listing_'.$sitetree->route_name.'_categories'));
           ?>
@@ -85,7 +86,8 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array('sitetree' => $sit
       <?php endif ?>
     
       <h4>Content</h4>
-      <div id='listing_<?php echo $sitetree->route_name; ?>_content'>
+      
+      <div id="listing_<?php echo $sitetree->route_name; ?>_content">
         <?php
         $url = 'sitetree/index';
         echo include_component('contentAdmin', 'editor', array('contentGroup' => $contentGroup, 'cancelUrl'=>$url, 'formTarget'=>'#listing_'.$sitetree->route_name.'_content'));
@@ -93,7 +95,8 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array('sitetree' => $sit
       </div>
     
       <h4>Properties</h4>
-      <div id='listing_<?php echo $sitetree->route_name; ?>_properties'>
+      
+      <div id="listing_<?php echo $sitetree->route_name; ?>_properties">
         <div class="content_border_thin">
           <?php if ($sitetree->is_locked) : ?>
              <p>Cannot edit properties of a locked page</p>

@@ -285,6 +285,7 @@ function xml_character_encode($content = "")
 function unicode_string_to_array($string) 
 { 
   $strlen = mb_strlen($string);
+  $array = array();
 
   while ($strlen) 
   {

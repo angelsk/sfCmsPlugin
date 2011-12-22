@@ -62,4 +62,20 @@ class ContentBlockTypeHTML extends ContentBlockType
 
 		return $form->isValid();
 	}
+	
+  /**
+   * Render from value - check for empty tags and return '' if no actual content
+   *
+   * @see ContentBlockType/ContentBlockType::renderFromValue()
+   *
+   * @param string $value
+   * @return string
+   */
+  public function renderFromValue($value)
+  {
+    $testValue = ContentBlockType::cleanContent($value);
+    
+    // If there is content return it :)
+    return (0 < strlen($testValue) ? $value : '');
+  }
 }
