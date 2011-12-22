@@ -215,4 +215,18 @@ abstract class ContentBlockType implements ContentBlockTypeInterface
   public function editRenderJavascript(sfWebRequest $request)
   {
   }
+  
+  /**
+   * Clean content to test if empty
+   * 
+   * @param string $value
+   */
+  public static function cleanContent($value)
+  {
+    $value = html_entity_decode(strip_tags($value)); // take away tags and decode html entities
+    $value = preg_replace( '/[^[:print:]]/', '',$value); // strip out any non-printable characters - line returns / funny word stuff
+    $value = trim($value); // trim empty spaces and lines
+    
+    return $value;
+  }
 }
