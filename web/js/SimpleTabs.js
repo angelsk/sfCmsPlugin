@@ -12,6 +12,8 @@
  * @license		MIT License
  * @author		Harald Kirschner <mail [at] digitarald.de>
  * @copyright	2007 Author
+ * 
+ * Edited by Jo Carter to allow switching to tabs programmatically
  */
 var SimpleTabs = new Class({
 
@@ -43,7 +45,11 @@ var SimpleTabs = new Class({
 		onFailure: function(toggle, container, index) {
 			container.removeClass('tab-ajax-loading');
 		},
-		onAdded: Class.empty,
+		onAdded: function(toggle, container, pos) {
+		  // Added by Jo - if there is a hash on the URL it should toggle to this tab
+		  var hash = (document.location.hash).replace('#', '');
+		  if (hash === container.id) this.options.show = pos;
+		},
 		getContent: null,
 		ajaxOptions: {},
 		cache: true
