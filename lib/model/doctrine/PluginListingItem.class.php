@@ -65,9 +65,10 @@ abstract class PluginListingItem extends BaseListingItem
       // See if we should be using the cache for this template
       if ($manager->getTemplateDefinitionParameter($template, 'item_cacheable', false))
       {
+        $request = sfContext::getInstance()->getRequest();
         $useCache = true;
         $culture = sfContext::getInstance()->getUser()->getCulture();
-        $partialVariables['cacheName'] = "listing.{$listing->id}.{$this->id}.{$culture}";
+        $partialVariables['cacheName'] = "listing.{$listing->id}.{$this->id}.{$culture}.{$request->isXmlHttpRequest()}";
       }
     }
 
@@ -142,7 +143,7 @@ abstract class PluginListingItem extends BaseListingItem
     $listing = $this->Listing;
 
     // This removes the cached pages from both the Listing and the items
-    siteManager::getInstance()->getCache()->removePattern("Listing.{$listing->id}.*");
+    siteManager::getInstance()->getCache()->removePattern("listing.{$listing->id}.*");
   }
 
   public function publish()

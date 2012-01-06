@@ -72,6 +72,5 @@ class ContentGroupTypePage extends ContentGroupType
   public function handleContentGroupChanged()
   {
     $this->getPage()->handleContentChanged();
-    siteManager::getInstance()->getCache()->remove('ContentGroup.' . $this->ContentGroup->id);
   }
 }
