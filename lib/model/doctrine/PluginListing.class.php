@@ -268,7 +268,7 @@ abstract class PluginListing extends BaseListing
    * @param boolean $isRss
    * @return sfDoctrineSuperPager
    */
-  protected function getInitialisedPager($request, $category, $page, $isRss = false)
+  public function getInitialisedPager($request, $category, $page, $isRss = false)
   {
     $manager = listingManager::getInstance();
     $template = $this->template;
