@@ -67,7 +67,7 @@ abstract class PluginListingItem extends BaseListingItem
       {
         $useCache = true;
         $culture = sfContext::getInstance()->getUser()->getCulture();
-        $partialVariables['cacheName'] = "listing.{$listing->id}.{$item->id}.{$culture}";
+        $partialVariables['cacheName'] = "listing.{$listing->id}.{$this->id}.{$culture}";
       }
     }
 
