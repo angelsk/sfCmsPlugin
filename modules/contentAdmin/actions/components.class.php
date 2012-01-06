@@ -177,6 +177,13 @@ class ContentAdminComponents extends sfComponents
         }
       }
     }
+    
+    if ($request->hasParameter('clear_cache'))
+    {
+      $this->clearContentGroupCache($contentGroup);
+      
+      $user->setFlash('content_notice', 'Page cache cleared on ' . siteManager::getInstance()->getManagedApp());
+    }
 
     $previewUrl = $contentGroup->getContentGroupType()->getPreviewUrl();
     $previewUrl = siteManager::getInstance()->generateCrossAppUrlFor($previewUrl);
