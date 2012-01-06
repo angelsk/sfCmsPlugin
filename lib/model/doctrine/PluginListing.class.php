@@ -76,7 +76,7 @@ abstract class PluginListing extends BaseListing
         $useCache = true;
         $culture = sfContext::getInstance()->getUser()->getCulture();
         $categoryIdentifier = ($category ? $category->id : 'nc');
-        $partialVariables['cacheName'] = "listing.{$listing->id}.listing.{$categoryIdentifier}.{$culture}{$page}";
+        $partialVariables['cacheName'] = "listing.{$this->id}.listing.{$categoryIdentifier}.{$culture}{$page}";
       }
     }
 
