@@ -73,10 +73,11 @@ abstract class PluginListing extends BaseListing
       // See if we should be using the cache for this template
       if ($manager->getTemplateDefinitionParameter($template, 'listing_cacheable', false))
       {
+        if (!$request) $request = sfContext::getInstance()->getRequest();
         $useCache = true;
         $culture = sfContext::getInstance()->getUser()->getCulture();
         $categoryIdentifier = ($category ? $category->id : 'nc');
-        $partialVariables['cacheName'] = "listing.{$listing->id}.listing.{$categoryIdentifier}.{$culture}{$page}";
+        $partialVariables['cacheName'] = "listing.{$this->id}.listing.{$categoryIdentifier}.{$culture}{$page}.{$request->isXmlHttpRequest()}";
       }
     }
 
@@ -268,7 +269,7 @@ abstract class PluginListing extends BaseListing
    * @param boolean $isRss
    * @return sfDoctrineSuperPager
    */
-  protected function getInitialisedPager($request, $category, $page, $isRss = false)
+  public function getInitialisedPager($request, $category, $page, $isRss = false)
   {
     $manager = listingManager::getInstance();
     $template = $this->template;
@@ -449,7 +450,7 @@ abstract class PluginListing extends BaseListing
   public function handleContentChanged()
   {
     // This removes the cached pages from both the Listing and the items (and rss feed)
-    siteManager::getInstance()->getCache()->removePattern("Listing.{$this->id}.*");
+    siteManager::getInstance()->getCache()->removePattern("listing.{$this->id}.*");
   }
 
   /**
