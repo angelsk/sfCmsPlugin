@@ -14,9 +14,10 @@ $formTarget = ($sf_data->offsetExists('formTarget') ? $sf_data->getRaw('formTarg
 
 <form id="<?php echo $formId ?>" method="post" action="<?php echo $formTarget; ?>" enctype="multipart/form-data">
   <fieldset class="sitetreeInfo">
-    <span style="float:left;">Load versions: &nbsp;</span>
-    <input type="submit" name="live_versions" value="Currently live" class="btn_load frm_submit" />
-    <input type="submit" name="new_versions" value="Newest" class="btn_load frm_submit" />
+    <span style="float:left;">Content actions: &nbsp;</span>
+    <input type="submit" name="live_versions" value="Load live content" class="btn_load frm_submit" />
+    <input type="submit" name="new_versions" value="Load newest content" class="btn_load frm_submit" />
+    <input type="submit" name="clear_cache" value="Clear page cache" class="btn_load frm_submit" />
   </fieldset>
   
   <fieldset>

@@ -63,9 +63,10 @@ abstract class PluginPage extends BasePage
       // See if we should be using the cache for this template
       if ($contentManager->getTemplateDefinitionAttribute($templateSlug, 'cacheable', false))
       {
+        $request = sfContext::getInstance()->getRequest();
         $useCache = true;
         $culture = sfContext::getInstance()->getUser()->getCulture();
-        $partialVariables['cacheName'] = "contentGroup.{$contentGroup->id}.{$culture}";
+        $partialVariables['cacheName'] = "page.{$this->id}.{$culture}.{$request->isXmlHttpRequest()}";
       }
     }
     
@@ -159,7 +160,7 @@ abstract class PluginPage extends BasePage
   public function handleContentChanged()
   {
     // This removes the cached Pages
-    siteManager::getInstance()->getCache()->removePattern("Page.{$this->id}.*");
+    siteManager::getInstance()->getCache()->removePattern("page.{$this->id}.*");
   }
 
   /**

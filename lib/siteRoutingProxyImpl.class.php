@@ -23,7 +23,7 @@ class siteRoutingProxyImpl implements siteRoutingProxy
    */
   public function addRoute($sitetree, $name, $url, $defaultParams = array(), $requirements = array(), $options = array()) 
   {
-    $routeName = $this->getRouteName($sitetree, $name);
+    $routeName      = $this->getRouteName($sitetree, $name);
     $includeCulture = sfConfig::get('app_site_include_culture_in_routes', false);
     
     if ($includeCulture) 
@@ -34,8 +34,15 @@ class siteRoutingProxyImpl implements siteRoutingProxy
       $url = '/:sf_culture' . $url;
       $defaultParams['sf_culture'] = $defaultCulture;
     }
-
-    $route = new sfRoute($url, $defaultParams, $requirements);
+    
+    $routeClass = 'sfRoute';
+    
+    if (!empty($options) && isset($options['model']) && isset($options['type']))
+    {
+      $routeClass = 'sfDoctrineRoute';
+    }
+    
+    $route = new $routeClass($url, $defaultParams, $requirements, $options);
 
     $this->router->prependRoute(
       $routeName,
