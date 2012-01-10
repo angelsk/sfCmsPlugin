@@ -188,12 +188,12 @@ abstract class ContentBlockType implements ContentBlockTypeInterface
    * @see ContentBlockType/ContentBlockTypeInterface::editIsChanged()
    *
    * @param sfWebRequest $request
-   * @return string
+   * @return boolean
    */
   public function editIsChanged(sfWebRequest $request)
   {
     $newValue = $this->getValueFromRequest($request);
-
+    
     return ($newValue != $this->ContentBlockVersion->value);
   }
 

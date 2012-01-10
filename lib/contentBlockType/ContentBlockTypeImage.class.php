@@ -83,6 +83,24 @@ class ContentBlockTypeImage extends ContentBlockType
   }
   
   /**
+   * @see ContentBlockType/ContentBlockTypeInterface::editIsChanged()
+   */
+  public function editIsChanged(sfWebRequest $request)
+  {
+    $newValue = $this->getValueFromRequest($request);
+    
+    // remove empty image pool thingy
+    foreach ($newValue as $idx => $raw)
+    {
+      if (empty($raw)) unset($newValue[$idx]);
+    }
+    
+    if (is_array($newValue)) $newValue = serialize($newValue);
+    
+    return ($newValue != $this->ContentBlockVersion->value);
+  }
+  
+  /**
    * @see ContentBlockType/ContentBlockTypeInterface::getValue()
    */
   public function getValue()
