@@ -325,25 +325,20 @@ The Text content block can be restricted in length (useful for styling restricti
 
 #### Types - Image
 
-TODO  - sfImagePoolPlugin
+Requires: sfImagePoolPlugin
 
-An image asset - the images can be managed in the ASSETS tab.  The image can either be selected from existing images, or uploaded on the page.
-
-An image content block requires more configuration than the basic text or HTML content block.  You need to specify the width (fixed) and height (fixed OR flexible) of the image.
+An image asset - the images can be managed in the Image Pool tab.  The image can either be selected from existing images, or uploaded on the page.
 
     content_block_1:
       name: Content Block 1
-      type: AssetImage
-      width: 225
-      height: 225   
-  
-      # If the height of the image is irrelevant use 
-      height: Any
+      type: Image
+	  tag:  [icon]    # set if tag restriction required, as per sfImagePoolable (none set by default)
+	  multiple: false # set if multiple images allowed, as per sfImagePoolable  (false by default)
 
 
-The height and width can be overridden in the template itself, if a smaller image is required (for example, on a listing page).  Additionally, an array of attributes can be sent through to set class, id, etc.
+The image pool rendering options are set in the template itself, as the content block returns an sfImagePoolCollection (if multiple), or an sfImagePoolImage (if not multiple) - so you can treat it like any other image poolable object.
 
-    <?php echo $page->renderContent('content_block_1', array('width'=>150, 'height'=>150, 'attributes'=>array('class'=>'image')); ?>
+    <?php echo pool_image_tag($page->renderContent('content_block_1'), '200'); ?>
 
 
 #### Types - further

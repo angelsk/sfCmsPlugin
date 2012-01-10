@@ -15,8 +15,10 @@ class ContentBlockTypeHTMLForm extends ContentBlockTypeForm
 		if (isset($definition['with_image']) && true == $definition['with_image'])
 		{
 		  $tag = (isset($definition['tag']) ? $definition['tag'] : '');
+		  $width = (isset($definition['image_width']) ? $definition['image_width'] : '');
+		  $height = (isset($definition['image_height']) ? $definition['image_height'] : '');
 		  
-		  sfImagePoolUtil::addImagePoolMooEditable($this, 'value', $tag);
+		  sfImagePoolUtil::addImagePoolMooEditable($this, 'value', array('image_tag'=>$tag, 'image_width'=>$width, 'image_height'=>$height), $this->getConfig());
 		}
     else 
     {
@@ -27,9 +29,6 @@ class ContentBlockTypeHTMLForm extends ContentBlockTypeForm
 		$this->widgetSchema->setLabel('value','&nbsp;');
 	}
 
-	/**
-	 * Set up TinyMCE
-	 */
 	protected function getConfig()
 	{
 		$options = array();
@@ -76,33 +75,4 @@ class ContentBlockTypeHTMLForm extends ContentBlockTypeForm
 	{
 		return 'ContentBlockTypeHTML';
 	}
-	
-	
-  public function getJavaScripts()
-  {
-    $js = parent::getJavascripts();
-    
-    $definition = $this->getObject()->getContentBlockVersion()->getDefinition();
-    
-    if (isset($definition['with_image']) && true == $definition['with_image'])
-    {
-      $js = array_merge($js, array('/sfImagePoolPlugin/js/MooEditable.ImagePool.js'));
-    }
-    
-    return $js;
-  }
-
-  public function getStylesheets()
-  {
-    $css = parent::getStylesheets();
-    
-    $definition = $this->getObject()->getContentBlockVersion()->getDefinition();
-    
-    if (isset($definition['with_image']) && true == $definition['with_image'])
-    {
-      $css = array_merge($css, array('/sfImagePoolPlugin/css/MooEditable.ImagePool.css'=>'all'));
-    }
-    
-    return $css;
-  }
 }
