@@ -148,7 +148,7 @@ class ContentBlockTypeImage extends ContentBlockType
     // else return image
     else 
     {
-      return $images->getFeaturedImage();
+      return ($images ? $images->getFeaturedImage() : null);
     }
   }
   
@@ -189,8 +189,6 @@ class ContentBlockTypeImage extends ContentBlockType
    */
   public function getPoolImages(Doctrine_Record $object = null, Doctrine_Query $query = null, $value = null)
   {    
-    if (is_null($this->_images)) $this->_images = new sfImagePoolImageCollection('sfImagePoolImage');
-    
     $image_ids = (!is_null($value) ? $value : $this->getValue());
 
     // If we don't have images - don't want to return all images
@@ -202,6 +200,8 @@ class ContentBlockTypeImage extends ContentBlockType
 
       $images = $query->execute();
 
+      if (is_null($this->_images)) $this->_images = new sfImagePoolImageCollection('sfImagePoolImage');
+      
       $this->_images->merge($images);
       $this->_images->takeSnapshot();
     }
