@@ -127,15 +127,18 @@ class ContentBlockTypeImage extends ContentBlockType
   public function renderFromValue($value)
   {
     // unserialize if from DB
-    if (!is_array($value))
+    if (!is_array($value) && !is_null($value))
     {
       $value = unserialize($value);
     }
     
     // remove empty image pool thingy if from request
-    foreach ($value as $idx => $raw)
+    if (!empty($value))
     {
-      if (empty($raw)) unset($value[$idx]);
+      foreach ($value as $idx => $raw)
+      {
+        if (empty($raw)) unset($value[$idx]);
+      }
     }
     
     $images = $this->getPoolImages(null, null, $value);
