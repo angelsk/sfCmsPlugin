@@ -820,7 +820,7 @@ class siteManager
    * @param array $excludeRange - optional left right range to exclude
    * @return array
    */
-  public function getSitetreeForForm($site = null, $level = null, $justActive = true, $excludeRange = array()) 
+  public function getSitetreeForForm($site = null, $level = null, $justActive = true, $excludeRange = array(), $field = 'route_name') 
   {
     if ($site === null) 
     {
@@ -839,7 +839,7 @@ class siteManager
       }
       else $include = true;
       
-      if ($include) $out[$item['route_name']] = str_repeat(':: ', $item['level']) . @$item['Translation'][$culture]['title'];
+      if ($include) $out[$item[$field]] = str_repeat(':: ', $item['level']) . @$item['Translation'][$culture]['title'];
     }
     
     return $out;
