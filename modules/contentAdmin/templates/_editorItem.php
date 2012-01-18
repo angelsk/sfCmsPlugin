@@ -71,6 +71,8 @@ $formTarget = ($sf_data->offsetExists('formTarget') ? $sf_data->getRaw('formTarg
       <div class="content_block_editor_messages" style="width: 20%; float: right;">
         <?php if ($contentBlock->getDefinitionParam('help')) : ?>
           <p><?php echo image_tag('/sfCmsPlugin/images/help.png'); ?> <?php echo $contentBlock->getDefinitionParam('help'); ?></p>
+        <?php elseif ('HTML' == $contentBlock->getDefinitionParam('type')) : ?>
+          <p><?php echo image_tag('/sfCmsPlugin/images/help.png'); ?> Use SHIFT + RETURN to create a soft new line (&lt;br />) and RETURN to create a new paragraph.</p>
         <?php endif; ?>
 
         <?php if ($contentBlock->useLang()): ?>
