@@ -29,6 +29,13 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array('sitetree' => $sit
       </span>
       (change template on Properties tab)
     </div>
+    
+    <?php if (isset($defn['help'])) : ?>
+      <div class='sitetreeInfo'>
+        <h3><?php echo image_tag('/sfCmsPlugin/images/help.png', array('style'=>'vertical-align: top;')); ?> Template help</h3>
+        <p><?php echo str_replace('%SITETREE%', $sitetree->getTitle(), $defn['help']); ?></p>
+      </div>
+    <?php endif;  ?>
   </div>
   
   <script type="text/javascript">

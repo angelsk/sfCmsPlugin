@@ -73,27 +73,3 @@ $formTarget = ($sf_data->offsetExists('formTarget') ? $sf_data->getRaw('formTarg
     });
   });
 </script>
-
-<?php
-// @TODO: Think this could probably be removed - just add the use_javascripts for form stuff to the render
-$javascript = "";
-foreach ($contentBlockVersions as $contentBlockVersion) 
-{
-  $versionJs =  $contentBlockVersion->getContentBlockType()->editRenderJavascript($sf_request->getRawValue());
-  if (!empty($versionJs)) 
-  {
-    $javascript .= "\n\n//Inititialisation javascript for Content block version '" . esc_entities($contentBlockVersion->id) . "'\n" . $versionJs;
-  }
-}
-?>
-
-<?php if (!empty($javascript)) : ?>
-  <script type="text/javascript">
-  //<![CDATA[
-    $(document).addEvent('domready', function() 
-    {
-      <?php $javascript; ?>
-    });
-  });
-  </script>
-<?php endif; ?>

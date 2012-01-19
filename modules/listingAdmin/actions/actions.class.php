@@ -336,7 +336,7 @@ class listingAdminActions extends sfActions
     $pagerClass = $manager->getListItemPagerClass($template);
 
     $pager = new $pagerClass($listing);
-    $pager->setMaxPerPage($listing->results_per_page);
+    $pager->setMaxPerPage(15); // Lets not get silly in the admin area
     $pager->getQuery()->addWhere('listing_id = ?', array($listing->id));
 
     if ($listing->use_custom_order)

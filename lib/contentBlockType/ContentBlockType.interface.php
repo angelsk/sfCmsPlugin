@@ -71,16 +71,4 @@ interface ContentBlockTypeInterface
    * @param sfWebRequest $request
    */
   public function editDuplicateAndSave(ContentBlockVersion $newContentBlock, sfWebRequest $request);
-  
-  /**
-   * Return javascript which needs to be called after the html for the editing
-   * has been put into the page.
-   * 
-   * If this is done on the initial editor page load, it will be executed on 
-   * window/load.  If it has been done on an AJAX request, it will be given
-   * to the client to execute immediately.
-   *
-   * @param sfWebRequest $request
-   */
-  public function editRenderJavascript(sfWebRequest $request);
 } 

@@ -3,6 +3,9 @@ $item = $form->getObject();
 $contentGroup = (isset($contentGroup) ? $sf_data->getRaw('contentGroup') : null);
 $sitetree = $sf_data->getRaw('sitetree');
 
+$listingManager = listingManager::getInstance();
+$defn = $listingManager->getTemplateDefinition($item->Listing->template); 
+
 $isNew = (!$item->exists());
 $moduleName = $sf_context->getModuleName();
 
@@ -28,8 +31,22 @@ use_stylesheets_for_form($form);
   
   <div id="sf_admin_header">
     <?php echo include_partial('sitetree/sitetreeInfo', array('sitetree'=>$sitetree, 'item'=>$item)); ?>
+    
+    <div class='sitetreeInfo'>
+      Template is
+      <span class="site_sitetree_<?php if (!$sitetree->is_active) echo 'not_'; ?>published">
+        <?php echo $defn['name']; ?>
+      </span>
+      (<?php echo link_to('Back to listing', 'listingAdmin/edit?id=' . $item->listing_id); ?>)
+    </div>
+    
+    <?php if (isset($defn['help'])) : ?>
+      <div class='sitetreeInfo'>
+        <h3><?php echo image_tag('/sfCmsPlugin/images/help.png', array('style'=>'vertical-align: top;')); ?> Template help</h3>
+        <p><?php echo str_replace('%SITETREE%', $sitetree->getTitle(), $defn['help']); ?></p>
+      </div>
+    <?php endif;  ?>
   
-
   <?php if ($isNew): ?>
   
     <p>Please enter the details for your new list item below. Once it has been created you will be able to choose the images and descriptions.</p>
@@ -88,9 +105,8 @@ use_stylesheets_for_form($form);
            <span class="site_sitetree_hidden" style="float:left;">Hidden</span>
         <?php endif; ?>
         
-        <br class="clear" />
         <?php if ($item->is_active): ?>
-           <form method="post" action="" style="float:left;">
+           <form method="post" action="" style="float:left; margin-top: -5px;">
               <input type="hidden" name="publish" value="0" />
               <input type="submit" value="Unpublish" />
            </form>
