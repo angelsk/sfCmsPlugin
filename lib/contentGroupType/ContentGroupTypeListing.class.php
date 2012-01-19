@@ -70,7 +70,7 @@ class ContentGroupTypeListing extends ContentGroupType
 	/**
 	 * @see ContentGroupType
 	 */
-	public function handleContentBlockGroupChanged()
+	public function handleContentGroupChanged()
 	{
 		$this->getContentBlockListing()->handleContentChanged();
 	}

@@ -200,15 +200,28 @@ class siteManager
   
   /**
    * Site cache
+   * Use the same cache as the rest of the site
    *
-   * @return sfFileCache
+   * @return sfCache
    */
   public function getCache() 
   {
     if (!$this->cache) 
     {
-      $cacheDir = sfConfig::get('sf_cache_dir') . '/' . $this->getManagedApp() . '/' . sfConfig::get('sf_environment') . '/site';
-      $this->cache = new sfFileCache(array('cache_dir' => $cacheDir));
+      $config = sfFactoryConfigHandler::getConfiguration(ProjectConfiguration::getActive()->getConfigPaths('config/factories.yml'));
+      $cachedir = sfConfig::get('sf_cache_dir') . '/' . $this->getManagedApp() . '/' . sfConfig::get('sf_environment') . '/site';
+      
+      $class = $config['view_cache']['class'];
+      $parameters = $config['view_cache']['param'];
+      $parameters['prefix'] = $cachedir;
+      $parameters['cache_dir'] = $cachedir;
+      if ('sfMemcacheCache' == $class) $parameters['storeCacheInfo'] = true;
+      
+      try 
+      {
+        $this->cache = new $class($parameters);
+      }
+      catch (Exception $e) { }
     }
     
     return $this->cache;
@@ -260,16 +273,20 @@ class siteManager
 
     $config = sfFactoryConfigHandler::getConfiguration($appConfiguration->getConfigPaths('config/factories.yml'));
 
-    $class = $config['routing']['param']['cache']['class'];
-    $parameters = $config['routing']['param']['cache']['param'];
-
-    $cache = new $class($parameters);
-    
-    try 
-    {
-      $cache->clean();
+    if (isset($config['routing']['param']['cache']))
+    {    
+      $class = $config['routing']['param']['cache']['class'];
+      $parameters = $config['routing']['param']['cache']['param'];
+      
+      if ('sfMemcacheCache' == $class) $parameters['storeCacheInfo'] = true;
+      
+      try 
+      {
+        $cache = new $class($parameters);
+        $cache->removePattern('symfony.routing.data'); // just remove the routing data
+      }
+      catch (Exception $e) { var_dump($e->getMessage()); }
     }
-    catch (Exception $e) { }
   }
 
   /**
@@ -735,6 +752,8 @@ class siteManager
     {
       $response->setTitle(htmlentities($v, null, 'utf-8', false), false);
     }
+    
+    $context->getRequest()->setAttribute('sitetree', $sitetree);
 
     return $sitetree;
   }

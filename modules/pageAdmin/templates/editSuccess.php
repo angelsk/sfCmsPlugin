@@ -26,6 +26,13 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array(
         [<?php echo link_to('change template', 'pageAdmin/editTemplate?id=' . $page->id)?>]
       <?php endif; ?>
     </div>
+    
+    <?php if (isset($defn['help'])) : ?>
+      <div class='sitetreeInfo'>
+        <h3><?php echo image_tag('/sfCmsPlugin/images/help.png', array('style'=>'vertical-align: top;')); ?> Template help</h3>
+        <p><?php echo str_replace('%SITETREE%', $sitetree->getTitle(), $defn['help']); ?></p>
+      </div>
+    <?php endif;  ?>
   </div>
   
   <div id="sf_admin_content">

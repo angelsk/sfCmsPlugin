@@ -37,6 +37,30 @@ abstract class PluginListingItem extends BaseListingItem
   }
   
   /**
+   * Get localised title
+   *
+   * @return string
+   */
+  public function getTitle() 
+  {
+    $lang = sfContext::getInstance()->getUser()->getCulture();
+    $title = $this->Translation[$lang]->title;
+
+    // Don't return blank item title - return default culture version if
+    // translation not available
+    if (!is_null($title)) 
+    {
+      return $title;
+    }
+    else 
+    {
+      $defn         = siteManager::getInstance()->getSite();
+      $default_lang = $defn['default_culture'];
+      return $this->Translation[$default_lang]->title;
+    }
+  }
+  
+  /**
    * Render a listing item
    *
    * @param boolean $tryUseCache

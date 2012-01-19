@@ -208,7 +208,6 @@ class listingAdminActions extends sfActions
       $actionP = ($this->getRequestParameter('publish') === '1') ? 'publish' : 'unPublish';
       $item->$actionP();
       $this->itemHasChanged($item);
-      $this->listingHasChanged($listing);
 
       // Message saying published/unpublished
       $this->getUser()->setFlash('notice', 'Item has been ' . ($item->is_active ? 'published' : 'unpublished'));
@@ -223,7 +222,6 @@ class listingAdminActions extends sfActions
         $this->form->save();
 
         $this->itemHasChanged($item);
-        $this->listingHasChanged($listing);
 
         // Message saying changes saved
         $this->getUser()->setFlash('notice','Your changes have been saved');
@@ -256,7 +254,7 @@ class listingAdminActions extends sfActions
     // Useful for legacy listings and those switched in the midst of items being added
     // @see Doctrine_Template_Orderable
     $item->resetOrder();
-    $item = Doctrine_Core::getTable($itemClass)->findOneById($request->getParameter('id')); // Get new object, so ordr correct
+    $item = Doctrine_Core::getTable($itemClass)->findOneById($request->getParameter('id')); // Get new object, so position correct
 
     $direction = $request->getParameter('direction');
     $directions = array('top', 'up', 'down', 'bottom'); // Currently just using up/down
@@ -336,12 +334,12 @@ class listingAdminActions extends sfActions
     $pagerClass = $manager->getListItemPagerClass($template);
 
     $pager = new $pagerClass($listing);
-    $pager->setMaxPerPage($listing->results_per_page);
+    $pager->setMaxPerPage(15); // Lets not get silly in the admin area
     $pager->getQuery()->addWhere('listing_id = ?', array($listing->id));
 
     if ($listing->use_custom_order)
     {
-      $pager->getQuery()->orderBy('ordr');
+      $pager->getQuery()->orderBy('position');
     }
     else
     {

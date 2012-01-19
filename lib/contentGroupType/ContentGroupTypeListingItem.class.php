@@ -59,7 +59,7 @@ class ContentGroupTypeListingItem extends ContentGroupType
 	public function getContentBlockDefinitions()
 	{
 		$template = $this->getListing()->template;
-		return ListingManager::getInstance()->getItemContentBlockDefinitions($template);
+		return listingManager::getInstance()->getItemContentBlockDefinitions($template);
 	}
 
 	/**
@@ -95,7 +95,6 @@ class ContentGroupTypeListingItem extends ContentGroupType
 	public function getSitetree()
 	{
 		$listing = $this->getListing();
-
 		return SitetreeTable::getInstance()->findOneById($listing->sitetree_id);
 	}
 
