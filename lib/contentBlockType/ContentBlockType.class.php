@@ -205,16 +205,6 @@ abstract class ContentBlockType implements ContentBlockTypeInterface
     $newContentBlock->value = $this->getValueFromRequest($request);
     $newContentBlock->save();
   }
-
-  /**
-   * @see ContentBlockType/ContentBlockTypeInterface::editRenderJavascript()
-   *
-   * @param sfWebRequest $request
-   * @return string
-   */
-  public function editRenderJavascript(sfWebRequest $request)
-  {
-  }
   
   /**
    * Clean content to test if empty

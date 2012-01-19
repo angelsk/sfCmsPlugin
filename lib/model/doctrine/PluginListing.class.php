@@ -298,7 +298,7 @@ abstract class PluginListing extends BaseListing
 
     if ($this->use_custom_order)
     {
-      $q->orderBy('ordr');
+      $q->orderBy('position');
     }
     elseif ($isRss)
     {

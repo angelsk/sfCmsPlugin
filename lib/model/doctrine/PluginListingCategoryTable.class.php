@@ -28,7 +28,7 @@ abstract class PluginListingCategoryTable extends Doctrine_Table
       $query = $this->createQuery('c')
               ->innerJoin('c.Translation t')
               ->where('c.listing_id = ?', array($listingId))
-              ->orderBy('c.ordr');
+              ->orderBy('c.position');
               
       return $query->execute(array(), $hydrationMode);
     }
@@ -46,7 +46,7 @@ abstract class PluginListingCategoryTable extends Doctrine_Table
               // Ensure only get categories with items
               ->innerJoin('c.ListingItem i')
               ->where('c.listing_id = ? AND c.is_active = ? AND i.is_active = ? AND i.is_hidden = ?', array($listingId, true, true, false))
-              ->orderBy('c.ordr');
+              ->orderBy('c.position');
               
       return $query->execute(array(), $hydrationMode);
     }
