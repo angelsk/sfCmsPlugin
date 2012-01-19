@@ -208,7 +208,6 @@ class listingAdminActions extends sfActions
       $actionP = ($this->getRequestParameter('publish') === '1') ? 'publish' : 'unPublish';
       $item->$actionP();
       $this->itemHasChanged($item);
-      $this->listingHasChanged($listing);
 
       // Message saying published/unpublished
       $this->getUser()->setFlash('notice', 'Item has been ' . ($item->is_active ? 'published' : 'unpublished'));
@@ -223,7 +222,6 @@ class listingAdminActions extends sfActions
         $this->form->save();
 
         $this->itemHasChanged($item);
-        $this->listingHasChanged($listing);
 
         // Message saying changes saved
         $this->getUser()->setFlash('notice','Your changes have been saved');
