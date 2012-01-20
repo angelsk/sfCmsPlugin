@@ -61,6 +61,20 @@ abstract class PluginListingItemForm extends BaseListingItemForm
 			// title is sluggable, this is automatic on creation
 			unset($this['slug']);
 		}
+		else
+		{
+		  // if slug edited - make it a valid url as per the sitetree
+		  $this->validatorSchema['slug'] = new sfValidatorAnd(array(
+                                            new sfValidatorCallback(array('callback' => array($this, 'baseRouteValidatorCallback'))),
+                                            new sfValidatorRegex(
+                                              array(
+                                                'pattern' => '/^[a-z0-9-_]+$/i',
+                                                'required' => true
+                                              ),
+                                              array('invalid' => 'Invalid - can only contain a-z, 0-9, _ and -'))
+                                         ), array('required' => true)
+                                      );
+		}
 		
 		sfImagePoolUtil::addImageChooser($this);
 
@@ -125,9 +139,14 @@ abstract class PluginListingItemForm extends BaseListingItemForm
 	 */
 	private function setTaintedValue($field, $value)
 	{
-		if ($this->isBound && empty($this->taintedValues[$field]))
+		if ($this->isBound)
 		{
 			$this->taintedValues[$field] = $value;
 		}
 	}
+	
+  public function baseRouteValidatorCallback($validator, $value) 
+  {    
+    return strtolower(trim($value, '/'));
+  }
 }
