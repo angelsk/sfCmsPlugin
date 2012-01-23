@@ -867,17 +867,22 @@ class siteManager
   /**
    * Get sitetree nodes marked as core navigation - cached so that user can configure but not high load on site
    */
-  public function getCoreNavigation()
+  public function getCoreNavigation($site = null)
   {
+    if ($site === null) 
+    {
+      $site = $this->getCurrentSite();
+    }
+    
     if (null === $this->coreNavigation) 
     {
       $cache = $this->getCache();
       $loadedFromCache = false;
       $this->coreNavigation = array();
         
-      if ($cache->has('ca.core_navigation')) 
+      if ($cache->has('ca.core_navigation.'.$site)) 
       {
-        $rawCoreNavigation = unserialize($cache->get('ca.core_navigation'));
+        $rawCoreNavigation = unserialize($cache->get('ca.core_navigation.'.$site));
         
         foreach ($rawCoreNavigation as $sitetreeArray) 
         {
@@ -896,7 +901,7 @@ class siteManager
       
       if (!$loadedFromCache) 
       {
-        $rawCoreNavigation = SitetreeTable::getInstance()->getCoreNavigation();
+        $rawCoreNavigation = SitetreeTable::getInstance()->getCoreNavigation($site);
         $cachedCoreNavigation = array();
         
         foreach ($rawCoreNavigation as $sitetree) 
@@ -905,7 +910,7 @@ class siteManager
           $this->coreNavigation[] = $sitetree;
         }
         
-        $cache->set('ca.core_navigation', serialize($cachedCoreNavigation), 86400);
+        $cache->set('ca.core_navigation.'.$site, serialize($cachedCoreNavigation), 86400);
       }
     }
     
