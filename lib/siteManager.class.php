@@ -378,6 +378,16 @@ class siteManager
   }
   
   /**
+   * Get the character to use to separate sitetree and listing item titles
+   * 
+   * @return string
+   */
+  public function getTitleSeparator()
+  {
+    return sfConfig::get('app_site_listing_title_separator', '-');
+  }
+  
+  /**
    * Generate a cross app url for the given internal url
    * 
      * @param string $url Internal url from the target app

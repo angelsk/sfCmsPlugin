@@ -34,6 +34,7 @@ all:
     # listing stuff
     listing_manager_class:      listingManager
     listing_template_dir:       %SF_ROOT_DIR%/templates/listing
+    listing_title_separator:    '-'
     
     # define your own templates locally
     #listing_templates:

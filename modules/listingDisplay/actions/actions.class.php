@@ -92,8 +92,9 @@ class listingDisplayActions extends sfActions
     $this->forward404Unless($item, 'Could not locate item from slug: ' . $slug);
 
     $htmlTitle = $this->getResponse()->getTitle();
-    $this->getResponse()->setTitle(htmlentities($htmlTitle . ' - ' . $item->title, null, 'utf-8', false), false);
-
+    $htmlTitle = sprintf('%s %s %s', $item->title, siteManager::getInstance()->getTitleSeparator(), $htmlTitle);
+    $this->getResponse()->setTitle(htmlentities($htmlTitle, null, 'utf-8', false), false);
+    
     // layout
     $manager = listingManager::getInstance();
     
