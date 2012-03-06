@@ -107,10 +107,7 @@ the dimension on the frontend app based on the URL by using a filter.  You will 
         'www.example.co.uk':     gb
         'www.example.fr':        fr
 
-and add the following to the TOP of your app's `filters.yml`
-
-    dimension:
-      class:      siteDimensionUrlFilter
+The dimension is set when the plugin's configuration is initialized so all you need to do is make sure the dimensions are defined in the main app.yml.
 
 Also set the default dimension in `ProjectConfiguration::setup()` - this is so the command line doesn't error out as the configuration is loaded after.
 
