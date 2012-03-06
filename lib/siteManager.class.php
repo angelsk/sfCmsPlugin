@@ -160,24 +160,46 @@ class siteManager
   {
     $config = sfContext::getInstance()->getConfiguration();
       
-    if (class_exists('ysfApplicationConfiguration') && $config instanceof ysfApplicationConfiguration)
+    if (sfConfig::get('sf_app') == $this->getManagedApp())
     {
-      // We are dealing with a multi-site app.
-      if (!$config instanceof ysfApplicationConfiguration)
+      if (class_exists('ysfApplicationConfiguration') && $config instanceof ysfApplicationConfiguration)
       {
-        throw new sfException("Config must be an instance of ysfApplicationConfiguration");
+        // We are dealing with a multi-site app.
+        if (!$config instanceof ysfApplicationConfiguration)
+        {
+          throw new sfException("Config must be an instance of ysfApplicationConfiguration");
+        }
+        
+        return (!is_null($config->getDimension()) ? 
+                                    $config->getDimension()->get('site') : 
+                                    ($config->getApplication() == $this->getManagedApp() ? false : $this->getDefaultSite())); 
+                                    // dimension not yet set - managed app, set false - other send default
       }
-      
-      return (!is_null($config->getDimension()) ? 
-                                  $config->getDimension()->get('site') : 
-                                  ($config->getApplication() == $this->getManagedApp() ? false : $this->getDefaultSite())); 
-                                  // dimension not yet set - managed app, set false - other send default
+      else
+      {
+        // single-site app... use the default site
+        return $this->getDefaultSite();
+      }
     }
+    // We can set it in the session
     else
     {
-      // single-site app... use the default site
-      return $this->getDefaultSite();
+      return sfContext::getInstance()->getUser()->getAttribute('site', $this->getDefaultSite(), 'site.' .  sfConfig::get('sf_app'));
     }
+  }
+
+
+  /**
+   * Set the current site we're on.
+   *
+   * ysfDimensionsPlugin has a bug with admin generated modules - so cannot be used in an
+   * admin context
+   *
+   * @param string $site
+   */
+  public function setCurrentSite($site) 
+  {
+    sfContext::getInstance()->getUser()->setAttribute('site', $site, 'site.' .  sfConfig::get('sf_app'));
   }
   
   /**
