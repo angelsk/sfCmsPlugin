@@ -168,7 +168,10 @@ class siteManager
         throw new sfException("Config must be an instance of ysfApplicationConfiguration");
       }
       
-      return (!is_null($config->getDimension()) ? $config->getDimension()->get('site') : false); // dimension not yet set
+      return (!is_null($config->getDimension()) ? 
+                                  $config->getDimension()->get('site') : 
+                                  ($config->getApplication() == $this->getManagedApp() ? false : $this->getDefaultSite())); 
+                                  // dimension not yet set - managed app, set false - other send default
     }
     else
     {
