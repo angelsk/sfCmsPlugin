@@ -168,7 +168,7 @@ class siteManager
         throw new sfException("Config must be an instance of ysfApplicationConfiguration");
       }
       
-      return $config->getDimension()->get('site');
+      return (!is_null($config->getDimension()) ? $config->getDimension()->get('site') : false); // dimension not yet set
     }
     else
     {
@@ -285,7 +285,7 @@ class siteManager
         $cache = new $class($parameters);
         $cache->removePattern('symfony.routing.data'); // just remove the routing data
       }
-      catch (Exception $e) { var_dump($e->getMessage()); }
+      catch (Exception $e) { }
     }
   }
 
@@ -327,9 +327,11 @@ class siteManager
    */
   public function registerRoutes($router) 
   {
-    $routingProxy = $this->getRoutingProxy($router);
     $site         = $this->getCurrentSite();
     
+    if (false === $site) return; // no routes to register yet as dimension not set
+    
+    $routingProxy = $this->getRoutingProxy($router);
     $sitetrees    = SitetreeTable::getInstance()->getSitetreeNodes($site, Doctrine_Core::HYDRATE_RECORD, false);
     $junkChar     = $this->getRouteJunkChar();
 

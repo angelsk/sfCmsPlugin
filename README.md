@@ -36,21 +36,22 @@ multiple sites, you will add a new config file per dimension (as specified in th
 
   # Basic site configuration
   all:
-    site:  # you'll want one of these for each dimension if you have multiple sites
-    identifier:        ##SITENAME##
-        definition:
-          name:         ##PROJECTNAME##
-          cultures:       [en_GB]
-        default_culture:     en_GB
+    # CMS configuration
+	site:
+	  identifier:         ##SITENAME##
+	  definition:
+	    name:             ##FRIENDLYNAME##
+	    cultures:         [en]
+	    default_culture:  en
       root_module:          default      # You will need to ensure you have a module.yml for whichever module this is - see below
         
       # the default site
-        default_site:       ##SITENAME##
+      default_site:       ##SITENAME##
      
-        available_modules:
-          - sitemap
-          - pageDisplay
-          - listingDisplay
+      available_modules:
+        - sitemap
+        - pageDisplay
+        - listingDisplay
 
 Finally, enable the admin modules in your backend app's `settings.yml`.  
 
@@ -79,9 +80,9 @@ Follow the instructions in `ysfDimensionsPlugin` if you have multiple sites to s
 
 In `config/dimensions.yml` define the allowed sites:
 
-    allowed:
-    site:         [ ##SITENAME##, ##SITENAME2## ]
-  default:        ##SITENAME##
+  allowed:
+    site:         [ gb, fr ]
+  default:        gb
 
 With this plugin dimensions are used to control the site (and cultures are handled within these).  If your setup is one domain per site, you can set
 the dimension on the frontend app based on the URL by using a filter.  You will need to set up the URL to dimensions relationship in your  `config/app.yml`
@@ -92,30 +93,43 @@ the dimension on the frontend app based on the URL by using a filter.  You will 
         identifier:         gb
         definition:
           name:             UK site
-          cultures:         [en_GB]
-          default_culture:  en_GB
+          cultures:         [en]
+          default_culture:  en
           
         # the default site
         default_site:     gb
         
         ......
       
-      # when the config has load this will determine which dimension is set based on the URL
+      # when the config has loaded this will determine which dimension is set based on the URL
       # it will always default to the default_site above if the domain doesn't match
       dimensions:
         'www.example.co.uk':     gb
         'www.example.fr':        fr
 
-and add the following to your app's `filters.yml`
+and add the following to the TOP of your app's `filters.yml`
 
-    # insert your own filters here
     dimension:
       class:      siteDimensionUrlFilter
 
 Also set the default dimension in `ProjectConfiguration::setup()` - this is so the command line doesn't error out as the configuration is loaded after.
 
-    // setup dimensions before calling parent::setup();
-    $this->setDimension(array('site' => '##SITENAME##'); // no config available at this point
+    // setup dimensions before calling parent::setup(); for command line operations
+	// Frontend handled by a filter
+	if ('cli' == php_sapi_name()) $this->setDimension(array('site' => 'gb'));
+
+When you add a new site, at the very least you'll need to create a folder in the main config folder for the app.yml, e.g: `config/fr/app/yml`
+
+This should contain the site configuration, so that the routing knows which routes to load, etc.
+
+    # Site configuration
+    all:
+      site:
+        identifier:         fr
+        definition:
+          name:             French site
+          cultures:         [fr]
+          default_culture:  fr
 
 Custom modules
 --------------

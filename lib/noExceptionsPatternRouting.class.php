@@ -13,7 +13,7 @@ class noExceptionsPatternRouting extends sfPatternRouting
   {
     try
     {
-      return parent::generate($name, $params, $absolute)
+      return parent::generate($name, $params, $absolute);
     }
     catch (sfConfigurationException $e)
     {
