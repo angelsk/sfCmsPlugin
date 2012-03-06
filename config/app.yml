@@ -23,6 +23,7 @@ all:
     # default classes - change if override locally
     routing_proxy_class:        siteRoutingProxyImpl
     manager_class:              siteManager
+    path_info_array:            SERVER   # for dimensions - see sfCmsPluginConfiguration::initialize();
     
     # page stuff
     page_manager_class:         pageManager
