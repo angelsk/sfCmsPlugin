@@ -128,6 +128,14 @@ This should contain the site configuration, so that the routing knows which rout
           cultures:         [fr]
           default_culture:  fr
 
+For the backend - you want some kind of form / option selection for the multiple sites - then set the selected site into a user attribute: `$this->getUser()->setAttribute('site', $selectedDimension, 'dimension');`
+
+You will then need to include the filter in the backend `filters.yml`
+
+      dimension:
+	    class: siteDimensionFilter
+
+
 Custom modules
 --------------
 

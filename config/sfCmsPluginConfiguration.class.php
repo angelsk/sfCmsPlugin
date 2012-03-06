@@ -36,16 +36,16 @@ class sfCmsPluginConfiguration extends sfPluginConfiguration
   {
     $config = ProjectConfiguration::getActive();
   
-    if (sfConfig::get('sf_app') == siteManager::getInstance()->getManagedApp())
+    if ('cli' != php_sapi_name())
     {
-      if (class_exists('ysfApplicationConfiguration') && $config instanceof ysfApplicationConfiguration)
+      if (sfConfig::get('sf_app') == siteManager::getInstance()->getManagedApp())
       {
-        // We are dealing with a multi-site app.
-        if ($config instanceof ysfApplicationConfiguration)
+        if (class_exists('ysfApplicationConfiguration') && $config instanceof ysfApplicationConfiguration)
         {
+          // We are dealing with a multi-site app.
           // trying to replicate default factories behaviour as sfWebRequest not accessible here
-          $pathVar = sfConfig::get('app_site_path_info_array', 'SERVER'); 
-          
+          $pathVar = sfConfig::get('app_site_path_info_array', 'SERVER');
+           
           if ('SERVER' == $pathVar) $pathInfoArray = $_SERVER;
           else $pathInfoArray = $_ENV;
           
