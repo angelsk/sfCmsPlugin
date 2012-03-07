@@ -61,7 +61,8 @@ class sfCmsPluginConfiguration extends sfPluginConfiguration
         
         $dimension = sfConfig::get('app_dimensions_'.$path, siteManager::getInstance()->getDefaultSite());
         
-        if (sfConfig::get('app_site_identifier') != $dimension) // don't get stuck in a loop
+        // Don't get stuck in a loop - if dimension not set set and reload config
+        if (is_null($config->getDimension())) 
         {
           $config->setDimension(array('site' => $dimension));
           $config->initConfiguration(); // re-init to load the dimension's config/app.yml

@@ -112,6 +112,24 @@ class PluginSitetreeTable extends Doctrine_Table
   }
   
   /**
+   * Get sites that have a copiable site tree structure (more than one un-deleted node)
+   *  
+   * @return array of sites
+   */
+  public function getSitesToCopyFrom()
+  {
+    $q = $this->createQuery()
+              ->select('site, count(id) AS nodes')
+              ->having('nodes > ?', 1)
+              ->groupBy('site')
+              ->orderBy('site');
+              
+     $r = $q->execute(null, Doctrine_Core::HYDRATE_SINGLE_SCALAR);
+
+     return (is_array($r) ? $r : array($r));
+  }
+  
+  /**
    * Set the base query for the Sitetree to include the Translation (less database hits)
    */
   public static function setTreeQueryWithTranslation() 

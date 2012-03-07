@@ -1,3 +1,15 @@
+.clear {
+  clear: both;
+}
+
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
+}
+
 #sf_admin_container .sf_admin_form_row .content.no_label {
   padding-left: 0px !important;
 }
@@ -94,7 +106,17 @@
   margin: 0px 0px 15px;
   background: white;
   border: 1px solid #DDD;
+  overflow: hidden;
 }
+
+  .sitetreeInfo p, .sitetreeInfo h3 {
+    padding: 0; 
+    margin: 0;
+  }
+  
+  .sitetreeInfo h3 { margin-bottom: 5px; }
+  
+  .copySitetree { width: 62%; }
 
 .site_sitetree_locked,
 .site_sitetree_hidden,

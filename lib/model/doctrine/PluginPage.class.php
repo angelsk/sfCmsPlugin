@@ -18,10 +18,11 @@ abstract class PluginPage extends BasePage
    * @param Sitetree $sitetree
    * @return Page
    */
-  public static function createFromSitetree($sitetree)
+  public static function createFromSitetree($sitetree, $template = '')
   {
     $page = new Page();
     $page->sitetree_id = $sitetree->id;
+    $page->template    = $template;
 
     return $page;
   }
@@ -152,6 +153,42 @@ abstract class PluginPage extends BasePage
 
       $page->delete();
     }
+    else if ($event->getName() == siteEvent::SITETREE_COPY) 
+    {
+      $copyFromSitetree = $event->getSubject();
+      $params           = $event->getParameters();
+    
+      if (!$copyToSitetree = @$params['copyTo']) 
+      {
+        throw new sfException('No sitetree to copy to');
+      }
+      
+      $copyFromPage = siteManager::getInstance()->loadItemFromSitetree('Page', $copyFromSitetree);
+      
+      if (!$copyFromPage) 
+      {
+        // there is no page to copy (maybe not setup)
+        return;
+      }
+      
+      $copyToPage = $copyFromPage->createCopy($copyToSitetree);
+    }
+  }
+  
+  /**
+   * Create a copy of this page, exactly the same but linked to the given sitetree.
+   * Doesn't copy content blocks over
+   *
+   * @param Sitetree $copyToSitetree
+   * @return Page
+   */
+  public function createCopy($copyToSitetree) 
+  {
+    $copyOfPage = self::createFromSitetree($copyToSitetree, $this->template);
+    $copyOfPage->updateNew();
+    $copyOfPage->save();
+    
+    return $copyOfPage;
   }
 
   /**

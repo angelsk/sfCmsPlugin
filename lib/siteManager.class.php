@@ -142,6 +142,20 @@ class siteManager
   }
   
   /**
+   * Get a list of active sites (if multiple sites set up)
+   * 
+   * This method should be overridden in a custom siteManager
+   * if the sites require filtering by permissions for example.
+   * 
+   * @param mixed $filter A dummy param to use to pass through filters for custom implementations
+   * @return array
+   */
+  public function getActiveSites($filter = null)
+  {
+    return sfConfig::get('app_site_active_sites', array());
+  }
+  
+  /**
    * Get the default site
    *
    * @return string
@@ -184,7 +198,11 @@ class siteManager
     // We can set it in the session
     else
     {
-      return sfContext::getInstance()->getUser()->getAttribute('site', $this->getDefaultSite(), 'site.' .  sfConfig::get('sf_app'));
+      // Get the cookie if it exists, fill in with the default site if it doesn't
+      $defaultSite = sfContext::getInstance()->getRequest()->getCookie('site_' .  sfConfig::get('sf_app'), $this->getDefaultSite());
+      
+      // And use that as the default for the session
+      return sfContext::getInstance()->getUser()->getAttribute('site', $defaultSite, 'site.' .  sfConfig::get('sf_app'));
     }
   }
 
@@ -200,6 +218,11 @@ class siteManager
   public function setCurrentSite($site) 
   {
     sfContext::getInstance()->getUser()->setAttribute('site', $site, 'site.' .  sfConfig::get('sf_app'));
+    
+    // Save it in a cookie because cache clearing clears the session and we don't want the site in the CMS
+    // to change halfway through editing, especially if sfGuardRememberMe is set.
+    $expiration_age = sfConfig::get('app_sf_guard_plugin_remember_key_expiration_age', 15 * 24 * 3600); // re-use this expiration :)
+    sfContext::getInstance()->getResponse()->setCookie('site_' .  sfConfig::get('sf_app'), $site, time() + $expiration_age);
   }
   
   /**
@@ -308,7 +331,7 @@ class siteManager
       try 
       {
         $cache = new $class($parameters);
-        $cache->removePattern('symfony.routing.data'); // just remove the routing data
+        $cache->removePattern('symfony.routing.*'); // just remove the routing data
       }
       catch (Exception $e) { }
     }
@@ -388,7 +411,7 @@ class siteManager
     
     if (sfConfig::get('sf_logging_enabled')) 
     {
-       sfContext::getInstance()->getLogger()->info('Registered dynamic routes');
+      sfContext::getInstance()->getLogger()->info('Registered dynamic routes');
     }
   }
   
@@ -444,10 +467,11 @@ class siteManager
     $currentApp = sfConfig::get('sf_app');
     
     // See if we saved this link in the cache
-    $cache = $this->getCache();
+    $cache    = $this->getCache();
     $cacheUrl = str_replace(array('+', '?', '=', '@'), '', $url);
+    $site     = $this->getCurrentSite();
     
-    $cacheKey = "ca.$app.$env.$cacheUrl";
+    $cacheKey = "ca.$site.$app.$env.$cacheUrl";
     
     if ($cache->has($cacheKey)) 
     {
@@ -952,6 +976,18 @@ class siteManager
     }
     
     return $this->coreNavigation;
+  }
+  
+  /**
+   * Load an object of the specified class related to the specified sitetree
+   *  e.g: the Page or Listing object associated with a sitetree - used when copying nodes
+   *  
+   * @param string $itemClass
+   * @param Sitetree $sitetree
+   */
+  public function loadItemFromSitetree($itemClass, $sitetree) 
+  {
+    return Doctrine_Core::getTable($itemClass)->findOneBySitetreeId($sitetree->id);
   }
   
   /**
