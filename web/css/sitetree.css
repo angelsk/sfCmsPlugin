@@ -160,3 +160,15 @@
   text-decoration: none;
   color: inherit;
 }
+
+.superPagerPagination {
+  float: right;
+}
+
+  .superPagerPagination .sel {
+    font-weight: bold;
+  }
+  
+  .superPagerPagination a {
+    margin-left:   5px;
+  }

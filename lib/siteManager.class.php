@@ -160,21 +160,46 @@ class siteManager
   {
     $config = sfContext::getInstance()->getConfiguration();
       
-    if (class_exists('ysfApplicationConfiguration') && $config instanceof ysfApplicationConfiguration)
+    if (sfConfig::get('sf_app') == $this->getManagedApp())
     {
-      // We are dealing with a multi-site app.
-      if (!$config instanceof ysfApplicationConfiguration)
+      if (class_exists('ysfApplicationConfiguration') && $config instanceof ysfApplicationConfiguration)
       {
-        throw new sfException("Config must be an instance of ysfApplicationConfiguration");
+        // We are dealing with a multi-site app.
+        if (!$config instanceof ysfApplicationConfiguration)
+        {
+          throw new sfException("Config must be an instance of ysfApplicationConfiguration");
+        }
+        
+        return (!is_null($config->getDimension()) ? 
+                                    $config->getDimension()->get('site') : 
+                                    ($config->getApplication() == $this->getManagedApp() ? false : $this->getDefaultSite())); 
+                                    // dimension not yet set - managed app, set false - other send default
       }
-      
-      return $config->getDimension()->get('site');
+      else
+      {
+        // single-site app... use the default site
+        return $this->getDefaultSite();
+      }
     }
+    // We can set it in the session
     else
     {
-      // single-site app... use the default site
-      return $this->getDefaultSite();
+      return sfContext::getInstance()->getUser()->getAttribute('site', $this->getDefaultSite(), 'site.' .  sfConfig::get('sf_app'));
     }
+  }
+
+
+  /**
+   * Set the current site we're on.
+   *
+   * ysfDimensionsPlugin has a bug with admin generated modules - so cannot be used in an
+   * admin context
+   *
+   * @param string $site
+   */
+  public function setCurrentSite($site) 
+  {
+    sfContext::getInstance()->getUser()->setAttribute('site', $site, 'site.' .  sfConfig::get('sf_app'));
   }
   
   /**
@@ -285,7 +310,7 @@ class siteManager
         $cache = new $class($parameters);
         $cache->removePattern('symfony.routing.data'); // just remove the routing data
       }
-      catch (Exception $e) { var_dump($e->getMessage()); }
+      catch (Exception $e) { }
     }
   }
 
@@ -327,9 +352,11 @@ class siteManager
    */
   public function registerRoutes($router) 
   {
-    $routingProxy = $this->getRoutingProxy($router);
     $site         = $this->getCurrentSite();
     
+    if (false === $site) return; // no routes to register yet as dimension not set
+    
+    $routingProxy = $this->getRoutingProxy($router);
     $sitetrees    = SitetreeTable::getInstance()->getSitetreeNodes($site, Doctrine_Core::HYDRATE_RECORD, false);
     $junkChar     = $this->getRouteJunkChar();
 
@@ -375,6 +402,16 @@ class siteManager
   public function getRouteJunkChar() 
   {
     return '_';
+  }
+  
+  /**
+   * Get the character to use to separate sitetree and listing item titles
+   * 
+   * @return string
+   */
+  public function getTitleSeparator()
+  {
+    return sfConfig::get('app_site_listing_title_separator', '-');
   }
   
   /**
