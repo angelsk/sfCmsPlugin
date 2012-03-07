@@ -23,6 +23,7 @@ all:
     # default classes - change if override locally
     routing_proxy_class:        siteRoutingProxyImpl
     manager_class:              siteManager
+    path_info_array:            SERVER   # for dimensions - see sfCmsPluginConfiguration::initialize();
     
     # page stuff
     page_manager_class:         pageManager
@@ -34,6 +35,7 @@ all:
     # listing stuff
     listing_manager_class:      listingManager
     listing_template_dir:       %SF_ROOT_DIR%/templates/listing
+    listing_title_separator:    '-'
     
     # define your own templates locally
     #listing_templates:
