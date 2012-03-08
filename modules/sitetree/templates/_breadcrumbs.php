@@ -2,7 +2,7 @@
 $breadcrumbs = (isset($breadcrumbs) ? $sf_data->getRaw('breadcrumbs') : array());
 $allBreadCrumbs = array();
 
-if (isset($sitetree)) 
+if (isset($sitetree) && $sitetree) 
 {
   $sitetree = $sf_data->getRaw('sitetree');
   

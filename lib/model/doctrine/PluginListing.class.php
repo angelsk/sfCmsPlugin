@@ -18,10 +18,14 @@ abstract class PluginListing extends BaseListing
    * @param Sitetree $sitetree
    * @return Listing
    */
-  public static function createFromSitetree($sitetree)
+  public static function createFromSitetree($sitetree, $template = '', $use_custom_order = false, $results_per_page = 10)
   {
     $listing = new Listing();
-    $listing->sitetree_id = $sitetree->id;
+    
+    $listing->sitetree_id      = $sitetree->id;
+    $listing->template         = $template;
+    $listing->use_custom_order = $use_custom_order;
+    $listing->results_per_page = $results_per_page;
 
     return $listing;
   }
@@ -370,6 +374,27 @@ abstract class PluginListing extends BaseListing
 
       $listing->delete();
     }
+    else if ($event->getName() == siteEvent::SITETREE_COPY) 
+    {
+      $copyFromSitetree = $event->getSubject();
+      $params           = $event->getParameters();
+      
+      if (!$copyToSitetree = @$params['copyTo']) 
+      {
+        throw new sfException('No sitetree to copy to');
+      }
+      
+      // get the Listing from the old Sitetree
+      $fromList = siteManager::getInstance()->loadItemFromSitetree('Listing', $copyFromSitetree);
+      
+      if (!$fromList) 
+      {
+        // there was no list at the old sitetree, maybe it hadn't been created yet.
+        return;
+      }
+      
+      $fromList->createCopy($copyToSitetree);
+    }
     else if ($event->getName() == siteEvent::SITETREE_ROUTING)
     {
       // handle the routing... i.e: register our routes.
@@ -443,7 +468,23 @@ abstract class PluginListing extends BaseListing
       );
     }
   }
-
+  
+  /**
+   * Create a copy of this listing, exactly the same but linked to the given sitetree.
+   * Doesn't copy content blocks or items over
+   *
+   * @param Sitetree $copyToSitetree
+   * @return Listing
+   */
+  public function createCopy($copyToSitetree) 
+  {
+    $copyOfListing = self::createFromSitetree($copyToSitetree, $this->template, $this->use_custom_order, $this->results_per_page);
+    $copyOfListing->updateNew();
+    $copyOfListing->save();
+    
+    return $copyOfListing;
+  }
+    
   /**
    * Handle when the content for this Listing (eg. content blocks or properties) has changed.
    */

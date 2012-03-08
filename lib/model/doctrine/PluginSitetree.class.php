@@ -361,4 +361,101 @@ abstract class PluginSitetree extends BaseSitetree
     
     // Don't send event as this nukes all the content from the page
   }
+  
+  /**
+   * Create a copy of this sitetree node and insert it under/next to $otherSitetreeNode
+   *
+   * They can be in different sites, and this will most often be used to copy the entire
+   * sitetree from one site to a new site
+   * 
+   * @param SiteTree $copyHere Sitetree node that this is to be copied to
+   * @param boolean $isUnder Whether the sitetree cloned node becomes a child or a sibling of $copyTo 
+   * @param boolean $copyChilden Whether to copy the children of the current node too
+   * @param boolean $isChildCopy This is currently one of the child copies (recursive function)
+  */
+  public function copyTo($copyHere, $isUnder = true, $copyChilden = true, $isChildCopy = false) 
+  {
+    // Don't copy root node - just copy children
+    if (!$this->getNode()->isRoot())
+    {
+      $this->refreshRelated('Translation');
+      $copy = $this->copy(true);
+      
+      // make routename of target item unique
+      $limit        = 20;
+      $count        = 1;
+      $newRouteName = $copy->route_name;
+      
+      while ($count <= $limit) 
+      {
+        $nodeExists = SitetreeTable::getInstance()->findOneBySiteAndRouteName($copyHere->site, $newRouteName);
+        
+        if (!$nodeExists) 
+        {
+          break; // we have a unique routename!
+        } 
+  
+        // try a new one
+        $newRouteName = $copy->route_name . $count++;
+      }
+  
+      $copy->route_name = $newRouteName;
+      $copy->site       = $copyHere->site;
+      
+      // clear current tree fields otherwise INSERT will complain
+      $copy->level = $copy->rgt = $copy->lft = null;
+  
+      if ($isUnder)
+      {
+        if ($isChildCopy) 
+        {
+          $copy->getNode()->insertAsLastChildOf($copyHere);
+        } 
+        else 
+        {
+          $copy->getNode()->insertAsFirstChildOf($copyHere);
+        }
+      } 
+      else 
+      {
+        $copy->getNode()->insertAsNextSiblingOf($copyHere);
+      }
+  
+      // get the module at this node to duplicate itself
+      // no content - but page / listing configuration (plus anything in custom modules)
+      $event = new siteEvent(
+        $this,
+        siteEvent::SITETREE_COPY,
+        array(
+          'copyTo' => $copy
+        )
+      );
+      
+      $this->dispatchSiteEvent($event);
+    }
+    else 
+    {
+      $copy = $copyHere;
+    }
+
+    if ($copyChilden) 
+    {
+      $this->refresh();
+
+      if ($children = $this->getNode()->getChildren()) 
+      {
+        foreach ($children as $child) 
+        {
+          if (!$child->is_deleted) // don't copy any nodes which have been deleted
+          {
+            $child->refresh();
+            $child->copyTo($copy, true, true, true);
+            $copy->refresh();
+          }
+        }
+      }
+    }
+
+    return $copy;
+  }
 }
