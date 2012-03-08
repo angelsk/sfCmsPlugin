@@ -18,6 +18,13 @@ class siteManager
    * @var siteManager
    */
   protected static $instance;
+  
+  /**
+   * This holds copies of the other contexts so we don't have to keep loading them
+   * 
+   * @var $otherContexts
+   */
+  protected static $otherContexts = array();
 
   /**
    * The node where we are in the sitetree at the moment
@@ -246,6 +253,19 @@ class siteManager
     return $defn['default_culture'];
   }
   
+  protected function getAppConfig($app)
+  {
+    $currentConfig = sfContext::getInstance()->getConfiguration();
+
+    $appConfig = ProjectConfiguration::getApplicationConfiguration(
+      $app,
+      $currentConfig->getEnvironment(),
+      $currentConfig->isDebug()
+    );
+    
+    return $appConfig;
+  }
+  
   /**
    * Site cache
    * Use the same cache as the rest of the site
@@ -256,8 +276,17 @@ class siteManager
   {
     if (!$this->cache) 
     {
-      $config = sfFactoryConfigHandler::getConfiguration(ProjectConfiguration::getActive()->getConfigPaths('config/factories.yml'));
-      $cachedir = sfConfig::get('sf_cache_dir') . '/' . $this->getManagedApp() . '/' . sfConfig::get('sf_environment') . '/site';
+      // get current config+context so we can switch back after
+      $currentApp = sfConfig::get('sf_app');
+      
+      // Switch config
+      $managedAppConfig = $this->getAppConfig($this->getManagedApp());
+      
+      $config = sfFactoryConfigHandler::getConfiguration($managedAppConfig->getConfigPaths('config/factories.yml'));
+      $cachedir = sprintf('%s/%s/%s/site', sfConfig::get('sf_cache_dir'), $this->getManagedApp(), sfConfig::get('sf_environment'));
+      
+      // switch back
+      $currentConfig = $this->getAppConfig($currentApp);
       
       $class = $config['view_cache']['class'];
       $parameters = $config['view_cache']['param'];
@@ -291,19 +320,20 @@ class siteManager
    */
   public function clearManagedAppRoutingCache() 
   {
-    $currentConfig = sfContext::getInstance()->getConfiguration();
-
-    $managedAppConfig = ProjectConfiguration::getApplicationConfiguration(
-      $this->getManagedApp(),
-      $currentConfig->getEnvironment(),
-      $currentConfig->isDebug()
-    );
+    // get current config+context so we can switch back after
+    $currentApp = sfConfig::get('sf_app');
+    
+    // Switch config
+    $managedAppConfig = $this->getAppConfig($this->getManagedApp());
     
     $this->clearRoutingCache($managedAppConfig);
     
+    // switch back
+    $currentConfig = $this->getAppConfig($currentApp);
+    
     if (sfConfig::get('sf_logging_enabled')) 
     {
-      sfContext::getInstance()->getLogger()->info('Cleared frontend cache');
+      sfContext::getInstance()->getLogger()->info(sprintf('Cleared %s routing cache', $this->getManagedApp()));
     }
   }
 
@@ -318,9 +348,9 @@ class siteManager
   {
     $app = $appConfiguration->getApplication();
     $env = $appConfiguration->getEnvironment();
-
+    
     $config = sfFactoryConfigHandler::getConfiguration($appConfiguration->getConfigPaths('config/factories.yml'));
-
+    
     if (isset($config['routing']['param']['cache']))
     {    
       $class = $config['routing']['param']['cache']['class'];
@@ -331,7 +361,7 @@ class siteManager
       try 
       {
         $cache = new $class($parameters);
-        $cache->removePattern('symfony.routing.*'); // just remove the routing data
+        $cache->remove('symfony.routing.data'); // just remove the routing data
       }
       catch (Exception $e) { }
     }
@@ -345,6 +375,11 @@ class siteManager
     try 
     {
       $this->getCache()->removePattern('ca.*');
+      
+      if (sfConfig::get('sf_logging_enabled')) 
+      {
+        sfContext::getInstance()->getLogger()->info(sprintf('Cleared %s cross app cache', $this->getManagedApp()));
+      }
     }
     catch (Exception $e) { }
   }
@@ -448,9 +483,6 @@ class siteManager
      */
   public function generateCrossAppUrlFor($url, $app = null, $env = null) 
   {
-    // this holds copies of the other contexts so we don't have to keep loading them
-    static $otherContexts = array();
-      
     if ($app === null) 
     {
       $app = $this->getManagedApp();
@@ -478,12 +510,12 @@ class siteManager
       return $cache->get($cacheKey);
     }
 
-    if (!isset($otherContexts[$app][$env])) 
+    if (!isset(self::$otherContexts[$app][$env])) 
     {
       // get config/context for our other app.  This will switch the current
       // context and change the contents of sfConfig, so we will need to change back after
       $otherConfiguration = ProjectConfiguration::getApplicationConfiguration($app, $env, $debug);
-      $otherContexts[$app][$env] = sfContext::createInstance($otherConfiguration, $app . $env);
+      self::$otherContexts[$app][$env] = sfContext::createInstance($otherConfiguration, $app . $env);
     } 
     else 
     {
@@ -494,7 +526,7 @@ class siteManager
     try 
     {
       // make the url
-      $generatedUrl = $otherContexts[$app][$env]->getController()->genUrl($url, true);
+      $generatedUrl = self::$otherContexts[$app][$env]->getController()->genUrl($url, true);
     } 
     catch (sfConfigurationException $e) 
     {
