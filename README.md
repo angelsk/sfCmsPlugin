@@ -98,6 +98,11 @@ the dimension on the frontend app based on the URL by using a filter.  You will 
           
         # the default site
         default_site:     gb
+
+		# if you have more than one site (through dimensions) - then list them here for the CMS site select
+		active_sites:
+		  gb:	'UK site'
+		  fr:   'French site'
         
         ......
       
@@ -115,7 +120,8 @@ Also set the default dimension in `ProjectConfiguration::setup()` - this is so t
 	// Frontend handled by a filter
 	if ('cli' == php_sapi_name()) $this->setDimension(array('site' => 'gb'));
 
-When you add a new site, at the very least you'll need to create a folder in the main config folder for the app.yml, e.g: `config/fr/app/yml`
+When you add a new site, at the very least you'll need to add it to the `active_sites` config array; and create a folder in the main config folder for 
+the site specific `app.yml`, e.g: `config/fr/app/yml`. 
 
 This should contain the site configuration, so that the routing knows which routes to load, etc.
 
@@ -128,9 +134,8 @@ This should contain the site configuration, so that the routing knows which rout
           cultures:         [fr]
           default_culture:  fr
 
-For the backend - you want some kind of form / option selection for the multiple sites - then set the selected site via the site manager:
-
-    siteManager::getInstance()->setCurrentSite($selectedSite);
+For the backend - you'll want to set your `homepage` route to point to `sitetree/changeSite` (or point to this action where you want to implement the 
+change site functionality).
 
 
 Custom modules

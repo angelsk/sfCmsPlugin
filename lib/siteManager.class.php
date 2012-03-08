@@ -18,6 +18,13 @@ class siteManager
    * @var siteManager
    */
   protected static $instance;
+  
+  /**
+   * This holds copies of the other contexts so we don't have to keep loading them
+   * 
+   * @var $otherContexts
+   */
+  protected static $otherContexts = array();
 
   /**
    * The node where we are in the sitetree at the moment
@@ -142,6 +149,20 @@ class siteManager
   }
   
   /**
+   * Get a list of active sites (if multiple sites set up)
+   * 
+   * This method should be overridden in a custom siteManager
+   * if the sites require filtering by permissions for example.
+   * 
+   * @param mixed $filter A dummy param to use to pass through filters for custom implementations
+   * @return array
+   */
+  public function getActiveSites($filter = null)
+  {
+    return sfConfig::get('app_site_active_sites', array());
+  }
+  
+  /**
    * Get the default site
    *
    * @return string
@@ -184,7 +205,11 @@ class siteManager
     // We can set it in the session
     else
     {
-      return sfContext::getInstance()->getUser()->getAttribute('site', $this->getDefaultSite(), 'site.' .  sfConfig::get('sf_app'));
+      // Get the cookie if it exists, fill in with the default site if it doesn't
+      $defaultSite = sfContext::getInstance()->getRequest()->getCookie('site_' .  sfConfig::get('sf_app'), $this->getDefaultSite());
+      
+      // And use that as the default for the session
+      return sfContext::getInstance()->getUser()->getAttribute('site', $defaultSite, 'site.' .  sfConfig::get('sf_app'));
     }
   }
 
@@ -200,6 +225,11 @@ class siteManager
   public function setCurrentSite($site) 
   {
     sfContext::getInstance()->getUser()->setAttribute('site', $site, 'site.' .  sfConfig::get('sf_app'));
+    
+    // Save it in a cookie because cache clearing clears the session and we don't want the site in the CMS
+    // to change halfway through editing, especially if sfGuardRememberMe is set.
+    $expiration_age = sfConfig::get('app_sf_guard_plugin_remember_key_expiration_age', 15 * 24 * 3600); // re-use this expiration :)
+    sfContext::getInstance()->getResponse()->setCookie('site_' .  sfConfig::get('sf_app'), $site, time() + $expiration_age);
   }
   
   /**
@@ -223,6 +253,19 @@ class siteManager
     return $defn['default_culture'];
   }
   
+  protected function getAppConfig($app)
+  {
+    $currentConfig = sfContext::getInstance()->getConfiguration();
+
+    $appConfig = ProjectConfiguration::getApplicationConfiguration(
+      $app,
+      $currentConfig->getEnvironment(),
+      $currentConfig->isDebug()
+    );
+    
+    return $appConfig;
+  }
+  
   /**
    * Site cache
    * Use the same cache as the rest of the site
@@ -233,8 +276,17 @@ class siteManager
   {
     if (!$this->cache) 
     {
-      $config = sfFactoryConfigHandler::getConfiguration(ProjectConfiguration::getActive()->getConfigPaths('config/factories.yml'));
-      $cachedir = sfConfig::get('sf_cache_dir') . '/' . $this->getManagedApp() . '/' . sfConfig::get('sf_environment') . '/site';
+      // get current config+context so we can switch back after
+      $currentApp = sfConfig::get('sf_app');
+      
+      // Switch config
+      $managedAppConfig = $this->getAppConfig($this->getManagedApp());
+      
+      $config = sfFactoryConfigHandler::getConfiguration($managedAppConfig->getConfigPaths('config/factories.yml'));
+      $cachedir = sprintf('%s/%s/%s/site', sfConfig::get('sf_cache_dir'), $this->getManagedApp(), sfConfig::get('sf_environment'));
+      
+      // switch back
+      $currentConfig = $this->getAppConfig($currentApp);
       
       $class = $config['view_cache']['class'];
       $parameters = $config['view_cache']['param'];
@@ -268,19 +320,20 @@ class siteManager
    */
   public function clearManagedAppRoutingCache() 
   {
-    $currentConfig = sfContext::getInstance()->getConfiguration();
-
-    $managedAppConfig = ProjectConfiguration::getApplicationConfiguration(
-      $this->getManagedApp(),
-      $currentConfig->getEnvironment(),
-      $currentConfig->isDebug()
-    );
+    // get current config+context so we can switch back after
+    $currentApp = sfConfig::get('sf_app');
+    
+    // Switch config
+    $managedAppConfig = $this->getAppConfig($this->getManagedApp());
     
     $this->clearRoutingCache($managedAppConfig);
     
+    // switch back
+    $currentConfig = $this->getAppConfig($currentApp);
+    
     if (sfConfig::get('sf_logging_enabled')) 
     {
-      sfContext::getInstance()->getLogger()->info('Cleared frontend cache');
+      sfContext::getInstance()->getLogger()->info(sprintf('Cleared %s routing cache', $this->getManagedApp()));
     }
   }
 
@@ -295,9 +348,9 @@ class siteManager
   {
     $app = $appConfiguration->getApplication();
     $env = $appConfiguration->getEnvironment();
-
+    
     $config = sfFactoryConfigHandler::getConfiguration($appConfiguration->getConfigPaths('config/factories.yml'));
-
+    
     if (isset($config['routing']['param']['cache']))
     {    
       $class = $config['routing']['param']['cache']['class'];
@@ -308,7 +361,7 @@ class siteManager
       try 
       {
         $cache = new $class($parameters);
-        $cache->removePattern('symfony.routing.data'); // just remove the routing data
+        $cache->remove('symfony.routing.data'); // just remove the routing data
       }
       catch (Exception $e) { }
     }
@@ -322,6 +375,11 @@ class siteManager
     try 
     {
       $this->getCache()->removePattern('ca.*');
+      
+      if (sfConfig::get('sf_logging_enabled')) 
+      {
+        sfContext::getInstance()->getLogger()->info(sprintf('Cleared %s cross app cache', $this->getManagedApp()));
+      }
     }
     catch (Exception $e) { }
   }
@@ -388,7 +446,7 @@ class siteManager
     
     if (sfConfig::get('sf_logging_enabled')) 
     {
-       sfContext::getInstance()->getLogger()->info('Registered dynamic routes');
+      sfContext::getInstance()->getLogger()->info('Registered dynamic routes');
     }
   }
   
@@ -425,9 +483,6 @@ class siteManager
      */
   public function generateCrossAppUrlFor($url, $app = null, $env = null) 
   {
-    // this holds copies of the other contexts so we don't have to keep loading them
-    static $otherContexts = array();
-      
     if ($app === null) 
     {
       $app = $this->getManagedApp();
@@ -444,22 +499,23 @@ class siteManager
     $currentApp = sfConfig::get('sf_app');
     
     // See if we saved this link in the cache
-    $cache = $this->getCache();
+    $cache    = $this->getCache();
     $cacheUrl = str_replace(array('+', '?', '=', '@'), '', $url);
+    $site     = $this->getCurrentSite();
     
-    $cacheKey = "ca.$app.$env.$cacheUrl";
+    $cacheKey = "ca.$site.$app.$env.$cacheUrl";
     
     if ($cache->has($cacheKey)) 
     {
       return $cache->get($cacheKey);
     }
 
-    if (!isset($otherContexts[$app][$env])) 
+    if (!isset(self::$otherContexts[$app][$env])) 
     {
       // get config/context for our other app.  This will switch the current
       // context and change the contents of sfConfig, so we will need to change back after
       $otherConfiguration = ProjectConfiguration::getApplicationConfiguration($app, $env, $debug);
-      $otherContexts[$app][$env] = sfContext::createInstance($otherConfiguration, $app . $env);
+      self::$otherContexts[$app][$env] = sfContext::createInstance($otherConfiguration, $app . $env);
     } 
     else 
     {
@@ -470,7 +526,7 @@ class siteManager
     try 
     {
       // make the url
-      $generatedUrl = $otherContexts[$app][$env]->getController()->genUrl($url, true);
+      $generatedUrl = self::$otherContexts[$app][$env]->getController()->genUrl($url, true);
     } 
     catch (sfConfigurationException $e) 
     {
@@ -952,6 +1008,18 @@ class siteManager
     }
     
     return $this->coreNavigation;
+  }
+  
+  /**
+   * Load an object of the specified class related to the specified sitetree
+   *  e.g: the Page or Listing object associated with a sitetree - used when copying nodes
+   *  
+   * @param string $itemClass
+   * @param Sitetree $sitetree
+   */
+  public function loadItemFromSitetree($itemClass, $sitetree) 
+  {
+    return Doctrine_Core::getTable($itemClass)->findOneBySitetreeId($sitetree->id);
   }
   
   /**

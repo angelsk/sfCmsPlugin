@@ -162,5 +162,11 @@ sfConfig::set('site_hack_entireSitetree', $treeNodes);
         );
       } ?>
     </div>
+    
+    <?php if (isset($sites) && 0 < count($sites)) : // only have root so offer other sites to copy structure from ?>
+    
+      <?php include_partial('sitetree/copySite', array('sites'=>$sites)); ?>
+    
+    <?php endif; ?>
   </div>
 </div>

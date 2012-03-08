@@ -18,11 +18,36 @@ class sitetreeActions extends sfActions
   /**
    * Change the language in the CMS
    */
-  public function executeLanguage(sfWebRequest $request)
+  public function executeChangeLanguage(sfWebRequest $request)
   {
     $this->getUser()->setCulture($this->getRequestParameter('sf_culture'));
     $url = ($this->getRequest()->getReferer() != '' ? $this->getRequest()->getReferer() : '@homepage');
     $this->redirect($url);
+  }
+  
+  /**
+   * Change the site in the CMS
+   * 
+   * @param sfWebRequest $request
+   */
+  public function executeChangeSite(sfWebRequest $request)
+  {
+    $this->sites = siteManager::getInstance()->getActiveSites();
+    $selectedSite = false;
+    
+    if (empty($this->sites)) $this->redirect('sitetree/index'); // will use default site
+    
+    $shortSites = array_keys($this->sites);
+    
+    if (1 == count($this->sites))       $selectedSite = $shortSites[0]; // If only one site
+    if ($request->hasParameter('site')) $selectedSite = $request->getParameter('site', false); // If already selected site
+
+    if ($selectedSite && in_array($selectedSite, $shortSites))
+    {
+      siteManager::getInstance()->setCurrentSite($selectedSite);
+      
+      $this->redirect('sitetree/index');
+    }
   }
   
   /**
@@ -33,6 +58,53 @@ class sitetreeActions extends sfActions
     $manager           = siteManager::getInstance();
     $site              = $manager->getCurrentSite();
     $this->treeNodes   = $manager->getEntireSitetree($site);
+    
+    if (1 == count($this->treeNodes))
+    {
+      // Get potential sites to copy from
+      $this->sites = SitetreeTable::getInstance()->getSitesToCopyFrom();
+    }
+  }
+  
+  /**
+   * Copy a sitetree from the requested site, to the new site
+   * 
+   * @param sfWebRequest $request
+   */
+  public function executeCopy(sfWebRequest $request)
+  {
+    $this->forward404Unless($copyFromSite = $request->getParameter('site'), 'No site selected');
+    
+    // Check current site has only root node
+    $manager     = siteManager::getInstance();
+    $site        = $manager->getCurrentSite();
+    $treeNodes   = $manager->getEntireSitetree($site);
+    
+    $this->forward404Unless((1 == count($treeNodes)), 'Site already has structure');
+    
+    // Check copying site is in sitesToCopyFrom
+    $sites = SitetreeTable::getInstance()->getSitesToCopyFrom();
+    
+    $this->forward404Unless(in_array($copyFromSite, $sites), 'Site not eligible to copy from');
+    
+    // Call $oldRoot->copyTo($newRoot);
+    $currentRoot = $treeNodes->getFirst();
+    $copyFromRoot = SitetreeTable::getInstance()->findOneBySiteAndRouteName($copyFromSite, 'homepage');
+    
+    try 
+    {
+      $copyFromRoot->copyTo($currentRoot);
+      $this->getUser()->setFlash('notice', 'Sitetree structure copied');
+    }
+    catch (Exception $e)
+    {
+      $this->getUser()->setFlash('error', $e->getMessage());
+    }
+    
+    // tell the manager the sitetree has changed so we can refresh the cache
+    siteManager::getInstance()->sitetreeChanged();
+    
+    $this->redirect('sitetree/index');
   }
   
   /**
