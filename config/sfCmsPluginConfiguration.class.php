@@ -74,9 +74,12 @@ class sfCmsPluginConfiguration extends sfPluginConfiguration
           $this->configuration->setDimension(array('site' => $dimension));
           
           // Load dimensions config (if it exists) - requires the config handler registered above
-          if ($file = $this->configuration->getConfigCache()->checkConfig(sprintf('config/%s/app.yml', $dimension), true))
+          if (file_exists(sprintf('%s/config/%s/app.yml', sfConfig::get('sf_root_dir'), $dimension)))
           {
-            include($file);
+            if ($file = $this->configuration->getConfigCache()->checkConfig(sprintf('config/%s/app.yml', $dimension), true))
+            {
+              include($file);
+            }
           }
         }
       }
