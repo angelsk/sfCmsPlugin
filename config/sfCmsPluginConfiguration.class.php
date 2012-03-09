@@ -53,34 +53,27 @@ class sfCmsPluginConfiguration extends sfPluginConfiguration
         // If dimension not set set and reload config
         if (is_null($this->configuration->getDimension())) 
         {
-          // trying to replicate default factories behaviour as sfWebRequest not accessible here
-          $pathVar = sfConfig::get('app_site_path_info_array', 'SERVER');
-           
-          if ('SERVER' == $pathVar) $pathInfoArray = $_SERVER;
-          else $pathInfoArray = $_ENV;
-          
-          if (isset($pathInfoArray['HTTP_X_FORWARDED_HOST']))
-          {
-            $elements = explode(',', $pathInfoArray['HTTP_X_FORWARDED_HOST']);
-            $path = trim($elements[count($elements) - 1]);
-          }
-          else
-          {
-            $path =  isset($pathInfoArray['HTTP_HOST']) ? $pathInfoArray['HTTP_HOST'] : '';
-          }
-          
+          // Check where we are
+          $path      = siteManager::getInstance()->getRequestHost();
           $dimension = sfConfig::get('app_dimensions_'.$path, siteManager::getInstance()->getDefaultSite());
           
+          // Set the dimension
           $this->configuration->setDimension(array('site' => $dimension));
           
-          // Load dimensions config (if it exists) - requires the config handler registered above
-          if (file_exists(sprintf('%s/config/%s/app.yml', sfConfig::get('sf_root_dir'), $dimension)))
-          {
-            if ($file = $this->configuration->getConfigCache()->checkConfig(sprintf('config/%s/app.yml', $dimension), true))
-            {
-              include($file);
-            }
-          }
+          // Load the config
+          siteManager::getInstance()->loadSiteConfig($dimension);
+        }
+      }
+      else 
+      {
+        // See if it's set in a cookie and load the config
+        $app       = sfConfig::get('sf_app');
+        $dimension = (isset($_COOKIE['site_' . $app]) ? $_COOKIE['site_' . $app] : false);
+        
+        if ($dimension)
+        {
+          // Load the config
+          siteManager::getInstance()->loadSiteConfig($dimension);
         }
       }
     }
