@@ -62,7 +62,7 @@ abstract class PluginContentBlock extends BaseContentBlock
 
     if (!$contentBlockCurrentVersion)
     {
-      $contentBlockCurrentVersion = ContentBlockCurrentVersion::createNew($contentBlock, $lang);
+      $contentBlockCurrentVersion = ContentBlockCurrentVersion::createNew($contentBlockVersion->ContentBlock, $lang);
     }
 
     if ($contentBlockCurrentVersion->content_block_version_id == $contentBlockVersion->id)
@@ -72,7 +72,6 @@ abstract class PluginContentBlock extends BaseContentBlock
     }
 
     $contentBlockCurrentVersion->Version = $contentBlockVersion;
-    $contentBlockCurrentVersion->content_block_version_id = $contentBlockVersion->id;
     $contentBlockCurrentVersion->save();
 
     // clear the "cache" of the current version data
