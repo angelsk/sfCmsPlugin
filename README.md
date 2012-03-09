@@ -43,7 +43,8 @@ multiple sites, you will add a new config file per dimension (as specified in th
 	    name:             ##FRIENDLYNAME##
 	    cultures:         [en]
 	    default_culture:  en
-      root_module:          default      # You will need to ensure you have a module.yml for whichever module this is - see below
+	    url_prefix:       http://www.example.com   # optional url_prefix if cms has a different domain to the main site
+      root_module:        default      # You will need to ensure you have a module.yml for whichever module this is - see below
         
       # the default site
       default_site:       ##SITENAME##
@@ -95,15 +96,16 @@ the dimension on the frontend app based on the URL by using a filter.  You will 
           name:             UK site
           cultures:         [en]
           default_culture:  en
+          url_prefix:       'http://www.example.co.uk'
           
         # the default site
         default_site:     gb
 
 		# if you have more than one site (through dimensions) - then list them here for the CMS site select
 		active_sites:
-		  gb:	'UK site'
-		  fr:   'French site'
-        
+	      gb:               'UK site'
+	      fr:               'French site'
+	
         ......
       
       # when the config has loaded this will determine which dimension is set based on the URL
@@ -133,6 +135,7 @@ This should contain the site configuration, so that the routing knows which rout
           name:             French site
           cultures:         [fr]
           default_culture:  fr
+		  url_prefix:       'http://www.example.fr'
 
 For the backend - you'll want to set your `homepage` route to point to `sitetree/changeSite` (or point to this action where you want to implement the 
 change site functionality).

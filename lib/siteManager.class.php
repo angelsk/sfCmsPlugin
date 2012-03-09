@@ -179,10 +179,10 @@ class siteManager
    */
   public function getCurrentSite() 
   {
-    $config = sfContext::getInstance()->getConfiguration();
-      
     if (sfConfig::get('sf_app') == $this->getManagedApp())
     {
+      $config = sfContext::getInstance()->getConfiguration();
+      
       if (class_exists('ysfApplicationConfiguration') && $config instanceof ysfApplicationConfiguration)
       {
         // We are dealing with a multi-site app.
@@ -206,13 +206,12 @@ class siteManager
     else
     {
       // Get the cookie if it exists, fill in with the default site if it doesn't
-      $defaultSite = sfContext::getInstance()->getRequest()->getCookie('site_' .  sfConfig::get('sf_app'), $this->getDefaultSite());
+      $defaultSite = sfContext::getInstance()->getRequest()->getCookie('site_' . sfConfig::get('sf_app'), $this->getDefaultSite());
       
       // And use that as the default for the session
-      return sfContext::getInstance()->getUser()->getAttribute('site', $defaultSite, 'site.' .  sfConfig::get('sf_app'));
+      return sfContext::getInstance()->getUser()->getAttribute('site', $defaultSite, 'site.' . sfConfig::get('sf_app'));
     }
   }
-
 
   /**
    * Set the current site we're on.
@@ -229,7 +228,24 @@ class siteManager
     // Save it in a cookie because cache clearing clears the session and we don't want the site in the CMS
     // to change halfway through editing, especially if sfGuardRememberMe is set.
     $expiration_age = sfConfig::get('app_sf_guard_plugin_remember_key_expiration_age', 15 * 24 * 3600); // re-use this expiration :)
-    sfContext::getInstance()->getResponse()->setCookie('site_' .  sfConfig::get('sf_app'), $site, time() + $expiration_age);
+    sfContext::getInstance()->getResponse()->setCookie('site_' . sfConfig::get('sf_app'), $site, time() + $expiration_age);
+  }
+  
+  /**
+   * Load config for the current site dimension
+   * 
+   * @param string $site
+   */
+  public function loadSiteConfig($site)
+  {
+    // Load dimensions config (if it exists) - requires the config handler registered above
+    if (file_exists(sprintf('%s/config/%s/app.yml', sfConfig::get('sf_root_dir'), $site)))
+    {
+      if ($file = ProjectConfiguration::getActive()->getConfigCache()->checkConfig(sprintf('config/%s/app.yml', $site), true))
+      {
+        include($file);
+      }
+    }
   }
   
   /**
@@ -533,18 +549,85 @@ class siteManager
       $generatedUrl = '';
     }
     
-    // to deal with the case where we have a different domain name, we have a couple
-    // of ways to manipulate the generated urls.  Either by adding on a prefix or
-    // by using a function to alter them:
-    $generatedUrl = $this->processCrossAppUrl($generatedUrl, $currentApp, $app, $env);
-
     // switch back to old config
     sfContext::switchTo($currentApp);
+    
+    // to deal with different domains and controllers
+    $generatedUrl = $this->processCrossAppUrl($generatedUrl, $currentApp, $app, $env);
 
     // save
     $cache->set($cacheKey, $generatedUrl);
 
     return $generatedUrl;
+  }
+  
+  /**
+   * Return the contents of $_SERVER or $_ENV for use when sfWebRequest isn't available
+   * 
+   * @return array()
+   */
+  public function getRequestPathInfoArray()
+  {
+    // trying to replicate default factories behaviour
+    $pathVar = sfConfig::get('app_site_path_info_array', 'SERVER');
+     
+    if ('SERVER' == $pathVar) $pathInfoArray = $_SERVER;
+    else $pathInfoArray = $_ENV;
+    
+    return $pathInfoArray;
+  }
+  
+  /**
+   * Returns the current host name, for use when sfWebRequest isn't available
+   * 
+   * @return string
+   */
+  public function getRequestHost()
+  {
+    $pathInfoArray = $this->getRequestPathInfoArray();
+    
+    if (isset($pathInfoArray['HTTP_X_FORWARDED_HOST']))
+    {
+      $elements = explode(',', $pathInfoArray['HTTP_X_FORWARDED_HOST']);
+      $path = trim($elements[count($elements) - 1]);
+    }
+    else
+    {
+      $path =  isset($pathInfoArray['HTTP_HOST']) ? $pathInfoArray['HTTP_HOST'] : '';
+    }
+          
+    return $path;
+  }
+  
+  /**
+   * Dynamically create the url for the managed app
+   * 
+   * @return string
+   */
+  public function getManagedAppUrl()
+  {
+    $request      = sfContext::getInstance()->getRequest();
+    $siteConfig   = $this->getSite();
+        
+    // If single site with url_prefix different to CMS
+    // Or multi-site set up
+    if (isset($siteConfig['url_prefix']) && !empty($siteConfig['url_prefix']))
+    {
+      $hostName = $siteConfig['url_prefix'];
+      
+      if (false === strpos($hostName, 'http'))
+      {
+        
+        $hostName = sprintf('http%s://%s', ($request->isSecure() ? 's' : ''), $hostName);
+      } 
+    }
+    // Else it's the same as the backend
+    else 
+    {
+      $hostName = sprintf('http%s://%s', ($request->isSecure() ? 's' : ''), $request->getHost());
+    }
+    
+    return $hostName;
   }
   
   /**
@@ -563,43 +646,37 @@ class siteManager
   {
     if ($toApplication == $this->getManagedApp())
     {
-      // If the url returned doesn't already contain http(s):// - because of site magic in the front web controller
+      // If the url returned doesn't already contain http(s)://
       if (false !== strpos($generatedUrl, 'http')) 
       {
-        // Absolute URL, but still has admin. in
-        if (false !== strpos($generatedUrl, 'admin.')) 
+        // Replace the backend domain with the frontend domain - note this will be the same if not set in config
+        $request      = sfContext::getInstance()->getRequest();
+        
+        $hostName     = $this->getManagedAppUrl();
+        $cmsHostName  = sprintf('http%s://%s', ($request->isSecure() ? 's' : ''), $request->getHost());
+        $generatedUrl = str_replace($cmsHostName, $hostName, $generatedUrl);
+        
+        // Replace the controller in the URL
+        if (false != strpos($generatedUrl, $fromApplication.'.php/') || false != strpos($generatedUrl, $fromApplication.'_'.$environment.'.php/'))
         {
-          // If we're on prod, and don't already have www. in the URL
-          if ('prod' == $environment && false === strpos($generatedUrl, 'www.')) 
-          {
-            $generatedUrl = str_replace('admin.', 'www.', $generatedUrl);
-          }
-          else 
-          {
-            $generatedUrl = str_replace('admin.', '', $generatedUrl);
-          }
-        }
-        // Or has the controller in the URL
-        else if (false != strpos($generatedUrl, $fromApplication.'.php/') || false != strpos($generatedUrl, $fromApplication.'_'.$environment.'.php/'))
-        {
-          $fromController   = ('prod' == $environment) ? $fromApplication.'.php' : $fromApplication.'_'.$environment.'.php';
-          $toController     = ('prod' == $environment) ? '' : $toApplication.'_'.$environment.'.php';
-          $generatedUrl     = str_replace($fromController, $toController, $generatedUrl);
+          $fromController = ('prod' == $environment) ? $fromApplication.'.php' : $fromApplication.'_'.$environment.'.php';
+          $toController   = ('prod' == $environment) ? '' : $toApplication.'_'.$environment.'.php';
+          $generatedUrl   = str_replace($fromController, $toController, $generatedUrl);
         }
         
         return $generatedUrl;
       }
       else 
       {
-        // need to add in the hostname without the "admin." (if appropriate)
-        $hostName   = $_SERVER['HTTP_HOST'];
-        $hostName   = str_replace('admin.', '', $hostName);
-        return 'http://' . $hostName . $generatedUrl; // @TODO: http(s)
+        // Generate the domain from config / request
+        $hostName = $this->getUrlForManagedApp();
+        
+        return $hostName . $generatedUrl;
       }
     }
     else 
     {
-      throw new sfException("Unknown app: " . $toApplication);
+      throw new sfException("Unmanaged app: " . $toApplication);
     }
   }
   
