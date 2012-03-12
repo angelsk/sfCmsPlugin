@@ -1,6 +1,7 @@
 <?php
 $listingManager = listingManager::getInstance();
 $defn = $listingManager->getTemplateDefinition($listing->template); 
+$activeSites = siteManager::getInstance()->getActiveSites();
 
 sfContext::getInstance()->getResponse()->setTitle(htmlentities('Importing items to - ' . $sitetree->title, null, 'utf-8', false), false);
 
@@ -56,7 +57,7 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array('sitetree' => $sit
                  
                 <?php foreach ($items as $item) : ?>
                   <option value="<?php echo $item->id; ?>"<?php if (in_array($item->id, $importedItems)) echo ' selected="selected"'; ?>>
-                    <?php echo $item->Listing->Sitetree->getTitle(); ?> - <?php echo $item->getTitle(); ?>
+                    <?php echo $item->Listing->Sitetree->getTitle(); ?> (<?php echo $activeSites[$item->Listing->Sitetree->site]; ?>) - <?php echo $item->getTitle(); ?>
                     <?php if ($item->item_date) : ?>
                       (<?php echo $item->getDateTimeObject('item_date')->format('d M Y'); ?>)
                     <?php endif; ?>
