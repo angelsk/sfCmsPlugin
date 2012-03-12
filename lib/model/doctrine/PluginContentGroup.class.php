@@ -121,11 +121,11 @@ abstract class PluginContentGroup extends BaseContentGroup
 	      $contentVersionCopy = $cv->getVersion()->copy(false);
 	      $contentVersionCopy->ContentBlock = $contentBlockCopy;
 	      $contentVersionCopy->created_at = null;
+	      // NOTE: We're not going to reset any lang here - as copying content from english
+	      // to french (for example) makes no sense
 	      
 	      $contentVersionCopy->save();
 	      $contentVersionCopy->refresh();
-	      
-	      // @TODO: reset lang of version if set and not in langs for current site
 	      
 	      $contentBlockCopy->makeVersionCurrent($contentVersionCopy);
 	    }

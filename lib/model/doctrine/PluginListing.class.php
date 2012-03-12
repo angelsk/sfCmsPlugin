@@ -482,7 +482,13 @@ abstract class PluginListing extends BaseListing
     $copyOfListing->updateNew();
     $copyOfListing->save();
     
-    // @TODO categories!
+    // Copy categories
+    foreach ($this->Categories as $category)
+    {
+      $copyCat = $category->copy(true);
+      $copyCat->Listing = $copyOfListing;
+      $copyCat->save();
+    }
     
     return $copyOfListing;
   }
