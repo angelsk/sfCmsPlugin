@@ -69,18 +69,17 @@ class ContentAdminComponents extends sfComponents
     }
     
     // Do we have another site to copy content from? (for Page and Listing)
-    if ($isNew && !empty($this->activeSites) && 1 < count($this->activeSites) && ('ListingItem' != $contentGroup->getType()))
+    if ($isNew && !empty($this->activeSites) && 1 < count($this->activeSites) && (in_array($contentGroup->getType(), array('Listing', 'Page'))))
     {
       $type     = $contentGroup->getType();
       $getType  = 'get' . $type;
       $obj      = $contentGroup->$getType()->getFirst();
-      $template = $contentGroup->getContentGroupType()->getTemplate();
       
       // Get other objects of this template
       $this->objs = Doctrine_Core::getTable($type)
                             ->createQuery('o')
                             ->innerJoin('o.Sitetree s')
-                            ->where('o.template = ? AND s.site != ?', array($template, siteManager::getInstance()->getCurrentSite()))
+                            ->where('o.template = ? AND s.site != ?', array($obj->template, $sitetree->site))
                             ->execute();
       
       if (0 < count($this->objs))

@@ -1,7 +1,5 @@
 <?php
 $item = $form->getObject();
-$contentGroup = (isset($contentGroup) ? $sf_data->getRaw('contentGroup') : null);
-$sitetree = $sf_data->getRaw('sitetree');
 
 $listingManager = listingManager::getInstance();
 $defn = $listingManager->getTemplateDefinition($item->Listing->template); 
@@ -11,7 +9,7 @@ $moduleName = $sf_context->getModuleName();
 
 $url = $moduleName . '/' . (!$isNew ? 'editItem?listId=' . $item->listing_id . '&id='.$item->id : 'createItem?id='.$item->listing_id);
 
-sfContext::getInstance()->getResponse()->setTitle(htmlentities('Editing item' . ' - ' . $sitetree->title . ' - ' . $item->title, null, 'utf-8', false), false);
+sfContext::getInstance()->getResponse()->setTitle(htmlentities('Editing item - ' . $item->title . ' - ' . $sitetree->title, null, 'utf-8', false), false);
 
 slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array(
   'sitetree' => $sitetree
@@ -186,7 +184,7 @@ use_stylesheets_for_form($form);
                 <?php endif; 
               endforeach; ?>
             </fieldset>
-             <ul class="sf_admin_actions">
+            <ul class="sf_admin_actions">
                <li class="sf_admin_action_save"><input type="submit" value="Save" /></li>
                <li class="sf_admin_action_list"><?php echo link_to('Back to listing', 'listingAdmin/edit?id=' . $item->listing_id); ?></li>
              </ul>

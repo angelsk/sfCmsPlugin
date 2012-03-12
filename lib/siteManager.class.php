@@ -899,9 +899,9 @@ class siteManager
       return null;
     }
 
-    $context = sfContext::getInstance();
+    $context  = sfContext::getInstance();
     $response = $context->getResponse();
-    $culture = $context->getUser()->getCulture();
+    $culture  = $context->getUser()->getCulture();
 
     if ($v = $sitetree->Translation[$culture]->html_keywords) 
     {

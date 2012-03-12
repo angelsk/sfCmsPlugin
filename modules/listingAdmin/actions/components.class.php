@@ -17,39 +17,44 @@ class listingAdminComponents extends sfComponents
     // Delete
     if ($request->hasParameter('deleteCategory')) 
     {
-      $catId = $request->getParameter('deleteCategory');
-      $category = listingCategoryTable::getInstance()->findOneById($catId);
-      $category->delete();
+      $category = ListingCategoryTable::getInstance()->findOneById($request->getParameter('deleteCategory'));
       
-      $this->getUser()->setFlash('notice', 'Category deleted');
+      if ($category)
+      {
+        $category->delete();
+        $this->getUser()->setFlash('notice', 'Category deleted');
+      }
     }
     
     // Edit existing
     if ($request->hasParameter('editCategory')) 
     {
-      $catId = $request->getParameter('editCategory');
-      $category = listingCategoryTable::getInstance()->findOneById($catId);
-      $form = new ListingCategoryForm($category);
+      $category = ListingCategoryTable::getInstance()->findOneById($request->getParameter('editCategory'));
       
-      if ($request->hasParameter('listing_category')) 
+      if ($category)
       {
-        $form->bind($request->getParameter('listing_category'));
+        $form = new ListingCategoryForm($category);
         
-        if ($form->isValid()) 
+        if ($request->hasParameter('listing_category')) 
         {
-          $form->save();
-          $this->getUser()->setFlash('notice', 'Category updated');
+          $form->bind($request->getParameter('listing_category'));
+          
+          if ($form->isValid()) 
+          {
+            $form->save();
+            $this->getUser()->setFlash('notice', 'Category updated');
+          }
         }
+        
+        $this->setVar('editCategoryName', $category->getTitle());
       }
-      
-      $this->setVar('editCategoryName', $category->getTitle());
     }
     // Add new
     else 
     {
       $category = new ListingCategory();
       $category->set('Listing', $listing);
-      $form = new ListingCategoryForm($category);
+      $form     = new ListingCategoryForm($category);
       
       if ($request->isMethod(sfWebRequest::POST) && $request->hasParameter('listing_category')) 
       {
@@ -62,7 +67,7 @@ class listingAdminComponents extends sfComponents
           
           $category = new ListingCategory();
           $category->set('Listing', $listing);
-          $form = new ListingCategoryForm($category);
+          $form     = new ListingCategoryForm($category);
         }
       }
       
@@ -72,18 +77,16 @@ class listingAdminComponents extends sfComponents
     // Or move up and down
     if ($request->hasParameter('upCategory')) 
     {
-      $catId = $request->getParameter('upCategory');
-      $category = listingCategoryTable::getInstance()->findOneById($catId);
+      $category = ListingCategoryTable::getInstance()->findOneById($request->getParameter('upCategory'));
       $category->moveUp();
     }
     else if ($request->hasParameter('downCategory')) 
     {
-      $catId = $request->getParameter('downCategory');
-      $category = listingCategoryTable::getInstance()->findOneById($catId);
+      $category = ListingCategoryTable::getInstance()->findOneById($request->getParameter('downCategory'));
       $category->moveDown();
     }
     
-    $currentCategories = listingCategoryTable::getInstance()->findByListingId($listing->id);
+    $currentCategories = ListingCategoryTable::getInstance()->findByListingId($listing->id);
     
     $this->setVar('currentCategories', $currentCategories);
     $this->setVar('form', $form);

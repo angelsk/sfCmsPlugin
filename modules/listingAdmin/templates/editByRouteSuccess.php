@@ -1,6 +1,4 @@
 <?php
-$sitetree = $sf_data->getRaw('sitetree');
-
 slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array(
   'sitetree' => $sitetree
 )));
@@ -28,7 +26,7 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array(
     
     <div class="sf_admin_form">
 
-      <?php echo $form->renderFormTag(url_for(sprintf('listingAdmin/editByRoute?routeName=%s&site=%s', $routeName, $site))); ?>
+      <?php echo $form->renderFormTag(url_for(sprintf('listingAdmin/editByRoute?routeName=%s&site=%s', $sitetree->route_name, $sitetree->site))); ?>
         <?php 
         echo $form->renderGlobalErrors(); 
         echo $form->renderHiddenFields();

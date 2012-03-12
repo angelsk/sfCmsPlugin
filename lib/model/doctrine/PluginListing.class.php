@@ -482,6 +482,8 @@ abstract class PluginListing extends BaseListing
     $copyOfListing->updateNew();
     $copyOfListing->save();
     
+    // @TODO categories!
+    
     return $copyOfListing;
   }
     
