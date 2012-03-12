@@ -1069,7 +1069,7 @@ class siteManager
         }
       }
       
-      if (!$loadedFromCache) 
+      if (!$loadedFromCache || empty($this->coreNavigation)) 
       {
         $rawCoreNavigation = SitetreeTable::getInstance()->getCoreNavigation($site);
         $cachedCoreNavigation = array();
