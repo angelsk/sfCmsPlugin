@@ -27,9 +27,9 @@ abstract class PluginContentBlockVersionTable extends Doctrine_Table
   public function getCurrentVersion($id, $lang)
   {
     $query = $this->createQuery('v')
-    ->select('v.*')
-    ->innerJoin('v.CurrentVersion cv')
-    ->where('cv.content_block_id = ? AND v.content_block_id = ?', array($id, $id));
+                  ->select('v.*')
+                  ->innerJoin('v.CurrentVersion cv')
+                  ->where('cv.content_block_id = ? AND v.content_block_id = ?', array($id, $id));
 
     if ($lang === null)
     {
@@ -53,7 +53,7 @@ abstract class PluginContentBlockVersionTable extends Doctrine_Table
   public function getNewestVersion($id, $lang)
   {
     $query = $this->createQuery('v')
-    ->where('v.content_block_id = ?', $id);
+                  ->where('v.content_block_id = ?', $id);
      
     if ($lang === null)
     {
@@ -80,7 +80,7 @@ abstract class PluginContentBlockVersionTable extends Doctrine_Table
   public function getSpecifiedVersion($id, $lang, $versionId)
   {
     $query = $this->createQuery('v')
-    ->where('v.content_block_id = ? AND v.id = ?', array($id, $versionId));
+                  ->where('v.content_block_id = ? AND v.id = ?', array($id, $versionId));
      
     if ($lang === null)
     {
@@ -104,11 +104,11 @@ abstract class PluginContentBlockVersionTable extends Doctrine_Table
   public function getEfficientVersionHistoryWithUsers($id, $lang, $limit = 10)
   {
     $query = $this->createQuery('v')
-    ->select('v.id, v.created_at, c.username')
-    ->leftJoin('v.CreatedBy c')
-    ->where('v.content_block_id = ?', array($id))
-    ->orderBy('v.id DESC')
-    ->limit($limit);
+                  ->select('v.id, v.created_at, c.username')
+                  ->leftJoin('v.CreatedBy c')
+                  ->where('v.content_block_id = ?', array($id))
+                  ->orderBy('v.id DESC')
+                  ->limit($limit);
 
     if ($lang === null)
     {

@@ -160,7 +160,11 @@ class pageManager
    */
   public function getTemplateFileLocation($templateSlug) 
   {
-    return $this->getTemplateDir() . DIRECTORY_SEPARATOR . $this->getTemplateName($templateSlug) . ".php";
+    // check for site specific template version
+    $siteVersion = sprintf('%s/%s/%s.php', $this->getTemplateDir(), siteManager::getInstance()->getCurrentSite(), $this->getTemplateName($templateSlug));
+    
+    if (is_file($siteVersion)) return $siteVersion;
+    else return sprintf('%s/%s.php', $this->getTemplateDir(), $this->getTemplateName($templateSlug));
   }
   
   /**

@@ -95,6 +95,48 @@ abstract class PluginContentGroup extends BaseContentGroup
 
 		return $this->typeObj;
 	}
+	
+	/**
+	 * Copy content blocks and latest version of content from specified content group
+	 * 
+	 * @param int $copyFromContentGroupId
+	 */
+	public function createFrom($copyFromContentGroupId)
+	{
+	  $copyContentFrom = ContentGroupTable::getInstance()->findOneById($copyFromContentGroupId);
+	  $contentBlocks = array();
+	  
+	  foreach ($copyContentFrom->getOrderedBlocks(true) as $block)
+	  {
+	    $contentBlockCopy = $block->copy(false);
+	    $contentBlockCopy->ContentGroup = $this;
+	    $contentBlockCopy->created_at = $contentBlockCopy->updated_at = null;
+	    
+	    $contentBlockCopy->save();
+	    $contentBlockCopy->refresh();
+	    
+	    // Get latest versions (all langs)
+	    foreach ($block->getCurrentVersions() as $cv)
+	    {
+	      $contentVersionCopy = $cv->getVersion()->copy(false);
+	      $contentVersionCopy->ContentBlock = $contentBlockCopy;
+	      $contentVersionCopy->created_at = null;
+	      // NOTE: We're not going to reset any lang here - as copying content from english
+	      // to french (for example) makes no sense
+	      
+	      $contentVersionCopy->save();
+	      $contentVersionCopy->refresh();
+	      
+	      $contentBlockCopy->makeVersionCurrent($contentVersionCopy);
+	    }
+	    
+	    $contentBlocks[] = $contentBlockCopy;
+	  }
+	  
+	  $this->refresh();
+	  
+	  return $contentBlocks;
+	}
 
 	/**
 	 * Get the Content blocks from this Content group in the order they
@@ -131,6 +173,16 @@ abstract class PluginContentGroup extends BaseContentGroup
 		return $orderedBlocks;
 	}
 
+	/**
+	 * Is this a new content group - no blocks yet?
+	 * 
+	 * @return boolean
+	 */
+	public function isNew()
+	{
+	  return (count($this->getContentBlocks()) == 0);
+	}
+	
 	/**
 	 * Initialises the Content blocks for this group, that is:
 	 *  - Looks at Content block definitions for this group

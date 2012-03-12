@@ -41,9 +41,12 @@
   <p><em>*</em> Only categories with no items can be deleted / Only active categories can be assigned to items (and only ones with items are available on the frontend).</p>
   
   <script type="text/javascript">
-      $(document).addEvent('domready', function() {
-        $$('.delete_cat').each(function(el) {
-          el.addEvent('click', function() {
+      $(document).addEvent('domready', function () 
+      {
+        $$('.delete_cat').each(function (el) 
+        {
+          el.addEvent('click', function () 
+          {
             return confirm('Are you sure you want to delete this category - it cannot be undone');
           });
         });  
@@ -69,6 +72,23 @@
   ?>
 
   <fieldset id="sf_fieldset_none">
+    <?php if ($editCategoryName) : ?>
+      <?php $translations = array(); ?>
+       <?php foreach ($form->getObject()->Translation as $culture => $Translation) : ?>
+         <?php if (!empty($Translation->title)) $translations[$culture] = $Translation->title; ?>
+      <?php endforeach; ?>
+      <?php if (!empty($translations)) : ?>
+        <div class="sf_admin_form_row">
+          <label>Category translations</label>
+          <div class="content">
+            <?php foreach ($translations as $culture => $Translation) : ?>
+               <?php echo $culture . ' - ' . $Translation; ?><br />
+            <?php endforeach; ?>
+          </div>
+        </div>
+      <?php endif; ?>
+    <?php endif; ?>
+  
     <?php foreach ($form as $idx => $widget):
       if (!$widget->isHidden()) : ?>
       
