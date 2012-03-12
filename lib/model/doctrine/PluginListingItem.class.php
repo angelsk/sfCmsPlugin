@@ -50,6 +50,19 @@ abstract class PluginListingItem extends BaseListingItem
     $copy->Listing  = $copyToListing;
     $copy->position = $copy->created_at = $copy->updated_at = null;
     
+    // Deal with categories
+    if (!is_null($this->listing_category_id))
+    {
+      $copyToCategory = ListingCategoryTable::getInstance()->findOneByListingIdAndSlug($copyToListing->id, $this->ListingCategory->slug);
+      
+      // If find match
+      if ($copyToCategory)
+      {
+        $copy->ListingCategory = $copyToCategory;
+      }
+      else $copy->listing_category_id = null;
+    }
+    
     $copy->updateNew(); // create content group and save item
     
     // copy content from here
@@ -57,7 +70,7 @@ abstract class PluginListingItem extends BaseListingItem
     
     $copy->refresh();
     
-    // @TODO: deal with categories
+    
     
     return $copy;
   }

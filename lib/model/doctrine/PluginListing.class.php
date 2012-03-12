@@ -485,6 +485,7 @@ abstract class PluginListing extends BaseListing
     // Copy categories
     foreach ($this->Categories as $category)
     {
+      $category->refreshRelated('Translation');
       $copyCat = $category->copy(true);
       $copyCat->Listing = $copyOfListing;
       $copyCat->save();
