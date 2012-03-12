@@ -27,7 +27,7 @@ abstract class PluginContentBlockCurrentVersionTable extends Doctrine_Table
   public function findCurrentVersion($id, $lang)
   {
     $query = $this->createQuery('v')
-    ->where('v.Content_block_id = ?', $id);
+                  ->where('v.Content_block_id = ?', $id);
 
     if ($lang === null)
     {
