@@ -209,7 +209,11 @@ class listingManager
    */
   public function getListingTemplateFile($template)
   {
-    return $this->getTemplateDir() . "/" . $this->getListingTemplateName($template) . ".php";
+    // check for site specific template version
+    $siteVersion = sprintf('%s/%s/%s.php', $this->getTemplateDir(), siteManager::getInstance()->getCurrentSite(), $this->getListingTemplateName($template));
+    
+    if (is_file($siteVersion)) return $siteVersion;
+    else return sprintf('%s/%s.php', $this->getTemplateDir(), $this->getListingTemplateName($template));
   }
 
   /**
@@ -231,7 +235,11 @@ class listingManager
    */
   public function getItemTemplateFile($template)
   {
-    return $this->getTemplateDir() . "/" . $this->getItemTemplateName($template) . ".php";
+    // check for site specific template version
+    $siteVersion = sprintf('%s/%s/%s.php', $this->getTemplateDir(), siteManager::getInstance()->getCurrentSite(), $this->getItemTemplateName($template));
+    
+    if (is_file($siteVersion)) return $siteVersion;
+    else return sprintf('%s/%s.php', $this->getTemplateDir(), $this->getItemTemplateName($template));
   }
 
   /**
