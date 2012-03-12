@@ -12,10 +12,10 @@ class listingItemPager extends sfDoctrineSuperPager
    */
   public function __construct($listing)
   {
-    $manager = listingManager::getInstance();
-    $itemClass = $manager->getListItemClass($listing->template);
-    $filterClass = "{$itemClass}FormFilter";
-    $form = new $filterClass(array(), array('template'=>$listing->template, 'listing_id'=>$listing->id));
+    $manager      = listingManager::getInstance();
+    $itemClass    = $manager->getListItemClass($listing->template);
+    $filterClass  = "{$itemClass}FormFilter";
+    $form         = new $filterClass(array(), array('template'=>$listing->template, 'listing_id'=>$listing->id));
 
     $cols = array(array('name' => 'Title'));
 
@@ -31,6 +31,7 @@ class listingItemPager extends sfDoctrineSuperPager
       $cols[] = array('name' => 'Category');
     }
 
+    $cols[] = array('name' => 'Item date');
     $cols[] = array('name' => 'Is live?');
     $cols[] = array('name' => 'Created');
     $cols[] = array('name' => 'Last updated');
@@ -97,31 +98,29 @@ class listingItemPager extends sfDoctrineSuperPager
       $out[] = array($item->ListingCategory->title);
     }
 
+    $out[] = array(($item->item_date ? $item->getDateTimeObject('item_date')->format('d M Y') : ''));
     $out[] = array(($item->is_active ? '<img src="/sfCmsPlugin/images/tick.png" />' : '&nbsp;'));
-    $out[] = array(date('d/M/Y H:i', strtotime($item->created_at)) . ' by ' . $item->CreatedBy->username);
-    $out[] = array(date('d/M/Y H:i', strtotime($item->updated_at)) . ' by ' . $item->UpdatedBy->username);
+    $out[] = array($item->getDateTimeObject('created_at')->format('d M Y H:i') . ' by ' . $item->CreatedBy->username);
+    $out[] = array($item->getDateTimeObject('updated_at')->format('d M Y H:i') . ' by ' . $item->UpdatedBy->username);
 
     $editOut = '<ul class="sf_admin_td_actions">';
     $editOut .= '<li class="sf_admin_action_edit" style="display:block;">' . link_to(
       "Edit",
-      'listingAdmin/editItem?listId=' . $listId . '&id=' . $item->id,
-    array('class' => 'btn_edit')
-    ) . '</li>';
+      'listingAdmin/editItem?listId=' . $listId . '&id=' . $item->id, array('class' => 'btn_edit')
+      ) . '</li>';
 
     if (!$item->is_active)
     {
       $editOut .= '<li class="sf_admin_action_publish" style="display:block;">' . link_to(
         "Publish",
-        'listingAdmin/publishItem?listId=' . $listId . '&id=' . $item->id,
-      array('class' => 'btn_publish')
-      ) . '</li>';
+        'listingAdmin/publishItem?listId=' . $listId . '&id=' . $item->id, array('class' => 'btn_publish')
+        ) . '</li>';
     }
 
     $editOut .= '<li class="sf_admin_action_delete" style="display:block;">' . link_to(
         "Delete",
-        'listingAdmin/deleteItem?listId=' . $listId . '&id=' . $item->id,
-    array('class' => 'btn_remove')
-    ) . '</li>';
+        'listingAdmin/deleteItem?listId=' . $listId . '&id=' . $item->id, array('class' => 'btn_remove')
+      ) . '</li>';
     $editOut .= "</ul>";
 
     $out[] = array($editOut);

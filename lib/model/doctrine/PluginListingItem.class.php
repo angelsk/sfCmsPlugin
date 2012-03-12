@@ -37,6 +37,45 @@ abstract class PluginListingItem extends BaseListingItem
   }
   
   /**
+   * Create a copy of the item including the content for the specified listing
+   * 
+   * @param Listing $listing
+   * @return ListingItem
+   */
+  public function createCopy($copyToListing)
+  {
+    $this->refreshRelated('Translation');
+    
+    $copy = $this->copy(true);
+    $copy->Listing  = $copyToListing;
+    $copy->position = $copy->created_at = $copy->updated_at = null;
+    
+    // Deal with categories
+    if (!is_null($this->listing_category_id))
+    {
+      $copyToCategory = ListingCategoryTable::getInstance()->findOneByListingIdAndSlug($copyToListing->id, $this->ListingCategory->slug);
+      
+      // If find match
+      if ($copyToCategory)
+      {
+        $copy->ListingCategory = $copyToCategory;
+      }
+      else $copy->listing_category_id = null;
+    }
+    
+    $copy->updateNew(); // create content group and save item
+    
+    // copy content from here
+    $blocks = $copy->ContentGroup->createFrom($this->ContentGroup->id); 
+    
+    $copy->refresh();
+    
+    
+    
+    return $copy;
+  }
+  
+  /**
    * Get localised title
    *
    * @return string

@@ -401,6 +401,7 @@ abstract class PluginSitetree extends BaseSitetree
   
       $copy->route_name = $newRouteName;
       $copy->site       = $copyHere->site;
+      $copy->is_active  = false;  // copy all as inactive until they have content
       
       // clear current tree fields otherwise INSERT will complain
       $copy->level = $copy->rgt = $copy->lft = null;

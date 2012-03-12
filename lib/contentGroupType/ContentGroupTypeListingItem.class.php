@@ -53,6 +53,11 @@ class ContentGroupTypeListingItem extends ContentGroupType
 		return $this->listingItem;
 	}
 
+	public function getTemplate()
+	{
+	  return $this->getListing()->template;
+	}
+	
 	/**
 	 * @see ContentGroupType
 	 */
