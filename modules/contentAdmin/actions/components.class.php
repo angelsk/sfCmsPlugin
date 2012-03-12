@@ -60,7 +60,7 @@ class ContentAdminComponents extends sfComponents
          
          $loadContent = false;
          $isNew       = false;
-         $user->setFlash('content_notice', 'Content imported');
+         $user->setFlash('content_notice', 'Content imported and published');
       }
       else
       {
