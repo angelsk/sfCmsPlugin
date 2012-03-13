@@ -40,15 +40,25 @@
   
   <p><em>*</em> Only categories with no items can be deleted / Only active categories can be assigned to items (and only ones with items are available on the frontend).</p>
   
-  <script type="text/javascript">
-      $(document).addEvent('domready', function() {
-        $$('.delete_cat').each(function(el) {
-          el.addEvent('click', function() {
-            return confirm('Are you sure you want to delete this category - it cannot be undone');
-          });
-        });  
-      });
-    </script>
+  <?php $content = get_slot('cms_js');  ?>
+    <?php slot('cms_js');
+      if (sfConfig::get('app_site_use_slots', false)) echo $content; // If using slot, combine them ?>
+      
+      <script type="text/javascript">
+        $(document).addEvent('domready', function () 
+        {
+          $$('.delete_cat').each(function (el) 
+          {
+            el.addEvent('click', function () 
+            {
+              return confirm('Are you sure you want to delete this category - it cannot be undone');
+            });
+          });  
+        });
+      </script>
+    <?php end_slot(); ?>
+    <?php if (!sfConfig::get('app_site_use_slots', false)) include_slot('cms_js'); ?>
+  
 <?php else : ?>
    <p>No categories set</p>
 <?php endif; ?>
