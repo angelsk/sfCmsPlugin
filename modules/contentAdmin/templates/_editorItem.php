@@ -29,14 +29,21 @@ $formTarget = ($sf_data->offsetExists('formTarget') ? $sf_data->getRaw('formTarg
     </ul>
 <?php endif; ?>
 
-<script type="text/javascript">
-  $(document).addEvent('domready', function () 
-  { 
-    new SimpleTabs('content_block_tabs_<?php echo $contentBlock->identifier; ?>', {
-      selector: 'h5'
+<?php $content = get_slot('cms_js');  ?>
+<?php slot('cms_js');
+  if (sfConfig::get('app_site_use_slots', false)) echo $content; // If using slot, combine them ?>
+  
+  <script type="text/javascript">
+    $(document).addEvent('domready', function () 
+    { 
+      new SimpleTabs('content_block_tabs_<?php echo $contentBlock->identifier; ?>', 
+      {
+        selector: 'h5'
+      });
     });
-  });
-</script>
+  </script>
+<?php end_slot(); ?>
+<?php if (!sfConfig::get('app_site_use_slots', false)) include_slot('cms_js'); ?>
 
 <div id="content_block_tabs_<?php echo $contentBlock->identifier; ?>">
   <div class="section">

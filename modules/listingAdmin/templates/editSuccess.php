@@ -35,13 +35,21 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array('sitetree' => $sit
     <?php endif;  ?>
   </div>
   
-  <script type="text/javascript">
-    $(document).addEvent('domready', function() {
-      new SimpleTabs('listing_<?php echo $sitetree->route_name; ?>_tabs', {
-        selector: 'h4'
-      });
-    });  
-  </script>
+  <?php $content = get_slot('cms_js');  ?>
+  <?php slot('cms_js');
+    if (sfConfig::get('app_site_use_slots', false)) echo $content; // If using slot, combine them ?>
+    
+    <script type="text/javascript">
+      $(document).addEvent('domready', function() 
+      {
+        new SimpleTabs('listing_<?php echo $sitetree->route_name; ?>_tabs', 
+        {
+          selector: 'h4'
+        });
+      });  
+    </script>
+  <?php end_slot(); ?>
+  <?php if (!sfConfig::get('app_site_use_slots', false)) include_slot('cms_js'); ?>
   
   <div id="sf_admin_content">
   
@@ -77,6 +85,10 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array('sitetree' => $sit
           <?php endif; ?>
         </ul>
           
+        <?php $content = get_slot('cms_js');  ?>
+        <?php slot('cms_js');
+          if (sfConfig::get('app_site_use_slots', false)) echo $content; // If using slot, combine them ?>
+          
         <script type="text/javascript">
           $(document).addEvent('domready', function() 
           {
@@ -89,6 +101,8 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array('sitetree' => $sit
             }); 
           });
         </script>
+        <?php end_slot(); ?>
+        <?php if (!sfConfig::get('app_site_use_slots', false)) include_slot('cms_js'); ?>
       </div>
       
       <?php if (!isset($defn['use_categories']) || true === $defn['use_categories']) : ?>

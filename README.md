@@ -24,6 +24,8 @@ Dependancies
  * [Orderable](https://github.com/HollerLondon/Doctrine-Orderable) (external in lib/doctrine_extensions)
  * [ysfDimensionsPlugin](http://www.symfony-project.org/plugins/ysfDimensionsPlugin) (for multiple sites)
 
+### MooTools 1.3.2
+
 Setup
 -----
 
@@ -72,6 +74,23 @@ Enable the page and listing display modules in the frontend `settings.yml`.
      enabled_modules:
       - pageDisplay
       - listingDisplay
+
+
+Javascript in the CMS
+=====================
+
+If the site includes javascript at the bottom of the template in the CMS then you need to enable the slots setting in site config;
+and include the js slot at the bottom of your layout template.
+
+In the config:
+     
+     site:
+       ....
+       use_slots: true
+
+In the backend layout:
+
+     <?php include_slot('cms_js') ?>
 
 
 Multiple Sites Setup
