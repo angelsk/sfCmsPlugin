@@ -41,7 +41,7 @@
   <p><em>*</em> Only categories with no items can be deleted / Only active categories can be assigned to items (and only ones with items are available on the frontend).</p>
   
   <?php $content = get_slot('cms_js');  ?>
-  <?php slot('cms_js');
+    <?php slot('cms_js');
     if (sfConfig::get('app_site_use_slots', false)) echo $content; // If using slot, combine them ?>
     
     <script type="text/javascript">
