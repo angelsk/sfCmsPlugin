@@ -79,32 +79,39 @@ $formTarget = ($sf_data->offsetExists('formTarget') ? $sf_data->getRaw('formTarg
 
 <?php if (!$includeImport) : ?>
 
-  <script type="text/javascript">
-    $(document).addEvent('domready', function () 
-    {
-      // hide the iframe
-      $('<?php echo $formId ?>Iframe').hide(); 
-      
-      $('<?php echo $formId ?>Preview').addEvent('click', function(event) 
+  <?php $content = get_slot('cms_js'); ?>
+  <?php slot('cms_js');
+    if (sfConfig::get('app_site_use_slots', false)) echo $content; // If using slot, combine them ?>
+    
+    <script type="text/javascript">
+      $(document).addEvent('domready', function () 
       {
-        // stop form submit
-        event.stopPropagation();
-  
-        // show the iframe
-        $('<?php echo $formId ?>Iframe').show();
-        var form = $('<?php echo $formId ?>');
+        // hide the iframe
+        $('<?php echo $formId ?>Iframe').hide(); 
         
-        // post our form to the iframe so it can render the Content blocks
-        form.set('action', '<?php echo $previewUrl ?>');
-        form.set('target', '<?php echo $formId ?>Iframe');
-        form.submit();
-  
-        // reset so can submit save / publish
-        form.set('action', '<?php echo $formTarget; ?>');
-        form.set('target', '');
-        return false;
+        $('<?php echo $formId ?>Preview').addEvent('click', function(event) 
+        {
+          // stop form submit
+          event.stopPropagation();
+    
+          // show the iframe
+          $('<?php echo $formId ?>Iframe').show();
+          var form = $('<?php echo $formId ?>');
+          
+          // post our form to the iframe so it can render the Content blocks
+          form.set('action', '<?php echo $previewUrl ?>');
+          form.set('target', '<?php echo $formId ?>Iframe');
+          form.submit();
+    
+          // reset so can submit save / publish
+          form.set('action', '<?php echo $formTarget; ?>');
+          form.set('target', '');
+          return false;
+        });
       });
-    });
-  </script>
-  
+    </script>
+    
+  <?php end_slot(); ?>
+  <?php if (!sfConfig::get('app_site_use_slots', false)) include_slot('cms_js'); ?>
+
 <?php endif; ?>

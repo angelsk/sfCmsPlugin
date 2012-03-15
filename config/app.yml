@@ -5,8 +5,8 @@ all:
     identifier:           en
     definition:
       name:               project name
-      cultures:           [en_GB]
-      default_culture:    en_GB
+      cultures:           [en]
+      default_culture:    en
       root_module:        default
       
     available_modules:  
@@ -19,6 +19,7 @@ all:
     # default settings
     include_culture_in_routes:  false
     managed_app:                frontend
+    use_slots:                  false   # see README
       
     # default classes - change if override locally
     routing_proxy_class:        siteRoutingProxyImpl
