@@ -1,0 +1,10 @@
+sfGuardPermission:
+  sitePermission_1:
+    name:           site.admin
+    description:    "Site admin - allows editing, publishing and deleting of sitetree nodes and all content"
+  sitePermission_2:
+    name:           site.edit
+    description:    "Site editor - allows editing of versionnable content"
+  sitePermission_3:
+    name:           site.publish
+    description:    "Site publisher - allows editing and publishing of sitetree nodes and all content"

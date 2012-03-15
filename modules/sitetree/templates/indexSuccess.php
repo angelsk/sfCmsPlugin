@@ -31,8 +31,9 @@ sfConfig::set('site_hack_entireSitetree', $treeNodes);
       {
         function sitetree_manager_node($sitetree) 
         {
-          $user = sfContext::getInstance()->getUser();
-          $canAdmin = $user->isSuperAdmin();
+          $user       = sfContext::getInstance()->getUser();
+          $canAdmin   = $user->hasCredential('site.admin');
+          $canPublish = ($canAdmin || $user->hasCredential('site.publish'));
           
           $name = esc_entities($sitetree->title);
           $out = "<span class=\"lnk\">" . $name . "</span>";
@@ -101,12 +102,12 @@ sfConfig::set('site_hack_entireSitetree', $treeNodes);
             $out .= '<a href="' . url_for('sitetree/move?direction=down&id='.$sitetree->id) . '" title="move down"><img src="/sfCmsPlugin/images/down.png" /></a>';
           }
           else $out .= $spacer;
-          if (!$isRoot && !$sitetree->is_locked) 
+          if (!$isRoot && !$sitetree->is_locked && $canAdmin) 
           {
             $out .= '<a href="' . url_for('sitetree/delete?id='.$sitetree->id) . '" title="delete" class="delete_sitetree"><img src="/sfCmsPlugin/images/cross.png" /></a>';
           }
-          else $out .= $spacer;
-          if ($sitetree->is_deleted && $canAdmin) 
+          else if ($canAdmin) $out .= $spacer; // otherwise space if just no permission
+          if ($sitetree->is_deleted && $user->isSuperAdmin()) 
           {
             $out .= '<a href="' . url_for('sitetree/restore?id='.$sitetree->id) . '" title="restore"><img src="/sfCmsPlugin/images/restore.png" /></a>';
           }
@@ -120,7 +121,7 @@ sfConfig::set('site_hack_entireSitetree', $treeNodes);
             $out .= '<a href="' . url_for('sitetree/create?parent='.$sitetree->id) . '" title="add child page"><img src="/sfCmsPlugin/images/add.png" /></a>';
           }
           else $out .= $spacer;
-          if (!$sitetree->is_active && !$sitetree->is_deleted) 
+          if ($canPublish && !$sitetree->is_active && !$sitetree->is_deleted) 
           {
             $out .= '<a href="' . url_for('sitetree/publish?id='.$sitetree->id) . '" title="publish page"><img src="/sfCmsPlugin/images/publish.png" /></a>';
           }
@@ -131,14 +132,7 @@ sfConfig::set('site_hack_entireSitetree', $treeNodes);
       
         function sitetree_manager_li($node) 
         {
-          $manager = siteManager::getInstance();
-          $user = sfContext::getInstance()->getUser();
-          
-          $canAdmin = $user->isSuperAdmin();
-          $entireSitetree = sfConfig::get('site_hack_entireSitetree');
-      
           $class = '';
-          $class .= ($canAdmin ? ' canAdmin' : '');
           $class .= ($node->is_locked ? ' locked' : '');
           $class .= (!$node->is_active ? ' notlive' : '');
           $class .= ($node->getNode()->isRoot() ? ' root' : '');

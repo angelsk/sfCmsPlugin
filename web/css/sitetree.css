@@ -183,6 +183,11 @@
   color: inherit;
 }
 
+#sf_admin_container .site_notice { 
+  background-color: white;  
+  color: #666;
+}
+
 .superPagerPagination {
   float: right;
 }

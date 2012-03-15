@@ -30,7 +30,17 @@ if ($sitetree = $sf_data->getRaw('sitetree'))
     echo '<span class="site_sitetree_not_published">' . __('Not live') . '</span>';
   }
 
-  echo link_to('Edit sitetree properties', 'sitetree/edit?id=' . $sitetree->id);
+  if ('sitetree' == $sf_request->getParameter('module'))
+  {
+    if ($sitetree->isManagedModule()) 
+    {
+      echo link_to('Edit content for this page', $sitetree->getEditLink());
+    }
+  }
+  else
+  {
+    echo link_to('Edit sitetree properties', 'sitetree/edit?id=' . $sitetree->id);
+  }
 
   if ($sitetree->is_active) 
   {
