@@ -225,6 +225,11 @@ class siteManager
   {
     sfContext::getInstance()->getUser()->setAttribute('site', $site, 'site.' .  sfConfig::get('sf_app'));
     
+    if (sfConfig::get('sf_logging_enabled')) 
+    {
+      sfContext::getInstance()->getLogger()->info(sprintf('Setting site to %s', $site));
+    }
+    
     // Save it in a cookie because cache clearing clears the session and we don't want the site in the CMS
     // to change halfway through editing, especially if sfGuardRememberMe is set.
     $expiration_age = sfConfig::get('app_sf_guard_plugin_remember_key_expiration_age', 15 * 24 * 3600); // re-use this expiration :)
@@ -1046,26 +1051,30 @@ class siteManager
     
     if (null === $this->coreNavigation) 
     {
-      $cache = $this->getCache();
-      $loadedFromCache = false;
       $this->coreNavigation = array();
-        
-      if ($cache->has('ca.core_navigation.'.$site)) 
+      $loadedFromCache = false;
+      
+      if (sfConfig::get('sf_cache'))
       {
-        $rawCoreNavigation = unserialize($cache->get('ca.core_navigation.'.$site));
+        $cache = $this->getCache();
         
-        foreach ($rawCoreNavigation as $sitetreeArray) 
+        if ($cache->has('ca.core_navigation.'.$site)) 
         {
-          $sitetree = new Sitetree();
-          $sitetree->fromArray($sitetreeArray);
-          $this->coreNavigation[] = $sitetree;
-        }
-        
-        $loadedFromCache = true;
+          $rawCoreNavigation = unserialize($cache->get('ca.core_navigation.'.$site));
           
-        if (sfConfig::get('sf_logging_enabled')) 
-        {
-           sfContext::getInstance()->getLogger()->info('Loaded core navigation from cache');
+          foreach ($rawCoreNavigation as $sitetreeArray) 
+          {
+            $sitetree = new Sitetree();
+            $sitetree->fromArray($sitetreeArray);
+            $this->coreNavigation[] = $sitetree;
+          }
+          
+          $loadedFromCache = true;
+            
+          if (sfConfig::get('sf_logging_enabled')) 
+          {
+             sfContext::getInstance()->getLogger()->info('Loaded core navigation from cache');
+          }
         }
       }
       
@@ -1080,7 +1089,7 @@ class siteManager
           $this->coreNavigation[] = $sitetree;
         }
         
-        $cache->set('ca.core_navigation.'.$site, serialize($cachedCoreNavigation), 86400);
+        if (sfConfig::get('sf_cache')) $cache->set('ca.core_navigation.'.$site, serialize($cachedCoreNavigation), 86400);
       }
     }
     
