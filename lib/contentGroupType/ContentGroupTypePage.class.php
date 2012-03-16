@@ -30,6 +30,11 @@ class ContentGroupTypePage extends ContentGroupType
     return $this->page;
   }
 
+  public function getTemplate()
+  {
+    return $this->getPage()->template;
+  }
+  
   /**
    * @see ContentGroupType
    */

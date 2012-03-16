@@ -28,6 +28,11 @@ Listing:
       foreign: id
       type: one
       onDelete: NO ACTION
+    Categories:
+      class:  ListingCategory
+      local:  id
+      foreign: listing_id
+      type: many
   
   actAs:
     Timestampable:          # created_at and updated_at

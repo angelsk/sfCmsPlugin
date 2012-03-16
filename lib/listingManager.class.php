@@ -63,8 +63,10 @@ class listingManager
          name: Blogs
          restricted: true           # Only show this template on the specified route name (must have route_name(s) set)
          route_name: blogs          # Template for only use with specified route name
-         generic_listing:
+         
+       generic_listing:
          name: Generic Listing
+         site: [gb,fr]              # Only allow template on these sites
 
    * @param Listing $listing
    * @return array Template defns
@@ -72,32 +74,48 @@ class listingManager
   public function getPossibleTemplatesForListing($listing)
   {
     $templates = $this->getTemplateDefinitions();
-    $out = array();
+    $out       = array();
 
     if ($listing)
     {
-      $currentTemplate = $listing->template;
+      $currentTemplate  = $listing->template;
       $currentRouteName = $listing->Sitetree->route_name;
     }
-    else
+    else 
     {
-      $currentTemplate = false;
-      $currentRouteName = siteManager::getInstance()->getCurrentSitetreeNode()->route_name;
+      $currentTemplate  = false;
+      $sitetree         = siteManager::getInstance()->getCurrentSitetreeNode();
+      $currentRouteName = ($sitetree ? $sitetree->route_name : false);
     }
-
-    foreach ($templates as $template => $defn)
+    
+    $currentSite = siteManager::getInstance()->getCurrentSite();
+    
+    foreach ($templates as $templateSlug => $definition) 
     {
-      // If restricted, then only return that one template
-      if (isset($defn['restricted']) && true == $defn['restricted'] && isset($defn['route_name'])
-      && ((is_array($defn['route_name']) && in_array($currentRouteName, $defn['route_name']))
-      || (!is_array($defn['route_name']) && $currentRouteName == $defn['route_name'])))
+      $skip = ($templateSlug === $currentTemplate); // if we already have this template set allow it
+      
+      // Check whether allowed site for this template
+      $sites = (isset($definition['site']) ? (is_array($definition['site']) ? $definition['site'] : array($definition['site'])) : array());
+      
+      if (!empty($sites) && !in_array($currentSite, $sites) && !$skip) continue;
+      
+      // Check whether route name restriction
+      $templateRoutes = (isset($definition['route_name']) ? (is_array($definition['route_name']) ? $definition['route_name'] : array($definition['route_name'])) : array());
+      
+      // If restricted to a certain route name, then only return that one template
+      if (isset($definition['restricted']) && true == $definition['restricted'] 
+            && isset($definition['route_name']) && in_array($currentRouteName, $templateRoutes)
+            && !$skip)
       {
         $out = array();
-        $out[$template] = $defn['name'];
+        $out[$templateSlug] = $definition['name'];
         return $out;
       }
-
-      $out[$template] = $defn['name'];
+      
+      // If not restricted, but template only for certain routes
+      if (!empty($templateRoutes) && !in_array($currentRouteName, $templateRoutes)) continue;
+      
+      $out[$templateSlug] = $definition['name'];
     }
 
     asort($out);
@@ -209,7 +227,11 @@ class listingManager
    */
   public function getListingTemplateFile($template)
   {
-    return $this->getTemplateDir() . "/" . $this->getListingTemplateName($template) . ".php";
+    // check for site specific template version
+    $siteVersion = sprintf('%s/%s/%s.php', $this->getTemplateDir(), siteManager::getInstance()->getCurrentSite(), $this->getListingTemplateName($template));
+    
+    if (is_file($siteVersion)) return $siteVersion;
+    else return sprintf('%s/%s.php', $this->getTemplateDir(), $this->getListingTemplateName($template));
   }
 
   /**
@@ -231,7 +253,11 @@ class listingManager
    */
   public function getItemTemplateFile($template)
   {
-    return $this->getTemplateDir() . "/" . $this->getItemTemplateName($template) . ".php";
+    // check for site specific template version
+    $siteVersion = sprintf('%s/%s/%s.php', $this->getTemplateDir(), siteManager::getInstance()->getCurrentSite(), $this->getItemTemplateName($template));
+    
+    if (is_file($siteVersion)) return $siteVersion;
+    else return sprintf('%s/%s.php', $this->getTemplateDir(), $this->getItemTemplateName($template));
   }
 
   /**

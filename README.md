@@ -544,13 +544,18 @@ As with view.yml (same format), stylesheets and javascripts can be set for speci
 Templates can be restricted to a particular page (or pages), for example: for registration / homepage.  This is done by specifying a route name (the identifier for a sitetree node).
 
       route_name: homepage
-      restricted: true
+      restricted: true    # if restricted, only this template is returned
 
 
-Or particular pages:
+Or only available for particular pages:
 
-       route_name: [offers, personal]
-       restricted: true
+       route_name: [ offers, personal ]
+
+Or only available for certain sites (if multi-site setup):
+
+		site:	[ gb, fr ]
+
+NOTE: Restrictions can be an array or single string, the manager handles converting it.
 
 
 ### Content listings and items
@@ -719,13 +724,18 @@ As per pages, specific stylesheets and javascripts can be added to the listing a
 Again, as per pages, listings can be restricted to certain route name(s).
 
       route_name: homepage
-      restricted: true
+      restricted: true    # if restricted, only this template is returned
 
-Or
 
-       route_name: [offers, personal]
-       restricted: true
+Or only available for particular pages:
 
+       route_name: [ offers, personal ]
+
+Or only available for certain sites (if multi-site setup):
+
+		site:	[ gb, fr ]
+
+NOTE: Restrictions can be an array or single string, the manager handles converting it.
 
 #### RSS Feeds
 
@@ -735,15 +745,13 @@ Config that is not set, will not be used (no config is required)
 
     site:
         definition:
-          name: Projectname
-          cultures: [en_GB]
-          default_culture: en_GB
+          name:            ##PROJECTNAME##
+          cultures:        [en]
+          default_culture: en
           rss_config:
             author:  { name: SITE_NAME, email: SITE_EMAIL, link: SITE_URL }
-            logo: { url: /images/logo.png, width: 131, height: 123 }
+            logo:    { url: /images/logo.png, width: 131, height: 123 }
             favicon: /favicon.ico
-
-
  
 Enable and set listing RSS settings in listing_templates (only required item is rss_enabled)
 
@@ -753,19 +761,18 @@ Description and Content use renderContent() on $item
       name: Articles (with RSS)
 
       # RSS config
-      rss_enabled: true
+      rss_enabled:       true
       rss_item_ordering: i.created_at # default
       rss_config:
         feed:
           # set here for feed specific, or in app_site_rss_config for sitewide
           author:  { name: SITE_NAME, email: SITE_EMAIL, link: SITE_URL }
-          logo: { url: /images/logo.png, width: 131, height: 123 }
+          logo:    { url: /images/logo.png, width: 131, height: 123 }
           favicon: /favicon.ico
 
         item:
           description: summary   # identifier of a content block in blocks:
           content: page_content  # identifier of a content block in blocks:
-
 
 Add the following to your `apps/frontend/template/layout.php` file, to include an auto-discoverable feed (make sure you have `$sitetree = siteManager::getInstance()->getCurrentSitetreeNode();` in the layout)
 
@@ -773,12 +780,9 @@ This also works for any feeds referenced in the External RSS Url field of the li
 
 Alternatively, substitute atom for rss to get an atom link
 
-
     <?php if (rss_for_sitetree($sitetree)) : ?> 
-      <link rel="alternate" type="application/rss+xml" href="<?php echo
-    rss_for_sitetree($sitetree); ?>" /> 
+      <link rel="alternate" type="application/rss+xml" href="<?php echo rss_for_sitetree($sitetree); ?>" /> 
     <?php endif; ?>
-
 
 
 ### Extending content blocks

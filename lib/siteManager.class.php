@@ -904,9 +904,9 @@ class siteManager
       return null;
     }
 
-    $context = sfContext::getInstance();
+    $context  = sfContext::getInstance();
     $response = $context->getResponse();
-    $culture = $context->getUser()->getCulture();
+    $culture  = $context->getUser()->getCulture();
 
     if ($v = $sitetree->Translation[$culture]->html_keywords) 
     {
@@ -1051,30 +1051,34 @@ class siteManager
     
     if (null === $this->coreNavigation) 
     {
-      $cache = $this->getCache();
-      $loadedFromCache = false;
       $this->coreNavigation = array();
-        
-      if ($cache->has('ca.core_navigation.'.$site)) 
+      $loadedFromCache = false;
+      
+      if (sfConfig::get('sf_cache'))
       {
-        $rawCoreNavigation = unserialize($cache->get('ca.core_navigation.'.$site));
+        $cache = $this->getCache();
         
-        foreach ($rawCoreNavigation as $sitetreeArray) 
+        if ($cache->has('ca.core_navigation.'.$site)) 
         {
-          $sitetree = new Sitetree();
-          $sitetree->fromArray($sitetreeArray);
-          $this->coreNavigation[] = $sitetree;
-        }
-        
-        $loadedFromCache = true;
+          $rawCoreNavigation = unserialize($cache->get('ca.core_navigation.'.$site));
           
-        if (sfConfig::get('sf_logging_enabled')) 
-        {
-           sfContext::getInstance()->getLogger()->info('Loaded core navigation from cache');
+          foreach ($rawCoreNavigation as $sitetreeArray) 
+          {
+            $sitetree = new Sitetree();
+            $sitetree->fromArray($sitetreeArray);
+            $this->coreNavigation[] = $sitetree;
+          }
+          
+          $loadedFromCache = true;
+            
+          if (sfConfig::get('sf_logging_enabled')) 
+          {
+             sfContext::getInstance()->getLogger()->info('Loaded core navigation from cache');
+          }
         }
       }
       
-      if (!$loadedFromCache) 
+      if (!$loadedFromCache || empty($this->coreNavigation)) 
       {
         $rawCoreNavigation = SitetreeTable::getInstance()->getCoreNavigation($site);
         $cachedCoreNavigation = array();
@@ -1085,7 +1089,7 @@ class siteManager
           $this->coreNavigation[] = $sitetree;
         }
         
-        $cache->set('ca.core_navigation.'.$site, serialize($cachedCoreNavigation), 86400);
+        if (sfConfig::get('sf_cache')) $cache->set('ca.core_navigation.'.$site, serialize($cachedCoreNavigation), 86400);
       }
     }
     

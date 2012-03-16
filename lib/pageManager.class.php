@@ -39,19 +39,22 @@ class pageManager
   /**
    * Get a list of the template names we can use for this page
    * 
-   * Some restrictions can be applied to template definitions, including using a separate layout or only allowing a template for a specific route_name
+   * Some restrictions can be applied to template definitions, 
+   * including using a separate layout or only allowing a template for a specific route_name/site
     
    * Examples:
     
        homepage:
-       name: Homepage
-            layout: homeLayout
-            restricted: true
+         name:       Homepage
+         layout:     homeLayout
+         restricted: true
+         route_name: homepage   # with restricted: true only returns this template
+         site:       gb
    */
   public function getPossibleTemplatesForPage($page) 
   {
     $templates = $this->getTemplateDefinitions();
-    $out = array();
+    $out       = array();
     
     if ($page) 
     {
@@ -61,20 +64,36 @@ class pageManager
     else 
     {
       $currentTemplate  = false;
-      $currentRouteName = siteManager::getInstance()->getCurrentSitetreeNode()->route_name;
+      $sitetree         = siteManager::getInstance()->getCurrentSitetreeNode();
+      $currentRouteName = ($sitetree ? $sitetree->route_name : false);
     }
+    
+    $currentSite = siteManager::getInstance()->getCurrentSite();
     
     foreach ($templates as $templateSlug => $definition) 
     {
-      // If restricted, then only return that one template
-      if (isset($definition['restricted']) && true == $definition['restricted'] && isset($definition['route_name']) 
-          && ((is_array($definition['route_name']) && in_array($currentRouteName, $definition['route_name']))
-            || (!is_array($definition['route_name']) && $currentRouteName == $definition['route_name']))) 
+      $skip = ($templateSlug === $currentTemplate); // if we already have this template set allow it
+      
+      // Check whether allowed site for this template
+      $sites = (isset($definition['site']) ? (is_array($definition['site']) ? $definition['site'] : array($definition['site'])) : array());
+      
+      if (!empty($sites) && !in_array($currentSite, $sites) && !$skip) continue;
+      
+      // Check whether route name restriction
+      $templateRoutes = (isset($definition['route_name']) ? (is_array($definition['route_name']) ? $definition['route_name'] : array($definition['route_name'])) : array());
+      
+      // If restricted to a certain route name, then only return that one template
+      if (isset($definition['restricted']) && true == $definition['restricted'] 
+            && isset($definition['route_name']) && in_array($currentRouteName, $templateRoutes)
+            && !$skip)
       {
         $out = array();
         $out[$templateSlug] = $definition['name'];
         return $out;
       }
+      
+      // If not restricted, but template only for certain routes
+      if (!empty($templateRoutes) && !in_array($currentRouteName, $templateRoutes)) continue;
       
       $out[$templateSlug] = $definition['name'];
     }
@@ -160,7 +179,11 @@ class pageManager
    */
   public function getTemplateFileLocation($templateSlug) 
   {
-    return $this->getTemplateDir() . DIRECTORY_SEPARATOR . $this->getTemplateName($templateSlug) . ".php";
+    // check for site specific template version
+    $siteVersion = sprintf('%s/%s/%s.php', $this->getTemplateDir(), siteManager::getInstance()->getCurrentSite(), $this->getTemplateName($templateSlug));
+    
+    if (is_file($siteVersion)) return $siteVersion;
+    else return sprintf('%s/%s.php', $this->getTemplateDir(), $this->getTemplateName($templateSlug));
   }
   
   /**

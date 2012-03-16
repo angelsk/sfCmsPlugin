@@ -34,12 +34,70 @@ class ContentAdminComponents extends sfComponents
     }
 
     $user = sfContext::getInstance()->getUser();
-
-    // load up the Content blocks for this group and pass them to the view.
-    // this will also create any missing Content blocks etc.
-    $checkDefinitions = true;
-    $contentBlocks = $contentGroup->getOrderedBlocks($checkDefinitions);
-
+    
+    // Is this a new content group? No content yet
+    $loadContent         = true;
+    $this->includeImport = false;
+    $isNew               = $contentGroup->isNew();
+    $this->activeSites   = siteManager::getInstance()->getActiveSites();
+    
+    // Don't import content
+    if ($request->isMethod(sfWebRequest::POST) && $request->hasParameter('dont_import'))
+    {
+      $isNew = false;
+      $user->setFlash('content_notice', 'Import skipped, carry on');
+    }
+    
+    // Import content
+    if ($request->isMethod(sfWebRequest::POST) && $request->hasParameter('import'))
+    {
+      $importContentGroupId = $request->getParameter('import_content_group_id', null);
+      
+      if (!empty($importContentGroupId))
+      {
+         // Import content from selected content group
+         $contentBlocks = $contentGroup->createFrom($importContentGroupId);
+         
+         $loadContent = false;
+         $isNew       = false;
+         $user->setFlash('content_notice', 'Content imported and published');
+      }
+      else
+      {
+        $user->setFlash('content_error', 'No content selected to import; select from the dropdown or choose "Don\'t import"');
+      }
+    }
+    
+    // Do we have another site to copy content from? (for Page and Listing)
+    if ($isNew && !empty($this->activeSites) && 1 < count($this->activeSites) && (in_array($contentGroup->getType(), array('Listing', 'Page'))))
+    {
+      $type     = $contentGroup->getType();
+      $getType  = 'get' . $type;
+      $obj      = $contentGroup->$getType()->getFirst();
+      
+      // Get other objects of this template
+      $this->objs = Doctrine_Core::getTable($type)
+                            ->createQuery('o')
+                            ->innerJoin('o.Sitetree s')
+                            ->where('o.template = ? AND s.site != ?', array($obj->template, $sitetree->site))
+                            ->execute();
+      
+      if (0 < count($this->objs))
+      {
+        $this->includeImport = true;
+        $loadContent         = false;
+        $contentBlocks       = array();
+      }
+    }
+    
+    if ($loadContent)
+    {
+      // load up the Content blocks for this group and pass them to the view.
+      // this will also create any missing Content blocks etc.
+      $checkDefinitions = true;
+      $contentBlocks = $contentGroup->getOrderedBlocks($checkDefinitions);
+    }
+    
     // if form submitted
     if ($request->isMethod(sfWebRequest::POST)
       && ($request->hasParameter('save') || $request->hasParameter('save_and_publish')))

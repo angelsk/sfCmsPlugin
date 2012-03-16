@@ -48,6 +48,21 @@ use_stylesheets_for_form($form);
             </div>
           </div>
           
+          <?php $translations = array(); ?>
+          <?php foreach ($form->getObject()->Translation as $culture => $Translation) : ?>
+            <?php if (!empty($Translation->title)) $translations[$culture] = $Translation->title; ?>
+          <?php endforeach; ?>
+          <?php if (!empty($translations)) : ?>
+            <div class="sf_admin_form_row">
+              <label>Sitetree title translations</label>
+              <div class="content">
+                <?php foreach ($translations as $culture => $Translation) : ?>
+                   <?php echo $culture . ' - ' . $Translation; ?><br />
+                <?php endforeach; ?>
+              </div>
+            </div>
+          <?php endif; ?>
+          
           <?php foreach ($form as $idx => $widget):
             if (!$widget->isHidden()) : ?>
               <?php if ($culture == $idx) : // embedded translation form ?>

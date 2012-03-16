@@ -3,14 +3,11 @@ use_helper("sfDoctrineSuperPager");
 
 $pagerAjaxUrl = "listingAdmin/listItemsAjax?id=$listing->id";
 $url = "listingAdmin/edit?id=$listing->id";
-$pager = $sf_data->getRaw('pager');
-$contentGroup = $sf_data->getRaw('contentGroup');
-$sitetree = $sf_data->getRaw('sitetree');
 
 $listingManager = listingManager::getInstance();
 $defn = $listingManager->getTemplateDefinition($listing->template); 
 
-sfContext::getInstance()->getResponse()->setTitle(htmlentities('Editing page' . ' - ' . $sitetree->title, null, 'utf-8', false), false);
+sfContext::getInstance()->getResponse()->setTitle(htmlentities('Editing listing - ' . $sitetree->title, null, 'utf-8', false), false);
 
 slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array('sitetree' => $sitetree)));
 ?>
@@ -60,12 +57,14 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array('sitetree' => $sit
   
       <h4>Items</h4>
       
-      <div id='listing_<?php echo $sitetree->route_name; ?>_items'>
+      <div id="listing_<?php echo $sitetree->route_name; ?>_items">
         <?php if ($sf_user->hasFlash('listing_notice')): ?>
           <div class="notice"><?php echo $sf_user->getFlash('listing_notice'); ?></div>
         <?php endif; ?>
             
-        <p>These are the items in our list.  The ordering here is the same as the ordering used on the frontend of the site (<?php echo $listing->use_custom_order ? 'manually' : $listingManager->getListItemOrdering($listing->template); ?>).</p>
+        <p>These are the items in our list.  
+        The ordering here is the same as the ordering used on the frontend of the site 
+        (<strong><?php echo $listing->use_custom_order ? 'manually' : $listingManager->getListItemOrdering($listing->template); ?></strong>).</p>
       
         <?php echo super_pager_render($pager, $url, $pagerAjaxUrl); ?>
           
@@ -75,8 +74,15 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array('sitetree' => $sit
       
         <ul class="sf_admin_actions">
           <li class="sf_admin_action_new">
-            <?php echo link_to('Create new item', 'listingAdmin/createItem?id=' . $listing->id, array('class' => 'btn_create float_r frm_submit')); ?>
+            <?php echo link_to('Create new item', 'listingAdmin/createItem?id=' . $listing->id); ?>
           </li>
+          
+          <?php $activeSites = siteManager::getInstance()->getActiveSites(); ?>
+          <?php if (!empty($activeSites) && 1 < count($activeSites)) : ?>
+            <li class="sf_admin_action_import">
+              <?php echo link_to('Import items', 'listingAdmin/importItems?id=' . $listing->id); ?>
+            </li>
+          <?php endif; ?>
         </ul>
           
         <?php $content = get_slot('cms_js');  ?>
@@ -132,7 +138,8 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array('sitetree' => $sit
               <div class="notice"><?php echo $sf_user->getFlash('edit_notice'); ?></div>
             <?php endif; ?>
               
-            <p><span class="site_sitetree_not_published">WARNING:</span> Changing the template will delete the existing page content, unless the template contains the same fields.</p>
+            <p><span class="site_sitetree_not_published">WARNING:</span> 
+            Changing the template will delete the existing page content, unless the template contains the same fields.</p>
                   
             <form method="post" action="#listing_<?php echo $sitetree->route_name; ?>_properties">
               <?php 
@@ -158,7 +165,7 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array('sitetree' => $sit
               </fieldset>
               
               <ul class="sf_admin_actions">
-                <li class="sf_admin_action_save"><input type="submit" class="btn_save float_r frm_submit" value="Save"  /></li>
+                <li class="sf_admin_action_save"><input type="submit" value="Save"  /></li>
                 <li class="sf_admin_action_list"><?php echo link_to('Back to sitetree', 'sitetree/index'); ?></li>
               </ul>
             </form>

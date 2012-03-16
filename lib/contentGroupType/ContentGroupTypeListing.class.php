@@ -15,7 +15,7 @@ class ContentGroupTypeListing extends ContentGroupType
 	 *
 	 * @return listing
 	 */
-	public function getContentBlockListing()
+	public function getListing()
 	{
 		if ($this->listing === null)
 		{
@@ -35,9 +35,14 @@ class ContentGroupTypeListing extends ContentGroupType
 	 */
 	public function getContentBlockDefinitions()
 	{
-		$template = $this->getContentBlockListing()->template;
+		$template = $this->getListing()->template;
 
 		return listingManager::getInstance()->getTemplateContentBlockDefinitions($template);
+	}
+	
+	public function getTemplate()
+	{
+	  return $this->getListing()->template;
 	}
 
 	/**
@@ -45,7 +50,7 @@ class ContentGroupTypeListing extends ContentGroupType
 	 */
 	public function getEditUrl()
 	{
-		return 'listingAdmin/edit?id=' . $this->getContentBlockListing()->id;
+		return 'listingAdmin/edit?id=' . $this->getListing()->id;
 	}
 
 	/**
@@ -54,7 +59,7 @@ class ContentGroupTypeListing extends ContentGroupType
 	public function getPreviewUrl()
 	{
 		//todo: named routes
-		return 'listingDisplay/preview?id=' . $this->getContentBlockListing()->id;
+		return 'listingDisplay/preview?id=' . $this->getListing()->id;
 	}
 
 	/**
@@ -62,7 +67,7 @@ class ContentGroupTypeListing extends ContentGroupType
 	 */
 	public function getSitetree()
 	{
-		$listing = $this->getContentBlockListing();
+		$listing = $this->getListing();
 
 		return sitetreeTable::getInstance()->findOneById($listing->sitetree_id);
 	}
@@ -72,6 +77,6 @@ class ContentGroupTypeListing extends ContentGroupType
 	 */
 	public function handleContentGroupChanged()
 	{
-		$this->getContentBlockListing()->handleContentChanged();
+		$this->getListing()->handleContentChanged();
 	}
 }
