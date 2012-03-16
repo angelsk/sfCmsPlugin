@@ -100,9 +100,9 @@ Follow the instructions in `ysfDimensionsPlugin` if you have multiple sites to s
 
 In `config/dimensions.yml` define the allowed sites:
 
-  allowed:
-    site:         [ gb, fr ]
-  default:        gb
+    allowed:
+      site:         [ gb, fr ]
+    default:        gb
 
 With this plugin dimensions are used to control the site (and cultures are handled within these).  If your setup is one domain per site, you can set
 the dimension on the frontend app based on the URL by using a filter.  You will need to set up the URL to dimensions relationship in your  `config/app.yml`
@@ -138,8 +138,8 @@ The dimension is set when the plugin's configuration is initialized so all you n
 Also set the default dimension in `ProjectConfiguration::setup()` - this is so the command line doesn't error out as the configuration is loaded after.
 
     // setup dimensions before calling parent::setup(); for command line operations
-	// Frontend handled by a filter
-	if ('cli' == php_sapi_name()) $this->setDimension(array('site' => 'gb'));
+	  // Frontend handled by a filter
+	  if ('cli' == php_sapi_name()) $this->setDimension(array('site' => 'gb'));
 
 When you add a new site, at the very least you'll need to add it to the `active_sites` config array; and create a folder in the main config folder for 
 the site specific `app.yml`, e.g: `config/fr/app/yml`. 
@@ -185,6 +185,7 @@ Allows editing and publishing of sitetree nodes and all content
 
 
 @TODO: Implement permissions for content - add sitetree awaiting approval indication 
+
 @TODO: Site specific permissions
 
 
@@ -604,30 +605,30 @@ Then you need to add configuration for each template type - depending on what co
 
 It makes no sense to have a listing without content, so the basic listing uses the default listingItem.
 
-        article:
-          name: Article (with Category)
-          use_categories: true  # this is the default
-      
-          item_status:
-            - featured
-            - editors_pick
-            - thought_about
-       
-          listing_blocks:
-            # no content
-       
-          item_blocks:
-            image: 
-              name: Image *
-              type: AssetImage
-              width: 290
-              height: Any
-              use_lang: false
-              required: true
-            content:
-              name: Content
-              type: HTML
-              use_lang: true
+      article:
+        name: Article (with Category)
+        use_categories: true  # this is the default
+    
+        item_status:
+          - featured
+          - editors_pick
+          - thought_about
+     
+        listing_blocks:
+          # no content
+     
+        item_blocks:
+          image: 
+            name: Image *
+            type: AssetImage
+            width: 290
+            height: Any
+            use_lang: false
+            required: true
+          content:
+            name: Content
+            type: HTML
+            use_lang: true
 
 
 This definition will require `article_listing.php` and `article_item.php` created in the `templates/listing` folder.
@@ -760,11 +761,11 @@ Again, as per pages, listings can be restricted to certain route name(s).
 
 Or only available for particular pages:
 
-       route_name: [ offers, personal ]
+      route_name: [ offers, personal ]
 
 Or only available for certain sites (if multi-site setup):
 
-		   site: [ gb, fr ]
+      site: [ gb, fr ]
 
 NOTE: Restrictions can be an array or single string, the manager handles converting it.
 
