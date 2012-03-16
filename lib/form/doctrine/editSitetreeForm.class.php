@@ -9,7 +9,9 @@ class editSitetreeForm extends SitetreeForm
     {
       $this->widgetSchema['target_module'] = new sfWidgetFormInputHidden();
   
-      unset($this['is_active'], $this['prepend_parent_url'], $this['base_url'], $this['is_hidden'], $this['is_core_navigation']);
+      if ($this->canPublish) unset($this['is_active']);
+      
+      unset($this['prepend_parent_url'], $this['base_url'], $this['is_hidden'], $this['is_core_navigation']);
     }
 
     if (!$this->canAdmin) 

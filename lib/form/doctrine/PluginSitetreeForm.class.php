@@ -14,7 +14,8 @@ abstract class PluginSitetreeForm extends BaseSitetreeForm
 
   public function __construct($sitetree) 
   {
-    $this->canAdmin = sfContext::getInstance()->getUser()->isSuperAdmin();
+    $this->canAdmin   = sfContext::getInstance()->getUser()->hasCredential('site.admin');
+    $this->canPublish = ($this->canAdmin || sfContext::getInstance()->getUser()->hasCredential('site.publish'));
 
     parent::__construct($sitetree);
   }
@@ -43,18 +44,26 @@ abstract class PluginSitetreeForm extends BaseSitetreeForm
       $this->widgetSchema->setLabel('target_module', 'Module <em>*</em>');
       $this->widgetSchema->setLabel('prepend_parent_url', 'Prepend parent URL');
       $this->widgetSchema->setLabel('is_core_navigation', 'Core navigation');
-      $this->widgetSchema->setLabel('is_locked', 'Lock page');
+      
+      if ($this->canAdmin)
+      {
+        $this->widgetSchema->setLabel('is_locked', 'Lock page');
+        $this->widgetSchema->setHelp('is_locked', 'Prevent page from being deleted (whilst locked), or the important settings from being changed');
+      }
     }
     
     $this->useFields(array($culture) + array_keys($this->getStandardWidgets()));
     
-    $this->widgetSchema->setLabel('is_active', 'Live');
+    if ($this->canPublish)
+    {
+      $this->widgetSchema->setLabel('is_active', 'Live');
+    }
+    
     $this->widgetSchema->setLabel('is_hidden', 'Hide from sitemap');
     
     $this->widgetSchema->setHelp('prepend_parent_url', 'should we prepend the parent\'s url to this one? e.g: /footer/terms or /terms (second is not prepended)');
     $this->widgetSchema->setHelp('route_name', 'This is for development purposes to uniquely identify the page');
     $this->widgetSchema->setHelp('is_hidden', 'The page will be created, but only accessible via a direct URL - useful for competitions for example');
-    $this->widgetSchema->setHelp('is_locked', 'Prevent page from being deleted (whilst locked), or the important settings from being changed');
     
     sfImagePoolUtil::addImageChooser($this);
     $this->widgetSchema->setHelp('sf_image_pool_ids', 'Select an image tagged with "sitetree" to represent the page');
@@ -97,14 +106,18 @@ abstract class PluginSitetreeForm extends BaseSitetreeForm
       'base_url'              => new sfWidgetFormInput(),
       'prepend_parent_url'    => new sfWidgetFormInputCheckbox(),
       'target_module'         => new sfWidgetFormSelect(array('choices' => $modules)),
-      'is_active'             => new sfWidgetFormInputCheckbox(),
       'is_hidden'             => new sfWidgetFormInputCheckbox(),
       'is_core_navigation'    => new sfWidgetFormInputCheckbox(),
     );
     
+    if ($this->canPublish)
+    {
+      $fields['is_active']    = new sfWidgetFormInputCheckbox();
+    }
+    
     if ($this->canAdmin) 
     {
-      $fields['is_locked']      = new sfWidgetFormInputCheckbox();
+      $fields['is_locked']    = new sfWidgetFormInputCheckbox();
     }
     
     return $fields;
@@ -125,11 +138,15 @@ abstract class PluginSitetreeForm extends BaseSitetreeForm
                                     array('invalid' => 'Invalid - can only contain a-z, 0-9, _ and -'))
                                  ), array('required' => !$this->getObject()->getNode()->isRoot())),
       'target_module'       => new sfValidatorChoice(array('choices' => array_keys($modules))),
-      'is_active'           => new sfValidatorBoolean(array('empty_value' => false)),
       'is_hidden'           => new sfValidatorBoolean(array('empty_value' => false)),
       'is_core_navigation'  => new sfValidatorBoolean(array('empty_value' => false)),
       'prepend_parent_url'  => new sfValidatorBoolean(array('empty_value' => false)),
     );
+    
+    if ($this->canPublish)
+    {
+      $fields['is_active']   = new sfValidatorBoolean(array('empty_value' => false));
+    }
     
     if ($this->canAdmin) 
     {

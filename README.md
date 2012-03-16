@@ -17,7 +17,7 @@ Dependancies
 
 ### Symfony
 
- * [sfDoctrineGuardUserPlugin](http://www.symfony-project.org/plugins/sfDoctrineGuardPlugin)
+ * [sfDoctrineGuardUserPlugin](http://www.symfony-project.org/plugins/sfDoctrineGuardPlugin) (for the CMS)
  * [sfImagePoolPlugin](https://github.com/HollerLondon/sfImagePoolPlugin)
  * [sfMooToolsFormExtraPlugin](https://github.com/HollerLondon/sfMooToolsFormExtraPlugin)
  * [Blamable]([http://svn.doctrine-project.org/extensions/Blameable/branches/1.2-1.0/) (external in lib/doctrine_extensions)
@@ -158,6 +158,34 @@ This should contain the site configuration, so that the routing knows which rout
 
 For the backend - you'll want to set your `homepage` route to point to `sitetree/changeSite` (or point to this action where you want to implement the 
 change site functionality).
+
+
+Permissions
+-----------
+
+In your CMS application (usually backend) set your sfUser to extend `cmsSecurityUser` (this extends `sfGuardSecurityUser`) to allow part permissions.
+
+Import the plugin's fixtures to include the CMS's user permissions:
+
+     ./symfony doctrine:data-load --append plugins/sfCmsPlugin/data/fixtures/permissions.yml
+     
+Permissions are as follows:
+
+site.admin
+==========
+Allows editing, publishing and deleting of sitetree nodes and all content
+
+site.edit
+=========
+Allows editing of versionnable content
+
+site.publish
+============
+Allows editing and publishing of sitetree nodes and all content
+
+
+@TODO: Implement permissions for content - add sitetree awaiting approval page
+@TODO: Site specific permissions
 
 
 Custom modules

@@ -13,11 +13,20 @@ use_stylesheets_for_form($form);
   <h1>Create new page</h1>
 
   <div id="sf_admin_header">
-    <p>Creating as a child of: <?php echo $parent->getTitle(); ?></p>
+    <div class="sitetreeInfo">
+      <p>Creating as a child of: 
+        <?php 
+        if ($parent->is_hidden) $class = 'site_sitetree_hidden';
+        else if ($parent->is_active) $class = 'site_sitetree_published';
+        else $class = 'site_sitetree_not_published';
+        ?>
+        <span class="<?php echo $class; ?>"><?php echo $parent->getTitle(); ?></span>
+      </p>
+    </div>
   
     <?php if (!$sf_user->isSuperAdmin()) 
     {
-      echo '<p>You are not a sitetree administrator, so you cannot lock or unlock nodes.</p>';
+      echo '<p class="error site_notice">You are not a sitetree administrator, so you cannot lock or unlock nodes.</p>';
     } ?>
   </div>
 
