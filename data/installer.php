@@ -7,9 +7,6 @@ $this->logSection('install', 'Creating applications');
 $this->runTask('generate:app', 'frontend');
 $this->runTask('generate:app', 'backend');
 
-// @TODO: Hollerize as per FB plugin (databases.yml-dist etc)
-//$this->logSection('install', 'Copying default configuration');
-
 $this->logSection('install', 'Reloading');
 $this->reloadTasks();
 $this->reloadAutoload();
