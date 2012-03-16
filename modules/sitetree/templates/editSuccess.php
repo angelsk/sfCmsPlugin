@@ -15,17 +15,15 @@ use_stylesheets_for_form($form);
   <h1>Edit '<?php echo $sitetree->getTitle(); ?>' properties</h1>
 
   <div id="sf_admin_header">
-    <p>This allows you to edit the information about this sitetree node.
-    
-    <?php if ($sitetree->isManagedModule()) 
+    <?php echo include_partial('sitetree/sitetreeInfo', array('sitetree'=>$sitetree)); ?>
+  
+    <?php if (!$sf_user->hasCredential('site.admin')) 
     {
-      echo ' You can also ' . link_to('edit the content for this page', $sitetree->getEditLink());
-    } ?>
-    </p>
-    
-    <?php if (!$sf_user->isSuperAdmin()) 
+      echo '<p class="error site_notice">You are not an administrator, so you cannot lock or unlock nodes</p>';
+    }
+    if (!$sf_user->hasCredential(array('site.admin', 'site.publish')) && !$sitetree->is_active) 
     {
-      echo '<p>You are not a super administrator, so you cannot lock or unlock nodes.</p>';
+      echo '<p class="error site_notice">You are not a publisher, so you cannot put this page live</p>';
     } ?>
   </div>
   

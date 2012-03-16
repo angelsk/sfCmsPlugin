@@ -40,7 +40,10 @@ class createSitetreeForm extends SitetreeForm
       unset($this['is_locked']);
     }
     
-    unset($this['is_active']); // Start off with all pages unpublished to avoid 404s and no content
+    if ($this->canPublish) 
+    {
+      unset($this['is_active']); // Start off with all pages unpublished to avoid 404s and no content
+    }
   }
 
   public function doSave($con = null) 
