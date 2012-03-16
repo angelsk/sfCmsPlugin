@@ -4,8 +4,8 @@ all:
     identifier:           ##SITEIDENTIFIER##
     definition:
       name:               ##PROJECTNAME##
-      cultures:           [en_GB]
-      default_culture:    en_GB
+      cultures:           [en]
+      default_culture:    en
       root_module:        default
       
     # the default site (used in the admin area)
