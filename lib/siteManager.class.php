@@ -198,18 +198,15 @@ class siteManager
       }
       else
       {
-        // single-site app... use the default site
-        return $this->getDefaultSite();
+        // single-site app... use the site set in config
+        return sfConfig::get('app_site_identifier');
       }
     }
     // We can set it in the session
     else
     {
-      // Get the cookie if it exists, fill in with the default site if it doesn't
-      $defaultSite = sfContext::getInstance()->getRequest()->getCookie('site_' . sfConfig::get('sf_app'), $this->getDefaultSite());
-      
-      // And use that as the default for the session
-      return sfContext::getInstance()->getUser()->getAttribute('site', $defaultSite, 'site.' . sfConfig::get('sf_app'));
+      // Site config loaded in plugin initialize - pulls it from cookies and loads site config
+      return sfConfig::get('app_site_identifier');
     }
   }
 
@@ -223,10 +220,18 @@ class siteManager
    */
   public function setCurrentSite($site) 
   {
-    sfContext::getInstance()->getUser()->setAttribute('site', $site, 'site.' .  sfConfig::get('sf_app'));
+    // If cookie set for non-active site, then use default site
+    $activeSites = $this->getActiveSites();
+    if (!empty($activeSites)) $activeSites = array_keys($activeSites);
     
-    // Save it in a cookie because cache clearing clears the session and we don't want the site in the CMS
-    // to change halfway through editing, especially if sfGuardRememberMe is set.
+    if (!in_array($site, $activeSites)) $site = $this->getDefaultSite();
+    
+    if (sfConfig::get('sf_logging_enabled')) 
+    {
+      sfContext::getInstance()->getLogger()->info(sprintf('Setting current site to %s', $site));
+    }
+    
+    // Save it in a cookie then it's remembered even when logged out by cache clearing on server
     $expiration_age = sfConfig::get('app_sf_guard_plugin_remember_key_expiration_age', 15 * 24 * 3600); // re-use this expiration :)
     sfContext::getInstance()->getResponse()->setCookie('site_' . sfConfig::get('sf_app'), $site, time() + $expiration_age);
   }

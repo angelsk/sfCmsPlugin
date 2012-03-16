@@ -67,10 +67,12 @@ class sfCmsPluginConfiguration extends sfPluginConfiguration
       else 
       {
         // See if it's set in a cookie and load the config
-        $app       = sfConfig::get('sf_app');
-        $dimension = (isset($_COOKIE['site_' . $app]) ? $_COOKIE['site_' . $app] : false);
+        $app          = sfConfig::get('sf_app');
+        $dimension   = (isset($_COOKIE['site_' . $app]) ? $_COOKIE['site_' . $app] : false);
+        $activeSites = sfConfig::get('app_site_active_sites', array());
+        if (!empty($activeSites)) $activeSites = array_keys($activeSites);
         
-        if ($dimension)
+        if ($dimension && in_array($dimension, $activeSites))
         {
           // Load the config
           siteManager::getInstance()->loadSiteConfig($dimension);
