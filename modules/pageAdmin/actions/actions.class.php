@@ -13,6 +13,11 @@ class pageAdminActions extends sfActions
   public function preExecute()
   {
     $this->getResponse()->addJavascript('/sfCmsPlugin/js/SimpleTabs.js', 'last');
+    
+    // Permissions
+    $user = sfContext::getInstance()->getUser();
+    $this->canAdmin   = $user->hasCredential('site.admin');
+    $this->canPublish = ($this->canAdmin || $user->hasCredential('site.publish'));
   }
   
   /**
@@ -93,8 +98,8 @@ class pageAdminActions extends sfActions
     $contentGroup = $page->ContentGroup;
     $contentGroup->setCurrentLang($this->getUser()->getCulture());
 
-    $this->page = $page;
-    $this->sitetree = $sitetree;
+    $this->page         = $page;
+    $this->sitetree     = $sitetree;
     $this->contentGroup = $contentGroup;
   }
 
@@ -108,10 +113,11 @@ class pageAdminActions extends sfActions
   {
     $this->forward404Unless($this->hasRequestParameter('id'));
 
-    $pageId = $request->getParameter('id');
-    $page = PageTable::getInstance()->findOneById($pageId);
+    $page = PageTable::getInstance()->findOneById($request->getParameter('id'));
 
     $this->forward404Unless($page);
+    
+    if (!$this->canPublish) $this->redirect("pageAdmin/edit?id=$page->id");
 
     $sitetree = SitetreeTable::getInstance()->findOneById($page->sitetree_id);
 

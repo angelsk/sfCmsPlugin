@@ -1,0 +1,28 @@
+SiteApproval:
+  columns:
+    sitetree_id:            { type: integer, notnull: true } 
+    model:                  { type: string, length: 50, notnull: true }
+    model_id:               { type: integer, notnull: true }
+
+  actAs:
+    SoftDelete:
+    Timestampable:          # created_at and updated_at
+    Blameable:              # created_by and updated_by (override to use sfGuardUser)
+      listener: siteBlamableListener
+      relations:
+        created:
+          disabled: false  
+          class: sfGuardUser
+        updated:
+          disabled: false  
+          class: sfGuardUser
+
+  relations:
+    Sitetree:
+      class: Sitetree
+      local: sitetree_id
+      foreign: id
+      
+  options:
+    symfony:               
+      form: false

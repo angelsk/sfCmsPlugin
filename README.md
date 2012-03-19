@@ -173,7 +173,7 @@ Permissions are as follows:
 
 site.admin
 ==========
-Allows editing, publishing and deleting of sitetree nodes and all content
+Allows editing, publishing, importing and soft deleting of sitetree nodes and all content
 
 site.edit
 =========
@@ -181,10 +181,12 @@ Allows editing of versionnable content
 
 site.publish
 ============
-Allows editing and publishing of sitetree nodes and all content
+Allows editing, importing and publishing of sitetree nodes and all content
 
+superadmin
+=========
+Only users with the superadmin permission can restore or permanently delete sitetree nodes.
 
-@TODO: Implement permissions for content - add sitetree awaiting approval indication 
 
 @TODO: Site specific permissions
 

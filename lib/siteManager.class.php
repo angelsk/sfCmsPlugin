@@ -995,11 +995,11 @@ class siteManager
     }
 
     // we are missing a root node for this site, try and create one:
-    $defn = $this->getSite();
+    $defn       = $this->getSite();
     $rootModule = isset($defn['root_module']) ? $defn['root_module'] : 'default';
-    $rootNode = Sitetree::createRoot($site, $rootModule);
+    $rootNode   = Sitetree::createRoot($site, $rootModule);
 
-    $results = new Doctrine_Collection('Sitetree');
+    $results    = new Doctrine_Collection('Sitetree');
     $results->add($rootNode);
 
     return $results;

@@ -24,7 +24,7 @@ use_stylesheets_for_form($form);
       </p>
     </div>
   
-    <?php if (!$sf_user->isSuperAdmin()) 
+    <?php if (!$canAdmin) 
     {
       echo '<p class="error site_notice">You are not a sitetree administrator, so you cannot lock or unlock nodes.</p>';
     } ?>

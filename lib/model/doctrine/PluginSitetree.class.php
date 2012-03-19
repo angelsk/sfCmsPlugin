@@ -306,6 +306,7 @@ abstract class PluginSitetree extends BaseSitetree
       
       // delete translations
       $translations = $this->Translation;
+      
       foreach ($translations as $lang => $translation) 
       {
         $translation->delete();
