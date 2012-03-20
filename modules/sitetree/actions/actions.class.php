@@ -65,7 +65,7 @@ class sitetreeActions extends sfActions
     $sites             = siteManager::getInstance()->getActiveSites(true);
     
     // If logged in and not correct site - redirect
-    if (!in_array($site, array_keys($sites))) $this->redirect('sitetree/changeSite');
+    if (!empty($sites) && !in_array($site, array_keys($sites))) $this->redirect('sitetree/changeSite');
     
     $this->treeNodes   = $manager->getEntireSitetree($site);
     $this->approvals   = SiteApprovalTable::getInstance()->getOrderedApprovalsForSite($site);

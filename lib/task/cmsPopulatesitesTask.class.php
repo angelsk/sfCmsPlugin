@@ -35,7 +35,7 @@ EOF;
     if (empty($activeSites))
     {
       // Get default site
-      $defn = sfConfig::get('app_site_definition');
+      $defn        = sfConfig::get('app_site_definition');
       $activeSites = array(sfConfig::get('app_site_identifier') => $defn['name']);
     }
     

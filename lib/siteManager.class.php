@@ -158,6 +158,13 @@ class siteManager
   {
     $sites = sfConfig::get('app_site_active_sites', array());
     
+    if (empty($sites))
+    {
+      // Get default site
+      $defn   = $this->getSite();
+      $sites  = array(sfConfig::get('app_site_identifier') => $defn['name']);
+    }
+    
     if ($filter)
     {
       $userSites = sfContext::getInstance()->getUser()->getSites();
