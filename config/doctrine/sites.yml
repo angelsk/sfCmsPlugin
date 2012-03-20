@@ -1,0 +1,48 @@
+Site:
+  options:
+    symfony:
+      form:   false
+      filter: false
+      
+  columns:
+    site:                   { type: string, length: 3, primary: true }
+    name:                   { type: string, length: 50 }
+
+  relations:
+    Groups:
+      class:        sfGuardGroup
+      refClass:     sfGuardGroupSite
+      type:         many
+      foreignAlias: Sites
+      local:        site
+      foreign:      group_id
+    sfGuardGroupSites:
+      class:    sfGuardGroupSite
+      foreign:  site
+      local:    site
+      type:     many
+
+sfGuardGroupSite:
+  options:
+    symfony:
+      form:   false
+      filter: false
+      
+  actAs: 
+    Timestampable:
+    
+  columns:
+    group_id:       { type: integer, primary: true }
+    site:           { type: string, length: 3, primary: true }
+    
+  relations:
+    Site:
+      class:    Site
+      local:    site
+      foreign:  site
+      type:     one
+    Group:
+      class:    sfGuardGroup
+      local:    group_id
+      foreign:  id
+      type:     one

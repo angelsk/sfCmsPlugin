@@ -151,15 +151,24 @@ class siteManager
   /**
    * Get a list of active sites (if multiple sites set up)
    * 
-   * This method should be overridden in a custom siteManager
-   * if the sites require filtering by permissions for example.
-   * 
-   * @param mixed $filter A dummy param to use to pass through filters for custom implementations
+   * @param boolean $filter Filter sites by permissions
    * @return array
    */
-  public function getActiveSites($filter = null)
+  public function getActiveSites($filter = false)
   {
-    return sfConfig::get('app_site_active_sites', array());
+    $sites = sfConfig::get('app_site_active_sites', array());
+    
+    if ($filter)
+    {
+      $userSites = sfContext::getInstance()->getUser()->getSites();
+      
+      foreach ($sites as $id => $name)
+      {
+        if (!in_array($id, $userSites)) unset($sites[$id]);
+      }
+    }
+    
+    return $sites;
   }
   
   /**
@@ -221,7 +230,7 @@ class siteManager
   public function setCurrentSite($site) 
   {
     // If cookie set for non-active site, then use default site
-    $activeSites = $this->getActiveSites();
+    $activeSites = $this->getActiveSites(true);
     if (!empty($activeSites)) $activeSites = array_keys($activeSites);
     
     if (!in_array($site, $activeSites)) $site = $this->getDefaultSite();

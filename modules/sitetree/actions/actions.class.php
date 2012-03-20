@@ -37,7 +37,7 @@ class sitetreeActions extends sfActions
    */
   public function executeChangeSite(sfWebRequest $request)
   {
-    $this->sites = siteManager::getInstance()->getActiveSites();
+    $this->sites = siteManager::getInstance()->getActiveSites(true); // with permissions
     $selectedSite = false;
     
     if (empty($this->sites)) $this->redirect('sitetree/index'); // will use default site
@@ -62,6 +62,11 @@ class sitetreeActions extends sfActions
   {
     $manager           = siteManager::getInstance();
     $site              = $manager->getCurrentSite();
+    $sites             = siteManager::getInstance()->getActiveSites(true);
+    
+    // If logged in and not correct site - redirect
+    if (!in_array($site, array_keys($sites))) $this->redirect('sitetree/changeSite');
+    
     $this->treeNodes   = $manager->getEntireSitetree($site);
     $this->approvals   = SiteApprovalTable::getInstance()->getOrderedApprovalsForSite($site);
     

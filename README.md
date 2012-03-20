@@ -159,6 +159,11 @@ This should contain the site configuration, so that the routing knows which rout
 For the backend - you'll want to set your `homepage` route to point to `sitetree/changeSite` (or point to this action where you want to implement the 
 change site functionality).
 
+To add the sites to the database (specifically to allow sfGuardGroup to have site specific permissions) run the following task (and each time a new
+site is added):
+
+     ./symfony cms:populate-sites
+
 
 Permissions
 -----------
@@ -175,20 +180,23 @@ site.admin
 ==========
 Allows editing, publishing, importing and soft deleting of sitetree nodes and all content
 
-site.edit
-=========
-Allows editing of versionnable content
-
 site.publish
 ============
 Allows editing, importing and publishing of sitetree nodes and all content
+
+site.edit
+=========
+Allows editing of versionnable content
 
 superadmin
 =========
 Only users with the superadmin permission can restore or permanently delete sitetree nodes.
 
+Groups
+======
 
-@TODO: Site specific permissions
+Sites and permissions are assigned to groups.  Permissions act as normal (though you only need one of the above permissions to gain sitetree permissions);
+but with sites, it assumes you can access all sites unless sites are assigned to your group (this is for viewing only - can import content from any site).
 
 
 Custom modules

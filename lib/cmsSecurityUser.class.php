@@ -55,4 +55,37 @@ class cmsSecurityUser extends sfGuardSecurityUser
     
     return $hasCredential;
   }
+  
+  /**
+   * Get sites for a user (if no sites assigned through a group, assume access to all).
+   * Stores in session for when needed
+   * 
+   * @return array of site identifiers
+   */
+  public function getSites()
+  {
+    $sites  = $this->getAttribute('sites', array(), 'sfGuardSecurityUser');
+    
+    if (empty($sites))
+    {
+      foreach ($this->getGuardUser()->getGroups() as $group)
+      {
+        foreach ($group->getSites() as $site)
+        {
+          $sites[] = $site->site;
+        }
+      }
+      
+      if (empty($sites))
+      {
+        $sites = SiteTable::getInstance()->getSiteIdentifiers();
+        
+        if (!is_array($sites)) $sites = array($sites);
+      }
+    }
+    
+    $this->setAttribute('sites', $sites, 'sfGuardSecurityUser');
+    
+    return $sites;
+  }
 }
