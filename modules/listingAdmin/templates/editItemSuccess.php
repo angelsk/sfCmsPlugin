@@ -103,17 +103,19 @@ use_stylesheets_for_form($form);
            <span class="site_sitetree_hidden" style="float:left;">Hidden</span>
         <?php endif; ?>
         
-        <?php if ($item->is_active): ?>
-           <form method="post" action="" style="float:left; margin-top: -5px;">
-              <input type="hidden" name="publish" value="0" />
-              <input type="submit" value="Unpublish" />
-           </form>
-        <?php else: //if ($item->is_active): ?>
-          <form method="post" action="" style="float:left;">
-            <input type="hidden" name="publish" value="1" />
-            <input type="submit" value="Publish" />
-          </form>
-        <?php endif; //if ($item->is_active): ?>
+        <?php if ($canPublish) : ?>
+          <?php if ($item->is_active): ?>
+             <form method="post" action="" style="float:left; margin-top: -5px;">
+                <input type="hidden" name="publish" value="0" />
+                <input type="submit" value="Unpublish" />
+             </form>
+          <?php else: //if ($item->is_active): ?>
+            <form method="post" action="" style="float:left;">
+              <input type="hidden" name="publish" value="1" />
+              <input type="submit" value="Publish" />
+            </form>
+          <?php endif; //if ($item->is_active): ?>
+        <?php endif; ?>
         <br class="clear" />
       </div>
     </div>
@@ -123,16 +125,22 @@ use_stylesheets_for_form($form);
     
     <div class="sf_admin_form">
   
-      <script type="text/javascript">
-        $(document).addEvent('domready', function() { 
-          $(document).addEvent('domready', function() {
-            new SimpleTabs('listing_item_<?php echo $item->slug; ?>_tabs', {
+      <?php $content = get_slot('cms_js');  ?>
+      <?php slot('cms_js');
+        if (sfConfig::get('app_site_use_slots', false)) echo $content; // If using slot, combine them ?>
+        
+        <script type="text/javascript">
+          $(document).addEvent('domready', function () 
+          {
+            new SimpleTabs('listing_item_<?php echo $item->slug; ?>_tabs', 
+            {
               selector: 'h4'
             });
           });
-        });
-      </script>
-    
+        </script>
+      <?php end_slot(); ?>
+      <?php if (!sfConfig::get('app_site_use_slots', false)) include_slot('cms_js'); ?>
+        
       <div id="listing_item_<?php echo $item->slug; ?>_tabs">
     
         <h4>Properties</h4>
@@ -194,7 +202,7 @@ use_stylesheets_for_form($form);
         </div>
     
         <h4>Content</h4>
-        <div id='item_<?php echo $item->slug; ?>_content'>
+        <div id='item_<?php echo $item->slug; ?>_content' class="listing_content">
       
           <div class="content_border_thin">
             <?php

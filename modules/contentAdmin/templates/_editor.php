@@ -20,6 +20,14 @@ $formTarget = ($sf_data->offsetExists('formTarget') ? $sf_data->getRaw('formTarg
 
   <?php if (!$includeImport) : ?>
   
+    <?php if ($currentApproval && $canPublish) : ?>
+      <div class="sitetreeInfo">
+        <p>Content currently waiting for approval - requested by <strong><?php echo $currentApproval->CreatedBy->username; ?></strong> 
+        on <strong><?php echo $currentApproval->getDateTimeObject('created_at')->format('d M Y H:i'); ?></strong></p><br />
+        <input type="submit" name="new_versions" value="Load content awaiting approval" class="btn_load frm_submit" />
+      </div>
+    <?php endif; ?>
+  
     <fieldset class="sitetreeInfo">
       <span style="float:left;">Content actions: &nbsp;</span>
       <input type="submit" name="live_versions" value="Load live content" class="btn_load frm_submit" />
@@ -42,7 +50,7 @@ $formTarget = ($sf_data->offsetExists('formTarget') ? $sf_data->getRaw('formTarg
     <ul class="sf_admin_actions">
       <li class="sf_admin_action_preview"><input type="submit" name="preview" id="<?php echo $formId ?>Preview" value="Preview" /></li>
       <li class="sf_admin_action_save"><input type="submit" name="save" value="Save version" /></li>
-      <li class="sf_admin_action_save_and_add"><input type="submit" name="save_and_publish" value="Save and publish" /></li>
+      <li class="sf_admin_action_save_and_add"><input type="submit" name="save_and_publish" value="Save and <?php echo ($canPublish ? 'publish' : 'mark for approval'); ?>" /></li>
       <?php if (isset($cancelUrl)) echo '<li class="sf_admin_action_list">' . link_to('Back', $cancelUrl) . '</li>'; ?>
     </ul>
   

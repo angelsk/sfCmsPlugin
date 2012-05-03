@@ -151,15 +151,31 @@ class siteManager
   /**
    * Get a list of active sites (if multiple sites set up)
    * 
-   * This method should be overridden in a custom siteManager
-   * if the sites require filtering by permissions for example.
-   * 
-   * @param mixed $filter A dummy param to use to pass through filters for custom implementations
+   * @param boolean $filter Filter sites by permissions
    * @return array
    */
-  public function getActiveSites($filter = null)
+  public function getActiveSites($filter = false)
   {
-    return sfConfig::get('app_site_active_sites', array());
+    $sites = sfConfig::get('app_site_active_sites', array());
+    
+    if (empty($sites))
+    {
+      // Get default site
+      $defn   = $this->getSite();
+      $sites  = array(sfConfig::get('app_site_identifier') => $defn['name']);
+    }
+    
+    if ($filter)
+    {
+      $userSites = sfContext::getInstance()->getUser()->getSites();
+      
+      foreach ($sites as $id => $name)
+      {
+        if (!in_array($id, $userSites)) unset($sites[$id]);
+      }
+    }
+    
+    return $sites;
   }
   
   /**
@@ -221,7 +237,7 @@ class siteManager
   public function setCurrentSite($site) 
   {
     // If cookie set for non-active site, then use default site
-    $activeSites = $this->getActiveSites();
+    $activeSites = $this->getActiveSites(true);
     if (!empty($activeSites)) $activeSites = array_keys($activeSites);
     
     if (!in_array($site, $activeSites)) $site = $this->getDefaultSite();
@@ -995,11 +1011,11 @@ class siteManager
     }
 
     // we are missing a root node for this site, try and create one:
-    $defn = $this->getSite();
+    $defn       = $this->getSite();
     $rootModule = isset($defn['root_module']) ? $defn['root_module'] : 'default';
-    $rootNode = Sitetree::createRoot($site, $rootModule);
+    $rootNode   = Sitetree::createRoot($site, $rootModule);
 
-    $results = new Doctrine_Collection('Sitetree');
+    $results    = new Doctrine_Collection('Sitetree');
     $results->add($rootNode);
 
     return $results;

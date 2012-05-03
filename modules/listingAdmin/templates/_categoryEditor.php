@@ -31,7 +31,7 @@
           <td>&nbsp;<?php if ($category->is_active) : ?><img alt="Checked" title="Checked" src="/sfCmsPlugin/images/tick.png"><?php endif; ?></td>
           <td>
             <span style="background: url(/sfDoctrinePlugin/images/edit.png) no-repeat 0px 0px; padding-left: 20px;"><a href="?editCategory=<?php echo $category->id . '#'.$formTarget; ?>">Edit</a></span>
-            <?php if (0 == $total) : ?><span style="background: url(/sfDoctrinePlugin/images/delete.png) no-repeat 0px 0px; padding-left: 20px;"><a href="?deleteCategory=<?php echo $category->id . '#'.$formTarget; ?>" class="delete_cat">Delete</a></span><?php endif; ?>
+            <?php if (0 == $total && $canAdmin) : ?><span style="background: url(/sfDoctrinePlugin/images/delete.png) no-repeat 0px 0px; padding-left: 20px;"><a href="?deleteCategory=<?php echo $category->id . '#'.$formTarget; ?>" class="delete_cat">Delete</a></span><?php endif; ?>
           </td>
         </tr>
       <?php endforeach; ?>
@@ -47,12 +47,9 @@
     <script type="text/javascript">
       $(document).addEvent('domready', function () 
       {
-        $$('.delete_cat').each(function (el) 
+        $$('.delete_cat').addEvent('click', function () 
         {
-          el.addEvent('click', function () 
-          {
-            return confirm('Are you sure you want to delete this category - it cannot be undone');
-          });
+          return confirm('Are you sure you want to delete this category - it cannot be undone');
         });  
       });
     </script>

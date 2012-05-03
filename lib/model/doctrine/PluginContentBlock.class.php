@@ -198,9 +198,13 @@ abstract class PluginContentBlock extends BaseContentBlock
       {
         $contentBlockVersion->ContentBlock = $this;
       }
-      else
+      else if (siteManager::getInstance()->getManagedApp() != sfConfig::get('sf_app'))
       {
         $contentBlockVersion = ContentBlockVersion::createInitialVersion($this, $lang);
+      }
+      else 
+      {
+        return null;
       }
 
       $this->setCurrentVersionsCache($contentBlockVersion, $lang);

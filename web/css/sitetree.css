@@ -22,91 +22,95 @@
   overflow: hidden;
   margin: 5px;
   padding: 10px;
-  width: 50%;
   min-width: 600px;
+  border: 1px solid #CCC;
+  border-radius: 1em;
+  box-shadow: 2px 2px 5px 2px #DDD;
+  margin: 2em 0;
+  background: white;
 }
 
-.folderTree ul {
-  margin: 0 0 0 20px;
-  padding: 0;
-}
-
-.folderTree ul li {
-  border-top: 1px solid #DDD;
-  padding-top: 3px;
-  position: relative;
-}
-
-.folderTree li .lnk {
-  padding-bottom: 5px;
-  overflow: hidden;
-}
-
-.folderTree,
-.folderTree li,
-.folderTree ul,
-.folderTree ul li {
-  list-style-type: none;
-}
-
-.folderTree li {
-  clear: both;
-  position: relative;
-}
-
-.folderTree .lnk {
-  width: 250px;
-  padding: 0 10px;
-}
-
-.folderTree .nodeinfo {
-  padding: 2px;
-  margin-left: 20px;
-  position: absolute;
-  right: 125px;
-  top: 0;
-  text-align: right;
-  width: auto;
-  margin-right: 10px;
-  color: #5bb838;
-}
-.folderTree .nodeinfo.hidden {
-  color: #666;
-}
-.folderTree .nodeinfo.locked {
-  color: #0085c5;
-}
-.folderTree .nodeinfo.notpublished,
-.folderTree .nodeinfo.deleted {
-  color: #ff0000;
-}
-.folderTree .nodeinfo.blank {
+  .folderTree ul {
+    margin: 0 0 0 20px;
+    padding: 0;
+  }
   
-}
+  .folderTree li {
+    border-top: 1px solid #DDD;
+    list-style-type: none;
+  }
+  
+    .folderTree li.root {
+      border-top: none;
+    }
+    
+    .folderTree li div {
+      position: relative;
+      margin: 3px;
+      padding: 3px;
+    }
+    
+      .folderTree li div.hover {
+        background: #ffc;
+      }
+    
+  .folderTree .lnk {
+    overflow: hidden;
+    width: 250px;
+  }
 
-.folderTree .sitetree_actions {
-  width: 120px;
-  position: absolute;
-  top: 0;
-  right: 0;
-}
+  .folderTree .nodeinfo {
+    margin: 0 10px 0 20px;
+    position: absolute;
+    right: 125px;
+    top:   3px;
+    text-align: right;
+    width: auto;
+    color: #5bb838;
+  }
+    .folderTree .nodeinfo.hidden {
+      color: #666;
+    }
+    .folderTree .nodeinfo.locked {
+      color: #0085c5;
+    }
+    .folderTree .nodeinfo.notpublished,
+    .folderTree .nodeinfo.deleted {
+      color: #ff0000;
+    }
+    .folderTree .nodeinfo.blank {
+      
+    }
 
-.folderTree .sitetree_actions .spacer {
-  display:inline-block;
-  width:16px;
-  height:16px;
-}
+  .folderTree .sitetree_actions {
+    width: 120px;
+    position: absolute;
+    top: 3px;
+    right: 0px;
+  }
+
+    .folderTree .sitetree_actions .spacer {
+      display:inline-block;
+      width:16px;
+      height:16px;
+    }
 
 #breadcrumbs {
   
 }
 
-.sitetreeInfo {
+#sf_admin_content .listing_content fieldset {
+  border: none;
+}
+
+.sitetreeInfo, #sf_admin_container fieldset.sitetreeInfo {
   padding: 10px;
-  margin: 0px 0px 15px;
   background: white;
-  border: 1px solid #DDD;
   overflow: hidden;
+  border: 1px solid #CCC;
+  border-radius: 1em;
+  box-shadow: 2px 2px 5px 2px #DDD;
+  margin: 2em 0;
 }
 
   .sitetreeInfo p, .sitetreeInfo h3 {
@@ -150,7 +154,10 @@
   margin: 0;
   clear: both;
   background: white;
-  border: 1px solid #DDD;
+  border: 1px solid #CCC;
+  border-radius: 0 1em 1em 1em;
+  box-shadow: 2px 2px 5px 2px #DDD;
+  margin: 0px 0px 2em;
 }
 
 .tab-menu {
@@ -158,30 +165,42 @@
   padding: 0;
   list-style: none;
   overflow: auto;
+  margin-bottom: -1px;
 }
 
-.tab-menu li {
-  margin: 0;
-  padding: 0;
-  float: left;
-  line-height: 2em;
-  list-style-type: none;
-}
-
-.tab-menu li a {
-  padding: 0 .5em;
-  font-weight: bold;
-}
-
-.tab-menu li a:hover,
-.tab-menu li a:focus { 
+  .tab-menu li {
+    margin: 0;
+    padding: 3px 1em;
+    float: left;
+    line-height: 2em;
+    list-style-type: none;
+    border-radius: 0.5em 0.5em 0 0;
+    border-top: 1px solid #CCC;
+    border-left: 1px solid #CCC;
+    border-right: 1px solid #CCC;
+    border-bottom: none;
+    background: white;
+    cursor: pointer;
+  }
   
-}
+    .tab-menu li.tab-selected {
+      border-bottom: 1px solid white;
+    }
+  
+    .tab-menu li a {
+      padding: 0 .5em;
+      font-weight: bold;
+    }
+  
+    .tab-menu li a:hover,
+    .tab-menu li a:focus { 
+      
+    }
 
-.tab-menu li.tab-selected a {
-  text-decoration: none;
-  color: inherit;
-}
+    .tab-menu li.tab-selected a {
+      text-decoration: none;
+      color: inherit;
+    }
 
 #sf_admin_container .site_notice { 
   background-color: white;  

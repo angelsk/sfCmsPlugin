@@ -13,6 +13,11 @@ class listingAdminActions extends sfActions
   public function preExecute()
   {
     $this->getResponse()->addJavascript('/sfCmsPlugin/js/SimpleTabs.js', 'last');
+    
+    // Permissions
+    $user = sfContext::getInstance()->getUser();
+    $this->canAdmin   = $user->hasCredential('site.admin');
+    $this->canPublish = ($this->canAdmin || $user->hasCredential('site.publish'));
   }
   
   /**
@@ -78,7 +83,7 @@ class listingAdminActions extends sfActions
     $manager = listingManager::getInstance();
     $form    = new ListingForm($listing);
 
-    if ($request->isMethod(sfWebRequest::POST) && $request->hasParameter('listing'))
+    if ($request->isMethod(sfWebRequest::POST) && $request->hasParameter('listing') && $this->canPublish)
     {
       $form->bind($request->getParameter('listing'));
 
@@ -90,7 +95,7 @@ class listingAdminActions extends sfActions
         $this->getUser()->setFlash('edit_notice', 'Your listing property changes have been saved');
       }
     }
-
+    
     // get a pager for the items in this content listing:
     $pager = $this->getPager($listing);
     $pager->initFromRequest($request);
@@ -164,6 +169,8 @@ class listingAdminActions extends sfActions
     $listing   = ListingTable::getInstance()->findOneById($request->getParameter('id'));
 
     $this->forward404Unless($listing);
+    
+    if (!$this->canPublish) $this->redirect('listingAdmin/edit?id=' . $listing->id);
     
     $sitetree   = SitetreeTable::getInstance()->findOneById($listing->sitetree_id);
     $template   = $listing->template;
@@ -255,7 +262,7 @@ class listingAdminActions extends sfActions
     $this->form     = new $formClass($item);
 
     // process the form
-    if ($request->isMethod(sfWebRequest::POST) && $this->hasRequestParameter('publish'))
+    if ($request->isMethod(sfWebRequest::POST) && $this->hasRequestParameter('publish') && $this->canPublish)
     {
       $actionP = ($this->getRequestParameter('publish') === '1') ? 'publish' : 'unPublish';
       $item->$actionP();
@@ -330,6 +337,8 @@ class listingAdminActions extends sfActions
     $listing = ListingTable::getInstance()->findOneById($request->getParameter('listId'));
     
     $this->forward404Unless($listing);
+    
+    if (!$this->canPublish) $this->redirect("listingAdmin/edit?id=$listing->id");
 
     $sitetree = SitetreeTable::getInstance()->findOneById($listing->sitetree_id);
 
@@ -358,6 +367,8 @@ class listingAdminActions extends sfActions
     $listing = ListingTable::getInstance()->findOneById($request->getParameter('listId'));
     
     $this->forward404Unless($listing);
+    
+    if (!$this->canAdmin) $this->redirect("listingAdmin/edit?id=$listing->id");
 
     $sitetree = SitetreeTable::getInstance()->findOneById($listing->sitetree_id);
 
