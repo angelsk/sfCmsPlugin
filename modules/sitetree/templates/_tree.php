@@ -2,19 +2,19 @@
 /**
  * Taken from the sfDoctrineTree plugin and modified a little
  */
-$id = (isset($id) ? $id : 'assetTree');
-$class = (isset($class) ? $class : '');
-$options = (isset($options) ? $options : array());
+$id                 = (isset($id) ? $id : 'assetTree');
+$class              = (isset($class) ? $class : '');
+$options            = (isset($options) ? $options : array());
 $nodeRenderFunction = (isset($nodeRenderFunction) ? $nodeRenderFunction : 'default_node_render');
-$liRenderFunction = (isset($liRenderFunction) ? $liRenderFunction : 'default_li_render');
-$ulRenderFunction = (isset($ulRenderFunction) ? $ulRenderFunction : 'default_ul_render');
-$sortTree = (isset($sortTree) ? $sortTree : false);
-$selectedNode = (isset($selectedNode)) ? $selectedNode : null;
-$parents = (isset($parents)) ? $parents : null;
-$checkIfHidden = (isset($checkIfHidden)) ? $checkIfHidden : false;
-$canBeDeleted = (isset($canBeDeleted)) ? $canBeDeleted : false;
+$liRenderFunction   = (isset($liRenderFunction) ? $liRenderFunction : 'default_li_render');
+$ulRenderFunction   = (isset($ulRenderFunction) ? $ulRenderFunction : 'default_ul_render');
+$sortTree           = (isset($sortTree) ? $sortTree : false);
+$selectedNode       = (isset($selectedNode)) ? $selectedNode : null;
+$parents            = (isset($parents)) ? $parents : null;
+$checkIfHidden      = (isset($checkIfHidden)) ? $checkIfHidden : false;
+$canBeDeleted       = (isset($canBeDeleted)) ? $canBeDeleted : false;
 
-$records = $sf_data->getRaw('records');
+$records            = $sf_data->getRaw('records');
 
 if (!function_exists('default_node_render'))
 {
@@ -38,9 +38,10 @@ if (!function_exists('default_li_render'))
   {
     $identifier = array_values($node->identifier());
 
-    //set class of 'first' on root node
+    // set class of 'first' on root node
     $class = '';
-    if($node->getNode()->isRoot()) $class = 'class="first"';
+    
+    if ($node->getNode()->isRoot()) $class = 'class="first"';
 
     return "<li id='node{$identifier[0]}' {$class}>";
   }
@@ -84,26 +85,12 @@ if (isset($records) && !empty($records) && count($records) > 0)
 
   foreach ($records as $record)
   {
-    $parentDeleted = false;
-    
-    if ($canBeDeleted && $record->is_deleted) continue;
-    
-    if ($canBeDeleted) 
-    {
-      $parent = $record;
-      
-      while ($parent = $parent->getNode()->getParent()) 
-      {
-        if ($parent->is_deleted) $parentDeleted = true;
-      }
-    }
-    
-    if ($canBeDeleted && $parentDeleted) continue;
-    
-    $parentHidden = false;
+    if ($canBeDeleted && $record->is_deleted) continue; // If parent deleted then children deleted too
     
     if ($checkIfHidden && ($record->is_hidden || !$record->is_active)) continue;
       
+    $parentHidden = false;
+    
     if ($checkIfHidden) 
     {
       $parent = $record;

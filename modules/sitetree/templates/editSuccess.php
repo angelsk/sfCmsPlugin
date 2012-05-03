@@ -17,14 +17,16 @@ use_stylesheets_for_form($form);
   <div id="sf_admin_header">
     <?php echo include_partial('sitetree/sitetreeInfo', array('sitetree'=>$sitetree)); ?>
   
-    <?php if (!$sf_user->hasCredential('site.admin')) 
+    <?php 
+    if (!$canAdmin) 
     {
-      echo '<p class="error site_notice">You are not an administrator, so you cannot lock or unlock nodes</p>';
+      echo '<p class="error site_notice">You are not a sitetree administrator, so you cannot lock or unlock nodes</p>';
     }
-    if (!$sf_user->hasCredential(array('site.admin', 'site.publish')) && !$sitetree->is_active) 
+    if (!$canPublish && !$sitetree->is_active) 
     {
-      echo '<p class="error site_notice">You are not a publisher, so you cannot put this page live</p>';
-    } ?>
+      echo '<p class="error site_notice">You are not a sitetree publisher, so you cannot put this page live</p>';
+    } 
+    ?>
   </div>
   
   <?php if ($form->hasErrors()) : ?>
@@ -52,6 +54,7 @@ use_stylesheets_for_form($form);
           <?php foreach ($form->getObject()->Translation as $culture => $Translation) : ?>
             <?php if (!empty($Translation->title)) $translations[$culture] = $Translation->title; ?>
           <?php endforeach; ?>
+          
           <?php if (!empty($translations)) : ?>
             <div class="sf_admin_form_row">
               <label>Sitetree title translations</label>

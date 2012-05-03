@@ -26,12 +26,21 @@ var generateRoute = function (e)
 $(document).addEvent('domready', function() 
 {
   // Confirm sitetree deletion in case of accidental click
-  $$('.delete_sitetree').each(function(el)
+  $$('.delete_sitetree').addEvent('click', function(e) 
   {
-    el.addEvent('click', function(e) 
+    return confirm('Are you sure you want to delete this page?');
+  });
+  
+  $$('div.sitetree').addEvents(
+  {
+    'mouseover' : function (e)
     {
-      return confirm('Are you sure you want to delete this page?');
-    });
+      this.addClass('hover');
+    },
+    'mouseout' : function (e)
+    {
+      this.removeClass('hover');
+    }
   });
   
   // For new items only

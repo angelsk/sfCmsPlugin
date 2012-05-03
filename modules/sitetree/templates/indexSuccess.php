@@ -6,7 +6,7 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array(
 )));
 
 // use this to store a global var for our tree rendering functions
-sfConfig::set('site_hack_entireSitetree', $treeNodes);
+sfConfig::set('app_site_awaitingApprovals', $approvals);
 ?>
 
 <div id="sf_admin_container">
@@ -14,7 +14,10 @@ sfConfig::set('site_hack_entireSitetree', $treeNodes);
   <h1>Sitetree</h1>
   
   <div id="sf_admin_header">
-    <p>Click on the page name to edit the content; and the pencil icon to edit the properties (and image) of each page.</p>
+    <div class="sitetreeInfo">
+      <p>Click on the page name to edit the content<?php if (!empty($approvals) && $canPublish) : ?> (<strong>*</strong> indicates content awaiting approval)<?php endif; ?>; 
+      and <img src="/sfCmsPlugin/images/edit.png" /> to edit the properties (and image) of each page.</p>
+    </div>
   </div>
 
   <?php if ($sf_user->hasFlash('error')) : ?>
@@ -34,9 +37,12 @@ sfConfig::set('site_hack_entireSitetree', $treeNodes);
           $user       = sfContext::getInstance()->getUser();
           $canAdmin   = $user->hasCredential('site.admin');
           $canPublish = ($canAdmin || $user->hasCredential('site.publish'));
+          $approvals  = sfConfig::get('app_site_awaitingApprovals', array());
           
           $name = esc_entities($sitetree->title);
-          $out = "<span class=\"lnk\">" . $name . "</span>";
+          if (isset($approvals[$sitetree->id]) && $canPublish) $name .= ' <strong>*</strong>';
+          
+          $out = sprintf('<div class="sitetree"><span class="lnk">%s</span>', $name);
           $class = '';
           $content = '';
       
@@ -46,7 +52,7 @@ sfConfig::set('site_hack_entireSitetree', $treeNodes);
             
             if ('sitetree/index' != $moduleDefinition['admin_url'] && !$sitetree->is_deleted)
             {
-              $out = '<span class="lnk">' . link_to(
+              $out = '<div class="sitetree"><span class="lnk">' . link_to(
                 $name,
                 $moduleDefinition['admin_url'] . "?routeName=$sitetree->route_name&site=$sitetree->site"
               ) . "</span>";
@@ -125,7 +131,7 @@ sfConfig::set('site_hack_entireSitetree', $treeNodes);
           {
             $out .= '<a href="' . url_for('sitetree/publish?id='.$sitetree->id) . '" title="publish page"><img src="/sfCmsPlugin/images/publish.png" /></a>';
           }
-          $out .= '</span>';
+          $out .= '</span></div>';
       
           return $out;
         }
@@ -137,6 +143,7 @@ sfConfig::set('site_hack_entireSitetree', $treeNodes);
           $class .= (!$node->is_active ? ' notlive' : '');
           $class .= ($node->getNode()->isRoot() ? ' root' : '');
           $class .= ($node->is_deleted ? ' deleted' : '');
+          $class = trim($class);
           
           return "<li class='$class' id='sitetree_{$node->id}'>";
         }
@@ -145,22 +152,23 @@ sfConfig::set('site_hack_entireSitetree', $treeNodes);
         include_partial(
           'sitetree/tree',
           array(
-            'id' => 'sitetree_manager_sitetree',
-            'class' => 'folderTree',
-            'records' => $treeNodes,
-            'nodeRenderFunction' => 'sitetree_manager_node',
-            'liRenderFunction' => 'sitetree_manager_li',
-            'sf_cache_key' => 'sitetree',
-            'canBeDeleted' => (!$sf_user->isSuperAdmin())
+            'id'                  => 'sitetree_manager_sitetree',
+            'class'               => 'folderTree',
+            'records'             => $treeNodes,
+            'nodeRenderFunction'  => 'sitetree_manager_node',
+            'liRenderFunction'    => 'sitetree_manager_li',
+            'sf_cache_key'        => 'sitetree',
+            'canBeDeleted'        => (!$sf_user->isSuperAdmin())
           )
         );
       } ?>
     </div>
     
-    <?php if (isset($sites) && 0 < count($sites)) : // only have root so offer other sites to copy structure from ?>
+    <?php if (isset($sites) && 0 < count($sites) && $canPublish) : // only have root so offer other sites to copy structure from ?>
     
       <?php include_partial('sitetree/copySite', array('sites'=>$sites)); ?>
     
     <?php endif; ?>
+    
   </div>
 </div>

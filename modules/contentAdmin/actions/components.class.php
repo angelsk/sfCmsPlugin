@@ -35,6 +35,18 @@ class ContentAdminComponents extends sfComponents
 
     $user = sfContext::getInstance()->getUser();
     
+    // Permissions
+    $this->canAdmin   = $user->hasCredential('site.admin');
+    $this->canPublish = ($this->canAdmin || $user->hasCredential('site.publish'));
+    
+    // Object info
+    $type     = $contentGroup->getType();
+    $getType  = 'get' . $type;
+    $obj      = $contentGroup->$getType()->getFirst();
+    
+    // Get approval information
+    $this->currentApproval = SiteApprovalTable::getInstance()->findLatest($type, $obj->getPrimaryKey());
+    
     // Is this a new content group? No content yet
     $loadContent         = true;
     $this->includeImport = false;
@@ -68,13 +80,11 @@ class ContentAdminComponents extends sfComponents
       }
     }
     
-    // Do we have another site to copy content from? (for Page and Listing)
-    if ($isNew && !empty($this->activeSites) && 1 < count($this->activeSites) && (in_array($contentGroup->getType(), array('Listing', 'Page'))))
+    // Do we have another site to copy content from? (for Page and Listing) - publishers only
+    if ($this->canPublish && $isNew 
+                && !empty($this->activeSites) && 1 < count($this->activeSites) 
+                && (in_array($type, array('Listing', 'Page'))))
     {
-      $type     = $contentGroup->getType();
-      $getType  = 'get' . $type;
-      $obj      = $contentGroup->$getType()->getFirst();
-      
       // Get other objects of this template
       $this->objs = Doctrine_Core::getTable($type)
                             ->createQuery('o')
@@ -106,15 +116,15 @@ class ContentAdminComponents extends sfComponents
 
       if (!$editingContentBlockVersions)
       {
-        sfContext::getInstance()->getUser()->setFlash('content_error', 'The versions you were working on were deleted while you were working - you will need to refresh the page and try editing again');
+        sfContext::getInstance()->getUser()->setFlash('content_error', 'The content you were working on is not valid - you will need to refresh the page and edit it again');
       }
       else
       {
-        $canSave = true;
-        $canPublish = ($request->hasParameter('save_and_publish') ? true : false);
+        $canSave        = true;
+        $canPutLive     = ($request->hasParameter('save_and_publish') ? true : false);
         $contentChanged = false;
-        $contentToSave = array();
-        $flash = '';
+        $contentToSave  = array();
+        $flash          = '';
 
         // Validate Content
         foreach ($contentBlocks as $contentBlock)
@@ -125,19 +135,19 @@ class ContentAdminComponents extends sfComponents
 
           if (!$contentBlockType->editIsValid($request))
           {
-            $canSave = false;
-            $canPublish = false;
+            $canSave    = false;
+            $canPutLive = false;
           }
           else
           {
             if ($contentBlockType->editIsChanged($request))
             {
-              $contentChanged = true;
-              $contentToSave[] = $contentBlock;
+              $contentChanged   = true;
+              $contentToSave[]  = $contentBlock;
             }
           }
         }
-
+        
         if ($canSave && $contentChanged)
         {
           // Save Content
@@ -149,52 +159,77 @@ class ContentAdminComponents extends sfComponents
             $editingContentBlockVersions[$identifier] = $contentBlockVersion;
           }
 
-          $flash .= count($contentToSave) . ' Content block(s) were saved';
-          $canPublish = true;
+          $flash .= sprintf('%s content block%s saved', count($contentToSave), (count($contentToSave) == 1 ? ' was' : 's were'));
+          $canPutLive = true;
         }
         elseif (!$canSave)
         {
-          $user->setFlash('content_error', 'Content couldn\'t be saved - please correct the errors and try again');
+          $user->setFlash('content_error', "Content couldn't be saved - please correct the errors and try again");
         }
-        elseif (!$canPublish)
+        elseif (!$canPutLive)
         {
-          $user->setFlash('content_notice', 'No Content was changed');
+          $user->setFlash('content_notice', 'No content was changed');
         }
 
-        if ($canPublish && $request->hasParameter('save_and_publish'))
+        if ($canPutLive && $request->hasParameter('save_and_publish'))
         {
-          $published = 0;
-
-          foreach ($contentBlocks as $contentBlock)
+          // If canPublish then publish
+          if ($this->canPublish)
           {
-            $identifier = $contentBlock->identifier;
-            $contentBlockVersion = $editingContentBlockVersions[$identifier];
-            $contentBlockType = $contentBlockVersion->getContentBlockType();
-
-            if ($contentBlockVersion->isCurrent())
+            $published = 0;
+  
+            foreach ($contentBlocks as $contentBlock)
             {
-              // this version is already live, so no need for action
-              continue;
+              $identifier = $contentBlock->identifier;
+              $contentBlockVersion = $editingContentBlockVersions[$identifier];
+              $contentBlockType = $contentBlockVersion->getContentBlockType();
+  
+              if ($contentBlockVersion->isCurrent())
+              {
+                // this version is already live, so no need for action
+                continue;
+              }
+              else
+              {
+                $contentBlock->makeVersionCurrent($contentBlockVersion);
+                $published++;
+              }
+            }
+  
+            if (0 == $published)
+            {
+              $flash .= sprintf('%s content already published', (!empty($flash) ? ' and all' : 'All'));
             }
             else
             {
-              $contentBlock->makeVersionCurrent($contentBlockVersion);
-              $published++;
+              // see if there's a current one and delete that
+              if ($this->currentApproval) $this->currentApproval->delete();
+              
+              $flash .= sprintf('%s %s content block%s published', (!empty($flash) ? ' and ' : ''), $published, ($published == 1 ? ' was' : 's were'));
             }
           }
-
-          if (0 == $published)
+          // Else mark for approval
+          else if ($contentChanged)
           {
-            $flash = 'All Content currently published';
+            // see if there's a current one and delete that
+            if ($this->currentApproval) $this->currentApproval->delete();
+            
+            // create a new one
+            $this->currentApproval = new SiteApproval();
+            $this->currentApproval->fromArray(array(
+              'model'       => $type,
+              'model_id'    => $obj->getPrimaryKey(),
+              'sitetree_id' => $sitetree->getPrimaryKey()
+            ));
+            $this->currentApproval->save();
+            
+            $flash .= ' and content marked for approval';
           }
-          else
-          {
-            if (!empty($flash)) $flash .= ' and ';
-            $flash .= $published . ' Content block(s) were published';
-          }
+          else $flash = 'No content was changed';
         }
 
         if (!empty($flash)) $user->setFlash('content_notice', $flash);
+        
         $this->clearContentGroupCache($contentGroup);
       }
     }
@@ -203,7 +238,7 @@ class ContentAdminComponents extends sfComponents
     $contentBlockVersions = array();
 
     if (isset($editingContentBlockVersions) && !empty($editingContentBlockVersions)
-    && ($request->hasParameter('save') || $request->hasParameter('save_and_publish')))
+            && ($request->hasParameter('save') || $request->hasParameter('save_and_publish')))
     {
       $contentBlockVersions = $editingContentBlockVersions;
     }
@@ -243,8 +278,7 @@ class ContentAdminComponents extends sfComponents
       $user->setFlash('content_notice', 'Page cache cleared on ' . siteManager::getInstance()->getManagedApp());
     }
 
-    $previewUrl = $contentGroup->getContentGroupType()->getPreviewUrl();
-    $previewUrl = siteManager::getInstance()->generateCrossAppUrlFor($previewUrl);
+    $previewUrl = siteManager::getInstance()->generateCrossAppUrlFor($contentGroup->getContentGroupType()->getPreviewUrl());
 
     $this->setVar('previewUrl', $previewUrl);
     $this->setVar('contentBlocks', $contentBlocks, true);
@@ -306,9 +340,9 @@ class ContentAdminComponents extends sfComponents
 
     foreach ($contentBlocksToSave as $contentBlock)
     {
-      $identifier = $contentBlock->identifier;
-      $contentBlockVersion = $editingContentBlockVersions[$identifier];
-      $contentBlockType = $contentBlockVersion->getContentBlockType();
+      $identifier             = $contentBlock->identifier;
+      $contentBlockVersion    = $editingContentBlockVersions[$identifier];
+      $contentBlockType       = $contentBlockVersion->getContentBlockType();
 
       $newContentBlockVersion = ContentBlockVersion::createVersion($contentBlock, $contentBlockVersion->lang);
 

@@ -6,18 +6,29 @@ class listingItemPager extends sfDoctrineSuperPager
 {
   protected $listing;
   protected $useCategories;
+  protected $canAdmin;
+  protected $canPublish;
+  protected $approvals;
 
   /**
    * @param listing $listing
    */
   public function __construct($listing)
   {
-    $manager      = listingManager::getInstance();
-    $itemClass    = $manager->getListItemClass($listing->template);
-    $filterClass  = "{$itemClass}FormFilter";
-    $form         = new $filterClass(array(), array('template'=>$listing->template, 'listing_id'=>$listing->id));
+    // Permissions
+    $user             = sfContext::getInstance()->getUser();
+    $this->canAdmin   = $user->hasCredential('site.admin');
+    $this->canPublish = ($this->canAdmin || $user->hasCredential('site.publish'));
+    
+    $manager          = listingManager::getInstance();
+    $itemClass        = $manager->getListItemClass($listing->template);
+    $filterClass      = "{$itemClass}FormFilter";
+    $form             = new $filterClass(array(), array('template'=>$listing->template, 'listing_id'=>$listing->id));
 
-    $cols = array(array('name' => 'Title'));
+    // get any approvals
+    $this->approvals = SiteApprovalTable::getInstance()->getOrderedApprovalsForItem($listing->sitetree_id, $itemClass);
+    
+    $cols             = array(array('name' => 'Title'));
 
     if ($listing->use_custom_order)
     {
@@ -41,7 +52,7 @@ class listingItemPager extends sfDoctrineSuperPager
 
     // Set up translation
     $culture = sfContext::getInstance()->getUser()->getCulture();
-    $query = $this->getQuery();
+    $query   = $this->getQuery();
     $query->from("$itemClass i");
 
     // Get all translations - just in case
@@ -72,6 +83,8 @@ class listingItemPager extends sfDoctrineSuperPager
         if (!empty($Translation->title) && empty($title)) $title = $Translation->title . ' [' . $culture . ']';
       }
     }
+    
+    if (isset($this->approvals[$item->id]) && $this->canPublish) $title .= ' *';
 
     $out = array(array(esc_entities($title)));
 
@@ -109,7 +122,7 @@ class listingItemPager extends sfDoctrineSuperPager
       'listingAdmin/editItem?listId=' . $listId . '&id=' . $item->id, array('class' => 'btn_edit')
       ) . '</li>';
 
-    if (!$item->is_active)
+    if (!$item->is_active && $this->canPublish)
     {
       $editOut .= '<li class="sf_admin_action_publish" style="display:block;">' . link_to(
         "Publish",
@@ -117,10 +130,14 @@ class listingItemPager extends sfDoctrineSuperPager
         ) . '</li>';
     }
 
-    $editOut .= '<li class="sf_admin_action_delete" style="display:block;">' . link_to(
-        "Delete",
-        'listingAdmin/deleteItem?listId=' . $listId . '&id=' . $item->id, array('class' => 'btn_remove')
-      ) . '</li>';
+    if ($this->canAdmin)
+    {
+      $editOut .= '<li class="sf_admin_action_delete" style="display:block;">' . link_to(
+          "Delete",
+          'listingAdmin/deleteItem?listId=' . $listId . '&id=' . $item->id, array('class' => 'btn_remove')
+        ) . '</li>';
+    }
+    
     $editOut .= "</ul>";
 
     $out[] = array($editOut);

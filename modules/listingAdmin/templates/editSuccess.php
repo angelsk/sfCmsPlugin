@@ -24,7 +24,7 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array('sitetree' => $sit
       <span class="site_sitetree_<?php if (!$sitetree->is_active) echo 'not_'; ?>published">
         <?php echo $defn['name']; ?>
       </span>
-      (change template on Properties tab)
+      <?php if ($canPublish) : ?>(change template on Properties tab)<?php endif; ?>
     </div>
     
     <?php if (isset($defn['help'])) : ?>
@@ -40,7 +40,7 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array('sitetree' => $sit
     if (sfConfig::get('app_site_use_slots', false)) echo $content; // If using slot, combine them ?>
     
     <script type="text/javascript">
-      $(document).addEvent('domready', function() 
+      $(document).addEvent('domready', function () 
       {
         new SimpleTabs('listing_<?php echo $sitetree->route_name; ?>_tabs', 
         {
@@ -77,11 +77,13 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array('sitetree' => $sit
             <?php echo link_to('Create new item', 'listingAdmin/createItem?id=' . $listing->id); ?>
           </li>
           
-          <?php $activeSites = siteManager::getInstance()->getActiveSites(); ?>
-          <?php if (!empty($activeSites) && 1 < count($activeSites)) : ?>
-            <li class="sf_admin_action_import">
-              <?php echo link_to('Import items', 'listingAdmin/importItems?id=' . $listing->id); ?>
-            </li>
+          <?php if ($canPublish) : ?>
+            <?php $activeSites = siteManager::getInstance()->getActiveSites(); ?>
+            <?php if (!empty($activeSites) && 1 < count($activeSites)) : ?>
+              <li class="sf_admin_action_import">
+                <?php echo link_to('Import items', 'listingAdmin/importItems?id=' . $listing->id); ?>
+              </li>
+            <?php endif; ?>
           <?php endif; ?>
         </ul>
           
@@ -89,18 +91,15 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array('sitetree' => $sit
         <?php slot('cms_js');
           if (sfConfig::get('app_site_use_slots', false)) echo $content; // If using slot, combine them ?>
           
-        <script type="text/javascript">
-          $(document).addEvent('domready', function() 
-          {
-            $$('.btn_remove').each(function(el) 
-            { 
-              el.addEvent('click', function() 
+          <script type="text/javascript">
+            $(document).addEvent('domready', function () 
+            {
+              $$('.btn_remove').addEvent('click', function () 
               {
                 return confirm('Are you sure you want to delete this item - it cannot be undone');
-           		 }); 
-            }); 
-          });
-        </script>
+              }); 
+            });
+          </script>
         <?php end_slot(); ?>
         <?php if (!sfConfig::get('app_site_use_slots', false)) include_slot('cms_js'); ?>
       </div>
@@ -110,14 +109,14 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array('sitetree' => $sit
         
         <div id="listing_<?php echo $sitetree->route_name; ?>_categories">
           <?php
-          echo include_component('listingAdmin', 'categoryEditor', array('listing' => $listing, 'formTarget' => 'listing_'.$sitetree->route_name.'_categories'));
+          echo include_component('listingAdmin', 'categoryEditor', array('listing' => $listing, 'formTarget' => 'listing_'.$sitetree->route_name.'_categories', 'canAdmin'=>$canAdmin));
           ?>
         </div>
       <?php endif ?>
     
       <h4>Content</h4>
       
-      <div id="listing_<?php echo $sitetree->route_name; ?>_content">
+      <div id="listing_<?php echo $sitetree->route_name; ?>_content" class="listing_content">
         <?php
         $url = 'sitetree/index';
         echo include_component('contentAdmin', 'editor', array('contentGroup' => $contentGroup, 'cancelUrl'=>$url, 'formTarget'=>'#listing_'.$sitetree->route_name.'_content'));
@@ -130,6 +129,8 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array('sitetree' => $sit
         <div class="content_border_thin">
           <?php if ($sitetree->is_locked) : ?>
              <p>Cannot edit properties of a locked page</p>
+          <?php elseif (!$canPublish) : ?>
+             <p>You do not have the correct permissions to edit the properties of this page.</p>
           <?php else: ?>
             <?php if ($form->hasErrors()): ?>
               <div class="error">Please correct the following errors</div>

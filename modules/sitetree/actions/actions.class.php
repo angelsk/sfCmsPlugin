@@ -13,6 +13,11 @@ class sitetreeActions extends sfActions
   public function preExecute()
   {
     $this->getResponse()->addJavascript('/sfCmsPlugin/js/sitetree.js', 'last');
+    
+    // Permissions
+    $user = sfContext::getInstance()->getUser();
+    $this->canAdmin   = $user->hasCredential('site.admin');
+    $this->canPublish = ($this->canAdmin || $user->hasCredential('site.publish'));
   }
   
   /**
@@ -32,7 +37,7 @@ class sitetreeActions extends sfActions
    */
   public function executeChangeSite(sfWebRequest $request)
   {
-    $this->sites = siteManager::getInstance()->getActiveSites();
+    $this->sites = siteManager::getInstance()->getActiveSites(true); // with permissions
     $selectedSite = false;
     
     if (empty($this->sites)) $this->redirect('sitetree/index'); // will use default site
@@ -57,7 +62,13 @@ class sitetreeActions extends sfActions
   {
     $manager           = siteManager::getInstance();
     $site              = $manager->getCurrentSite();
+    $sites             = siteManager::getInstance()->getActiveSites(true);
+    
+    // If logged in and not correct site - redirect
+    if (!empty($sites) && !in_array($site, array_keys($sites))) $this->redirect('sitetree/changeSite');
+    
     $this->treeNodes   = $manager->getEntireSitetree($site);
+    $this->approvals   = SiteApprovalTable::getInstance()->getOrderedApprovalsForSite($site);
     
     if (1 == count($this->treeNodes))
     {
@@ -73,7 +84,8 @@ class sitetreeActions extends sfActions
    */
   public function executeCopy(sfWebRequest $request)
   {
-    $this->forward404Unless($copyFromSite = $request->getParameter('site'), 'No site selected');
+    $this->forward404Unless($this->canPublish, "Don't have permission to import sitetree");
+    $this->forward404Unless(($copyFromSite = $request->getParameter('site')), 'No site selected');
     
     // Check current site has only root node
     $manager     = siteManager::getInstance();
@@ -188,6 +200,8 @@ class sitetreeActions extends sfActions
    */
   public function executePublish(sfWebRequest $request) 
   {
+    $this->forward404Unless($this->canPublish, "Don't have permission to publish sitetree");
+    
     $sitetree = SitetreeTable::getInstance()->findOneById($request->getParameter('id'));
     $this->forward404Unless($sitetree, 'No sitetree to publish');
 
@@ -204,9 +218,13 @@ class sitetreeActions extends sfActions
    */
   public function executeDelete(sfWebRequest $request) 
   {
+    $this->forward404Unless($this->canAdmin, "Don't have permission to delete sitetree");
+    
     $sitetree = SitetreeTable::getInstance()->findOneById($request->getParameter('id'));
+    
     $this->forward404Unless($sitetree, 'No sitetree to delete');
-    $title = $sitetree->getTitle();
+    
+    $title    = $sitetree->getTitle();
 
     if (!$sitetree->getNode()->isRoot()) 
     {
@@ -247,9 +265,13 @@ class sitetreeActions extends sfActions
    */
   public function executeRestore(sfWebRequest $request) 
   {
+    $this->forward404Unless($this->canAdmin, "Don't have permission to restore sitetree");
+    
     $sitetree = SitetreeTable::getInstance()->findOneById($request->getParameter('id'));
+    
     $this->forward404Unless($sitetree, 'No sitetree to restore');
-    $title = $sitetree->getTitle();
+    
+    $title    = $sitetree->getTitle();
 
     if ($sitetree->is_deleted) 
     {
@@ -280,11 +302,12 @@ class sitetreeActions extends sfActions
    */
   public function executeMove(sfWebRequest $request) 
   {
-    $direction = $request->getParameter('direction');
-    $sitetree = SitetreeTable::getInstance()->findOneById($request->getParameter('id'));
+    $direction  = $request->getParameter('direction');
+    $sitetree   = SitetreeTable::getInstance()->findOneById($request->getParameter('id'));
+    
     $this->forward404Unless($sitetree, 'No sitetree to move');
     
-    $node = $sitetree->getNode();
+    $node       = $sitetree->getNode();
     
     switch ($direction)
     {

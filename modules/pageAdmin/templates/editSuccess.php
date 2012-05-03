@@ -22,7 +22,7 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array(
       <span class="site_sitetree_<?php if (!$sitetree->is_active) echo 'not_'; ?>published">
         <?php $defn = pageManager::getInstance()->getTemplateDefinition($page->template); echo $defn['name']; ?>
       </span>
-      <?php if (!$sitetree->is_locked) : ?>
+      <?php if (!$sitetree->is_locked && $canPublish) : ?>
         [<?php echo link_to('change template', 'pageAdmin/editTemplate?id=' . $page->id)?>]
       <?php endif; ?>
     </div>
