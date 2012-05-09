@@ -326,6 +326,14 @@ class siteManager
       $currentConfig = $this->getAppConfig($currentApp);
       
       $class = $config['view_cache']['class'];
+      
+      // Don't use header cache for routing - we want the alternative cache
+      if ('sfHttpHeaderCache' == $class)
+      {
+        $config = array('view_cache' => (isset($config['view_cache']['param']['alt']) ? $config['view_cache']['param']['alt']['cache'] : array('class'=>'sfNoCache', 'param'=>array())));
+        $class  = $config['view_cache']['class'];
+      }
+      
       $parameters = $config['view_cache']['param'];
       $parameters['prefix'] = $cachedir;
       $parameters['cache_dir'] = $cachedir;
