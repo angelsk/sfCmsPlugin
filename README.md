@@ -21,7 +21,7 @@ Dependancies
  * [sfDoctrineGuardUserPlugin](http://www.symfony-project.org/plugins/sfDoctrineGuardPlugin) (for the CMS)
  * [sfImagePoolPlugin](https://github.com/HollerLondon/sfImagePoolPlugin)
  * [sfMooToolsFormExtraPlugin](https://github.com/HollerLondon/sfMooToolsFormExtraPlugin)
- * [Blamable]([http://svn.doctrine-project.org/extensions/Blameable/branches/1.2-1.0/) (external in lib/doctrine_extensions)
+ * [Blamable](http://svn.doctrine-project.org/extensions/Blameable/branches/1.2-1.0/) (external in lib/doctrine_extensions)
  * [Orderable](https://github.com/HollerLondon/Doctrine-Orderable) (external in lib/doctrine_extensions)
  * [ysfDimensionsPlugin](http://www.symfony-project.org/plugins/ysfDimensionsPlugin) (for multiple sites)
 
