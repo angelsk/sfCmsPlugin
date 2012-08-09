@@ -698,7 +698,7 @@ class siteManager
       else 
       {
         // Generate the domain from config / request
-        $hostName = $this->getUrlForManagedApp();
+        $hostName = $this->getManagedAppUrl();
         
         return $hostName . $generatedUrl;
       }
