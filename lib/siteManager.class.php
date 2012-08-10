@@ -555,23 +555,30 @@ class siteManager
       return $cache->get($cacheKey);
     }
 
-    if (!isset(self::$otherContexts[$app][$env])) 
+    if (!isset(self::$otherContexts[$app][$env][$site])) 
     {
       // get config/context for our other app.  This will switch the current
       // context and change the contents of sfConfig, so we will need to change back after
       $otherConfiguration = ProjectConfiguration::getApplicationConfiguration($app, $env, $debug);
-      self::$otherContexts[$app][$env] = sfContext::createInstance($otherConfiguration, $app . $env);
+      
+      // ensure set site when generating cross app url otherwise run into problems
+      if (class_exists('ysfApplicationConfiguration') && $otherConfiguration instanceof ysfApplicationConfiguration)
+      {
+        $otherConfiguration->setDimension(array('site' => $site));
+      }
+      
+      self::$otherContexts[$app][$env][$site] = sfContext::createInstance($otherConfiguration, $app . $env . $site);
     } 
     else 
     {
       // we already initialised the other context, switch to it now
-      sfContext::switchTo($app . $env);
+      sfContext::switchTo($app . $env . $site);
     }
     
     try 
     {
       // make the url
-      $generatedUrl = self::$otherContexts[$app][$env]->getController()->genUrl($url, true);
+      $generatedUrl = self::$otherContexts[$app][$env][$site]->getController()->genUrl($url, true);
     } 
     catch (sfConfigurationException $e) 
     {
