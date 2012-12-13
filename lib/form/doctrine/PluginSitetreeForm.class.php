@@ -11,6 +11,7 @@
 abstract class PluginSitetreeForm extends BaseSitetreeForm 
 {
   protected $canAdmin;
+  protected $canPublish;
 
   public function __construct($sitetree) 
   {
