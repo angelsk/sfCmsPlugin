@@ -326,6 +326,14 @@ class siteManager
       $currentConfig = $this->getAppConfig($currentApp);
       
       $class = $config['view_cache']['class'];
+      
+      // Don't use header cache for routing - we want the alternative cache
+      if ('sfHttpHeaderCache' == $class)
+      {
+        $config = array('view_cache' => (isset($config['view_cache']['param']['alt']) ? $config['view_cache']['param']['alt']['cache'] : array('class'=>'sfNoCache', 'param'=>array())));
+        $class  = $config['view_cache']['class'];
+      }
+      
       $parameters = $config['view_cache']['param'];
       $parameters['prefix'] = $cachedir;
       $parameters['cache_dir'] = $cachedir;
@@ -547,23 +555,30 @@ class siteManager
       return $cache->get($cacheKey);
     }
 
-    if (!isset(self::$otherContexts[$app][$env])) 
+    if (!isset(self::$otherContexts[$app][$env][$site])) 
     {
       // get config/context for our other app.  This will switch the current
       // context and change the contents of sfConfig, so we will need to change back after
       $otherConfiguration = ProjectConfiguration::getApplicationConfiguration($app, $env, $debug);
-      self::$otherContexts[$app][$env] = sfContext::createInstance($otherConfiguration, $app . $env);
+      
+      // ensure set site when generating cross app url otherwise run into problems
+      if (class_exists('ysfApplicationConfiguration') && $otherConfiguration instanceof ysfApplicationConfiguration)
+      {
+        $otherConfiguration->setDimension(array('site' => $site));
+      }
+      
+      self::$otherContexts[$app][$env][$site] = sfContext::createInstance($otherConfiguration, $app . $env . $site);
     } 
     else 
     {
       // we already initialised the other context, switch to it now
-      sfContext::switchTo($app . $env);
+      sfContext::switchTo($app . $env . $site);
     }
     
     try 
     {
       // make the url
-      $generatedUrl = self::$otherContexts[$app][$env]->getController()->genUrl($url, true);
+      $generatedUrl = self::$otherContexts[$app][$env][$site]->getController()->genUrl($url, true);
     } 
     catch (sfConfigurationException $e) 
     {
@@ -690,7 +705,7 @@ class siteManager
       else 
       {
         // Generate the domain from config / request
-        $hostName = $this->getUrlForManagedApp();
+        $hostName = $this->getManagedAppUrl();
         
         return $hostName . $generatedUrl;
       }
