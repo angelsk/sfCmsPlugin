@@ -197,6 +197,16 @@ abstract class PluginListingItem extends BaseListingItem
   {
     return $this->ContentGroup->renderContent($identifier, $extraParams);
   }
+  
+  /**
+   * Get date that the content fragment was last updated
+   * 
+   * @param string $identifier
+   */
+  public function getLastUpdated($identifier, $format = 'd/m/Y H:i')
+  {
+    return $this->ContentGroup->getLastUpdated($identifier, $format);
+  }
 
   /**
    * Handle when the content for the item has changed.

@@ -21,7 +21,7 @@ Dependancies
  * [sfDoctrineGuardUserPlugin](http://www.symfony-project.org/plugins/sfDoctrineGuardPlugin) (for the CMS)
  * [sfImagePoolPlugin](https://github.com/HollerLondon/sfImagePoolPlugin)
  * [sfMooToolsFormExtraPlugin](https://github.com/HollerLondon/sfMooToolsFormExtraPlugin)
- * [Blamable]([http://svn.doctrine-project.org/extensions/Blameable/branches/1.2-1.0/) (external in lib/doctrine_extensions)
+ * [Blamable](http://svn.doctrine-project.org/extensions/Blameable/branches/1.2-1.0/) (external in lib/doctrine_extensions)
  * [Orderable](https://github.com/HollerLondon/Doctrine-Orderable) (external in lib/doctrine_extensions)
  * [ysfDimensionsPlugin](http://www.symfony-project.org/plugins/ysfDimensionsPlugin) (for multiple sites)
 
@@ -445,6 +445,54 @@ An image asset - the images can be managed in the Image Pool tab.  The image can
 The image pool rendering options are set in the template itself, as the content block returns an sfImagePoolCollection (if multiple), or an sfImagePoolImage (if not multiple) - so you can treat it like any other image poolable object.
 
     <?php echo pool_image_tag($page->renderContent('content_block_1'), '200'); ?>
+
+
+#### Types - Widget
+
+A content block which allows integration of a simple widget and validator - such as a dropdown or a checkbox.  Currently only supports single value returned.
+
+The widget, its options and attributes; and the validator, its options and messages can all be defined in the config.
+
+      traffic:
+        name:        Traffic lights *
+        type:        Widget
+        widget:      sfWidgetFormChoice
+        widget_options:
+          choices:   { '':'', 'green' : 'green', 'amber' : 'amber', 'red' : 'red' }
+        widget_attributes:  []
+        validator:   sfValidatorChoice
+        validator_options:
+          required:  true
+          choices:   { 'green' : 'green', 'amber' : 'amber', 'red' : 'red' }
+        validator_messages:
+          required:  "You need to select a colour"
+          
+     enable:
+       name:        Enable something
+       type:        Widget
+       widget:      sfWidgetFormInputCheckbox
+       widget_attributes:
+         value:      1
+       validator:   sfValidatorBoolean
+       validator_options:
+         required:  false
+         empty_value: 0
+       validator_messages: []
+ 
+     date:
+        name:       Date
+        type:       Widget
+        widget:     sfWidgetFormDate
+        widget_options:
+          years:    { 2011: 2011, 2012: 2012 }
+          format:   '%day% %month% %year%'
+        widget_attributes:
+          style:    'width: auto;'
+        validator:  sfValidatorDate
+        validator_options:
+          required: false
+          
+Render will return the saved value, and it is up to the template to decide how to display it
 
 
 #### Types - further

@@ -540,6 +540,27 @@ abstract class PluginContentGroup extends BaseContentGroup
 			return $contentBlockVersion->getContentBlockType()->render();
 		}
 	}
+	
+	/**
+   * Get date that the content fragment was last updated
+   * 
+   * @param string $identifier
+   */
+  public function getLastUpdated($identifier, $format = 'd/m/Y H:i')
+  {
+    if (!$contentBlock = $this->getBlockByIdentifier($identifier))
+    {
+      return null;
+    }
+
+    if (!$contentBlockVersion = $contentBlock->getCurrentVersion())
+    {
+      return null;
+    }
+    
+    return $contentBlockVersion->CurrentVersion->getDateTimeObject('updated_at')->format($format);
+  }
+	
 
 	/**
 	 * Delete this Content group and all associated Content
