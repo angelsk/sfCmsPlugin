@@ -31,8 +31,10 @@ function internal_url_for_sitetree($sitetree, $name='', $params = array())
 {
   if (is_string($sitetree)) 
   {
+    $site = siteManager::getInstance()->getCurrentSite();
+    
     // check is active node
-    $sitetree = SitetreeTable::getInstance()->retrieveByRoutename($sitetree, true);
+    $sitetree = SitetreeTable::getInstance()->retrieveByRoutename($site, $sitetree, true);
   }
   
   if (!$sitetree) return false;
@@ -52,8 +54,10 @@ function link_to_sitetree($sitetree, $displayName=null, $options=array())
 {
   if (is_string($sitetree))  
   {
+    $site = siteManager::getInstance()->getCurrentSite();
+    
     // check is active node
-    $sitetree = SitetreeTable::getInstance()->retrieveByRoutename($sitetree, true);
+    $sitetree = SitetreeTable::getInstance()->retrieveByRoutename($site, $sitetree, true);
   }
 
   if (!$sitetree) return false;
@@ -102,8 +106,10 @@ function title_for_sitetree($sitetree)
 {
   if (is_string($sitetree)) 
   {
-      // check is active node
-      $sitetree = sitetreeTable::getInstance()->retrieveByRoutename($sitetree, true);
+    $site = siteManager::getInstance()->getCurrentSite();
+    
+    // check is active node
+    $sitetree = SitetreeTable::getInstance()->retrieveByRoutename($site, $sitetree, true);
   }
   
   if (!$sitetree) return false;
@@ -122,8 +128,10 @@ function rss_for_sitetree($sitetree)
 {
   if (is_string($sitetree))  
   {
+    $site = siteManager::getInstance()->getCurrentSite();
+    
     // check is active node
-    $sitetree = sitetreeTable::getInstance()->retrieveByRoutename($sitetree, true);
+    $sitetree = SitetreeTable::getInstance()->retrieveByRoutename($site, $sitetree, true);
   }
 
   if (!$sitetree) return false;
@@ -133,7 +141,7 @@ function rss_for_sitetree($sitetree)
     return false;
   }
   
-  $listing = listingTable::getInstance()->findOneByRouteName($sitetree->route_name);
+  $listing = ListingTable::getInstance()->findOneBySitetreeId($sitetree->id);
   
   // Set in listing - e.g: Feedburner URL
   if ('' != $listing->getRssUrl()) 
@@ -157,8 +165,10 @@ function atom_for_sitetree($sitetree)
 {
   if (is_string($sitetree))  
   {
+    $site = siteManager::getInstance()->getCurrentSite();
+  
     // check is active node
-    $sitetree = SitetreeTable::getInstance()->retrieveByRoutename($sitetree, true);
+    $sitetree = SitetreeTable::getInstance()->retrieveByRoutename($site, $sitetree, true);
   }
 
   if (!$sitetree) 
@@ -171,7 +181,7 @@ function atom_for_sitetree($sitetree)
     return false;
   }
   
-  $listing = listingTable::getInstance()->findOneByRouteName($sitetree->route_name);
+  $listing = ListingTable::getInstance()->findOneBySitetreeId($sitetree->id);
   
   // Set in listing - e.g: Feedburner URL
   if ('' != $listing->getRssUrl()) 
