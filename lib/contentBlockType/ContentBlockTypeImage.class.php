@@ -70,6 +70,8 @@ class ContentBlockTypeImage extends ContentBlockType
   {
     $value = $this->getValueFromRequest($request);
     
+    if (is_null($value)) $value = array();
+    
     // remove empty image pool thingy
     foreach ($value as $idx => $raw)
     {
@@ -88,6 +90,8 @@ class ContentBlockTypeImage extends ContentBlockType
   public function editIsChanged(sfWebRequest $request)
   {
     $newValue = $this->getValueFromRequest($request);
+    
+    if (is_null($newValue)) $newValue = array();
     
     // remove empty image pool thingy
     foreach ($newValue as $idx => $raw)
@@ -182,7 +186,84 @@ class ContentBlockTypeImage extends ContentBlockType
     return $multiple;
   }
   
- /**
+  /**
+   * Method for setting images but from ids only.
+   * 
+   * @param $object
+   * @param array $image_ids
+   */
+  public function setImageIds($image_ids = array(), $object = null)
+  {
+    $object = is_null($object) ? $this : $object;
+    
+    if (!is_array($image_ids)) $image_ids = unserialize($image_ids);
+    
+    
+    if (empty($image_ids))
+    {
+      return $object->getPoolImages()->clear();
+    }
+    
+    $images = sfImagePoolImageTable::getInstance()->getByIds($image_ids);
+    $images = $this->matchOrder($images, $image_ids);
+    
+    $this->setImages($images, $object);
+  }
+  
+  /**
+   * When multiple images have been associated with an object via the image chooser widget,
+   * the user may well have chosen a specific order. When pulling the associated images back
+   * from the DB, Doctrine returns in primary key order, which is incorrect. This method
+   * is a dirty way of matching the order of a collection to an order of image ids, which means
+   * images are returned in the same order they were associated in.
+   *
+   * @param $images Doctrine_Collection of images
+   * @param $image_ids Array of image ids in a specific order
+   *
+   * @return Doctrine_Collection
+   */
+  public function matchOrder(Doctrine_Collection $images, $image_ids)
+  {
+    if (!is_array($image_ids) || empty($image_ids)) return $images;
+    
+    $ordered = new Doctrine_Collection('sfImagePoolImage', 'id');
+
+    foreach ($image_ids as $index => $id)
+    {
+      foreach ($images as $i)
+      {
+        if ($i['id'] == $id) $ordered->set($i['id'], $i);
+      }
+    }
+
+    return $ordered;
+  }
+  
+  /**
+   * Set images to an object
+   * 
+   * @param array $images
+   * @param Doctrine_Record $object
+   */
+  public function setImages($images = array(), $object = null)
+  {
+    $object = is_null($object) ? $this : $object;
+
+    $object->getPoolImages()->clear();
+    
+    foreach ($images as $image)
+    {
+      $object->getPoolImages()->add($image);
+      
+      if (!$object->allowSelectMultiple()) 
+      {
+        // Stop after adding one if object isn't allowed multiple images
+        break;
+      }
+    }
+  }
+  
+  /**
    * Get image pool images for a version
    * 
    * @param Doctrine_Record $object

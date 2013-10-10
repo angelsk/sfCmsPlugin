@@ -111,7 +111,9 @@ abstract class ContentBlockType implements ContentBlockTypeInterface
   protected function getValueFromRequest(sfWebRequest $request)
   {
     $values = $request->getParameter($this->getFormName());
-    return $values['value'];
+    
+    if (isset($values['value'])) return $values['value'];
+    else return null;
   }
 
   /**
