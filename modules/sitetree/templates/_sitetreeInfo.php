@@ -42,15 +42,18 @@ if ($sitetree = $sf_data->getRaw('sitetree'))
     echo link_to('Edit sitetree properties', 'sitetree/edit?id=' . $sitetree->id);
   }
 
-  $manager = siteManager::getInstance();
-  $culture = sfContext::getInstance()->getUser()->getCulture();
-  $url     = $manager->generateCrossAppUrlFor($manager->getRoutingProxy()->generateInternalUrl($sitetree, '', array('sf_culture'=>$culture)), $manager->getManagedApp());
-  
   if ($sitetree->is_active) 
   {
+      $manager = siteManager::getInstance();
+      $culture = sfContext::getInstance()->getUser()->getCulture();
+      $url     = $manager->generateCrossAppUrlFor($manager->getRoutingProxy()->generateInternalUrl($sitetree, '', array('sf_culture'=>$culture)), $manager->getManagedApp());
+      
       if ($url) 
       {
         echo "&nbsp; | <a href='"  . esc_entities($url) . "' target=\"_blank\">View page on frontend</a>";
+        
+        // Check potential URL conflicts
+        if ($sitetree->hasConflictedUrl($url, $culture)) echo '&nbsp; <span class="site_sitetree_not_published">' .__('* WARNING: Another page exists with this URL').'</span> &nbsp;';
       }
       
       if ($sf_data->offsetExists('item')) 
@@ -76,8 +79,5 @@ if ($sitetree = $sf_data->getRaw('sitetree'))
       }
   }
   
-  // Check potential URL conflicts
-  if ($sitetree->hasConflictedUrl($url, $culture)) echo '&nbsp; <span class="site_sitetree_not_published">' .__('* WARNING: Another page exists with this URL').'</span>';
-
   echo '</div>';
 }

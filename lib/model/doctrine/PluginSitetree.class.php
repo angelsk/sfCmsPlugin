@@ -470,7 +470,7 @@ abstract class PluginSitetree extends BaseSitetree
   {
     $manager   = siteManager::getInstance();
     $culture   = sfContext::getInstance()->getUser()->getCulture();
-    $sitetrees = SitetreeTable::getInstance()->getInstance()->findBySiteAndBaseUrl($this->site, $this->base_url);
+    $sitetrees = SitetreeTable::getInstance()->getInstance()->findBySiteAndBaseUrlAndIsDeleted($this->site, $this->base_url, false);
     
     foreach ($sitetrees as $sitetree)
     {
