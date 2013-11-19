@@ -1,0 +1,6 @@
+all:
+  site:
+    module_definition:
+      name: "Redirect"
+      admin_url: redirectAdmin/editByRoute
+      event_handler: [Redirect, siteEventHandler]
