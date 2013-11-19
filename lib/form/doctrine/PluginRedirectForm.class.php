@@ -3,9 +3,9 @@
 /**
  * PluginRedirect form.
  *
- * @package    ##PROJECT_NAME##
+ * @package    site_cms
  * @subpackage form
- * @author     ##AUTHOR_NAME##
+ * @author     Jo Carter
  * @version    SVN: $Id: sfDoctrineFormPluginTemplate.php 23810 2009-11-12 11:07:44Z Kris.Wallsmith $
  */
 abstract class PluginRedirectForm extends BaseRedirectForm
