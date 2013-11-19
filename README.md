@@ -55,6 +55,8 @@ multiple sites, you will add a new config file per dimension (as specified in th
             - sitemap
             - pageDisplay
             - listingDisplay
+            - iframeDisplay 
+            - redirectDisplay
 
 Finally, enable the admin modules in your backend app's `settings.yml`.  
 
@@ -65,15 +67,19 @@ Finally, enable the admin modules in your backend app's `settings.yml`.
       - pageAdmin
       - listingAdmin
       - contentAdmin
+      - redirectAdmin
+      - iframeAdmin
 
 The first visit to the admin sitetree module will set up the sitetree (including the root node - based on the config above).  You will 
 need to publish the root node and delete the default `@homepage` route in the frontend app to use the dynamic routing.
 
-Enable the page and listing display modules in the frontend `settings.yml`.
+Enable the frontend display modules in the frontend `settings.yml`.
 
      enabled_modules:
       - pageDisplay
       - listingDisplay
+      - iframeDisplay 
+      - redirectDisplay
 
 
 Javascript in the CMS
@@ -133,11 +139,11 @@ the dimension on the frontend app based on the URL by using a filter.  You will 
         'www.example.co.uk':     gb
         'www.example.fr':        fr
 
-The dimension is set when the plugin's configuration is initialized so all you need to do is make sure the dimensions are defined in the main app.yml.
+The dimension is set when the plugin's configuration is initialised so all you need to do is make sure the dimensions are defined in the main app.yml.
 
 Also set the default dimension in `ProjectConfiguration::setup()` - this is so the command line doesn't error out as the configuration is loaded after.
 
-    // setup dimensions before calling parent::setup(); for command line operations
+      // setup dimensions before calling parent::setup(); for command line operations
 	  // Frontend handled by a filter
 	  if ('cli' == php_sapi_name()) $this->setDimension(array('site' => 'gb'));
 
@@ -315,6 +321,16 @@ Then continue with the module's functionality.
 ### Extending site classes
 
 All classes retrieved via the siteManager, listingManager and pageManager (including the managers themselves) can be extended by creating a local copy, setting the class in the configuration and extending the functionality as required.
+
+
+Redirects and iFrames
+---------------------
+
+Content pages are covered below, but there are a couple of simple modules that add useful functionality to the CMS.
+
+Redirect allows site nodes to be set up that purely redirect to a different URL, useful for external sites so the core navigation can still be controlled.
+
+iFrame allows site nodes to be set up that are iFrames to content created externally.  Useful if third parties (e.g: clients) want to create customised pages un-influenced by the main site.  These can be created from an external link or an internal HTML file (FTP'd to data/static).  Obviously the iframe containing the internal HTML file can be resized via JavaScript as the internal content height and width can be determined (this is not included).
 
 
 Pages and Listings

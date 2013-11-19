@@ -58,8 +58,7 @@ class ContentGroupTypeListing extends ContentGroupType
 	 */
 	public function getPreviewUrl()
 	{
-		//todo: named routes
-		return 'listingDisplay/preview?id=' . $this->getListing()->id;
+		return '@listing_display?id=' . $this->getListing()->id;
 	}
 
 	/**

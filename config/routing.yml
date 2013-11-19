@@ -1,0 +1,15 @@
+###########
+# CMS Previews
+###########
+
+page_display:
+  url:   /preview/page/:id
+  param: { module: pageDisplay, action: preview }
+  
+listing_display:
+  url:   /preview/listing/:id
+  param: { module: listingDisplay, action: preview }
+
+listing_display_item:
+  url:   /preview/listing/:listId/:itemId
+  param: { module: listingDisplay, action: previewItem }

@@ -41,7 +41,7 @@ abstract class PluginSitetreeForm extends BaseSitetreeForm
     
     if (!$this->object->is_locked) 
     {
-      $this->widgetSchema->setLabel('base_url', 'Url <em>*</em>');
+      $this->widgetSchema->setLabel('base_url', 'URL <em>*</em>');
       $this->widgetSchema->setLabel('target_module', 'Module <em>*</em>');
       $this->widgetSchema->setLabel('prepend_parent_url', 'Prepend parent URL');
       $this->widgetSchema->setLabel('is_core_navigation', 'Core navigation');

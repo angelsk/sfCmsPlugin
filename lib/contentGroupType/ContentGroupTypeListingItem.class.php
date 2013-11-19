@@ -86,7 +86,7 @@ class ContentGroupTypeListingItem extends ContentGroupType
 		$listId = $this->getListingItem()->listing_id;
 		$itemId = $this->getListingItem()->id;
 
-		return "listingDisplay/previewItem?listId=$listId&itemId=$itemId";
+		return "@listing_display_item?listId=$listId&itemId=$itemId";
 	}
 
 	public function getName()

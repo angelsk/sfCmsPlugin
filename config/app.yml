@@ -8,13 +8,21 @@ all:
       cultures:           [en]
       default_culture:    en
       root_module:        default
+      #url_prefix:         ''
       
     available_modules:  
       - sitemap
       - pageDisplay
       - listingDisplay
+      - redirectDisplay
+      - iframeDisplay
       
     default_site:               en  # define locally
+    
+    # for the backend to know what to display in the site selection - see README
+    #active_sites:
+    #  en:               'UK site'
+    #  fr:               'French site'
       
     # default settings
     include_culture_in_routes:  false
@@ -40,3 +48,8 @@ all:
     
     # define your own templates locally
     #listing_templates:
+    
+    iframe:
+      folder:                   %SF_DATA_DIR%/static   # Provide FTP access restricted to this folder for uploading HTML files
+      layouts:
+        layout:                 'Standard layout'

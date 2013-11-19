@@ -1,0 +1,25 @@
+# model definitions -------------------------
+
+Redirect:
+  columns:
+    # link this into the sitetree
+    sitetree_id:                  { type: integer, notnull: true }
+    status_code:                  { type: string(3), notnull: true, default: 301 }
+    url:                          { type: string(255), notnull: true }    # URL to redirect to, internal or external, including tracking
+    
+  actAs:
+    Timestampable:    ~
+    Blameable:              # created_by and updated_by (override to use sfGuardUser)
+      listener: siteBlamableListener
+    
+  relations:
+    Sitetree:
+      class:          Sitetree
+      onDelete:       CASCADE
+      local:          sitetree_id
+      foreign:        id
+      type:           one
+
+  options:
+    symfony:                
+      filter: false

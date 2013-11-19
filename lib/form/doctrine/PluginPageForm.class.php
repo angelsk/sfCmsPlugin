@@ -19,10 +19,10 @@ abstract class PluginPageForm extends BasePageForm
     $this->widgetSchema->setLabel('template', 'Template <em>*</em>');
     
     $Page = $this->getObject();
-      $contentManager = pageManager::getInstance();
-      $possibleTemplates = $contentManager->getPossibleTemplatesForPage($Page);
+    $contentManager = pageManager::getInstance();
+    $possibleTemplates = $contentManager->getPossibleTemplatesForPage($Page);
   
-      $this->widgetSchema['template'] = new sfWidgetFormChoice(array('choices' => array('' => '&nbsp;') + $possibleTemplates));
-      $this->validatorSchema['template'] = new sfValidatorChoice(array('choices' => array_keys($possibleTemplates), 'required' => true));
-    }
+    $this->widgetSchema['template'] = new sfWidgetFormChoice(array('choices' => array('' => '&nbsp;') + $possibleTemplates));
+    $this->validatorSchema['template'] = new sfValidatorChoice(array('choices' => array_keys($possibleTemplates), 'required' => true));
+  }
 }

@@ -11,14 +11,19 @@ if (!function_exists('sitemap_node_render'))
 }
 ?>
 
-<?php 
-include_partial(
-  'sitemap/tree',
-  array(
-    'records' => $entireSitetree,
-    'nodeRenderFunction' => 'sitemap_node_render',
-    'class' => 'sitemap',
-    'checkIfHidden' => true,
-    'canBeDeleted' => false
-  )
-);
+<h1>Sitemap</h1>
+
+<div class="sitemap">
+  <?php 
+  include_partial(
+    'sitemap/tree',
+    array(
+      'records' => $entireSitetree,
+      'nodeRenderFunction' => 'sitemap_node_render',
+      'class' => 'sitemap',
+      'checkIfHidden' => true,
+      'canBeDeleted' => false
+    )
+  );
+  ?>
+</div>

@@ -1,0 +1,7 @@
+all:
+  site:
+    module_definition:
+      name: iFrame content
+      admin_url: iframeAdmin/editByRoute
+      use_custom_routing: true
+      event_handler: [Iframe, siteEventHandler]

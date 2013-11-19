@@ -1,0 +1,25 @@
+# model definitions -------------------------
+
+Iframe:
+  columns:
+    sitetree_id:          { type: integer, notnull: true }
+    url:                  { type: string(255) }
+    file_name:            { type: string(255) }
+    layout:               { type: string(25) }
+    
+  actAs:
+    Timestampable:        ~
+    Blameable:            # created_by and updated_by (override to use sfGuardUser)
+      listener: siteBlamableListener
+    
+  relations:
+    Sitetree:
+      class:    Sitetree
+      foreign:  id
+      local:    sitetree_id
+      onDelete: CASCADE
+      type:     one
+      
+  options:
+    symfony:
+      filter: false
