@@ -460,4 +460,27 @@ abstract class PluginSitetree extends BaseSitetree
 
     return $copy;
   }
+  
+  /**
+   * Does this page share a URL with another page on the site
+   * 
+   * @param string $url
+   */
+  public function hasConflictedUrl($url, $culture)
+  {
+    $manager   = siteManager::getInstance();
+    $culture   = sfContext::getInstance()->getUser()->getCulture();
+    $sitetrees = SitetreeTable::getInstance()->getInstance()->findBySiteAndBaseUrl($this->site, $this->base_url);
+    
+    foreach ($sitetrees as $sitetree)
+    {
+      if ($sitetree->id == $this->id) continue; // don't check this page!
+        
+      $urlC = $manager->generateCrossAppUrlFor($manager->getRoutingProxy()->generateInternalUrl($sitetree, '', array('sf_culture' => $culture)), $manager->getManagedApp());
+      
+      if ($urlC == $url) return true;
+    }
+    
+    return false;
+  }
 }

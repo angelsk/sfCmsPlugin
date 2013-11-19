@@ -57,7 +57,7 @@ class ContentGroupTypePage extends ContentGroupType
    */
   public function getPreviewUrl()
   {
-    return 'pageDisplay/preview?id=' . $this->getPage()->id;
+    return '@page_display?id=' . $this->getPage()->id;
   }
 
   /**
