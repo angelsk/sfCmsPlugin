@@ -249,7 +249,8 @@ class siteManager
     
     // Save it in a cookie then it's remembered even when logged out by cache clearing on server
     $expiration_age = sfConfig::get('app_sf_guard_plugin_remember_key_expiration_age', 15 * 24 * 3600); // re-use this expiration :)
-    sfContext::getInstance()->getResponse()->setCookie('site_' . sfConfig::get('sf_app'), $site, time() + $expiration_age);
+    $secure         = (sfConfig::get('sf_environment') != 'dev' && 'backend' == sfConfig::get('sf_app')); // secure for backend & http-only
+    sfContext::getInstance()->getResponse()->setCookie(sprintf('site_%s', sfConfig::get('sf_app')), $site, time() + $expiration_age, '/', '', $secure, true);
   }
   
   /**
