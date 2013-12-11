@@ -48,3 +48,15 @@ all:
       - listingDisplay
       - iframeDisplay 
       - redirectDisplay
+
+    standard_helpers:
+      - Partial
+      - Cache
+      - Asset
+      - Url
+      - I18N
+      - Text
+      - ImagePool
+      - Site
+      - Date
+      
