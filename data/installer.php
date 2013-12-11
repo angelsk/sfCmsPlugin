@@ -130,4 +130,4 @@ $this->logSection('install', 'Finish up');
 $this->runTask('project:permissions');
 $this->runTask('cc');
 
-$this->logSection('info', 'FINISHED: Please update your project, build your models, install plugin assets and run mootools:install-assets');
+$this->logSection('info', 'FINISHED: Please update your project, build your models, publish plugin assets and run mootools:publish-assets');
