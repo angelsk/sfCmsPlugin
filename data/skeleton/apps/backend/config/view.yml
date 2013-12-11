@@ -1,0 +1,27 @@
+# You can find more information about this file on the symfony website:
+# http://www.symfony-project.org/reference/1_4/en/13-View
+
+default:
+  http_metas:
+    content-type: text/html
+
+  metas:
+    title:        ##PROJECTFNAME## CMS
+    #description:  symfony project
+    #keywords:     symfony, project
+    #language:     en
+    #robots:       index, follow
+
+  stylesheets:   
+    - /sfDoctrinePlugin/css/global.css
+    - /sfDoctrinePlugin/css/default.css
+    #- backend.css
+    - /sfCmsPlugin/css/sitetree.css
+
+  javascripts:
+    - https://ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools-yui-compressed.js: { position: first }
+    - mootools-more-backend.js
+    - admin.js
+
+  has_layout:     true
+  layout:         layout

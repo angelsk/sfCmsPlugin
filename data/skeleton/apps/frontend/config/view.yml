@@ -1,0 +1,23 @@
+# You can find more information about this file on the symfony website:
+# http://www.symfony-project.org/reference/1_4/en/13-View
+
+default:
+  http_metas:
+    content-type: text/html
+
+  metas:
+    apple-mobile-web-app-capable:   "yes"
+    viewport:                       "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+    
+    title:        ##PROJECTFNAME##
+    #description:  symfony project
+    #keywords:     symfony, project
+    #language:     en
+    #robots:       index, follow
+
+  stylesheets:    [main.css]
+
+  javascripts:    []
+
+  has_layout:     true
+  layout:         layout

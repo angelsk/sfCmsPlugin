@@ -7,7 +7,7 @@ all:
       name:               project name
       cultures:           [en]
       default_culture:    en
-      root_module:        default
+      root_module:        index
       #url_prefix:         ''
       
     available_modules:  
