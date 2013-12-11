@@ -35,7 +35,7 @@ NOTE: This assumes you have already got a lib/vendor folder with symfony it in.
 
 If it's a fresh setup of a project, you can use the installer to create a skeleton project using the `sfCmsPlugin`.  If you are using SVN this will install all of the appropriate plugins and dependancies.
 
-    php lib/vendor/symfony/data/bin/symfony generate:project PROJECT_IDENTIFIER --installer=plugins/sfCmsPlugin/data/installer.php
+    php lib/vendor/symfony/data/bin/symfony generate:project --installer=plugins/sfCmsPlugin/data/installer.php PROJECT_IDENTIFIER
 
 Otherwise you will need to add the following configuration to your existing project in `config/app.yml` for the main site.  For
 multiple sites, you will add a new config file per dimension (as specified in the `ysfDimensionsPlugin` README).
