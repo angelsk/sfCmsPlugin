@@ -8,3 +8,6 @@ sfGuardPermission:
   sitePermission_3:
     name:           site.publish
     description:    "Site publisher - allows editing and publishing of sitetree nodes and all content"
+  userPermission_1:
+    name:           user.admin
+    description:    "User admin - allows adding and editing of users"
