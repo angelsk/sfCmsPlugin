@@ -19,7 +19,7 @@ $plugins = array(
   'sfImagePoolPlugin'             => 'https://github.com/HollerLondon/sfImagePoolPlugin.git/trunk',
   'sfThumbnailPlugin'             => 'http://svn.symfony-project.com/plugins/sfThumbnailPlugin/branches/1.3/',
   'sfDoctrineActAsTaggablePlugin' => 'http://svn.symfony-project.com/plugins/sfDoctrineActAsTaggablePlugin/branches/1.2/',
-  'sfMooToolsFormExtraPlugin'     => 'https://github.com/HollerLondon/sfMooToolsFormExtraPlugin.git',
+  'sfMooToolsFormExtraPlugin'     => 'https://github.com/HollerLondon/sfMooToolsFormExtraPlugin.git/trunk',
   'sfFeed2Plugin'                 => 'http://svn.symfony-project.com/plugins/sfFeed2Plugin/trunk/',
   //'ysfDimensionsPlugin'          => 'http://svn.symfony-project.com/plugins/ysfDimensionsPlugin/branches/1.4/' // Not enabled by default
 );                                 
