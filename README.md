@@ -23,6 +23,7 @@ Dependancies
  * [sfMooToolsFormExtraPlugin](https://github.com/HollerLondon/sfMooToolsFormExtraPlugin)
  * [Blamable](http://svn.doctrine-project.org/extensions/Blameable/branches/1.2-1.0/) (external in lib/doctrine_extensions)
  * [Orderable](https://github.com/HollerLondon/Doctrine-Orderable) (external in lib/doctrine_extensions)
+ * [sfFeed2Plugin](http://www.symfony-project.com/plugins/sfFeed2Plugin) (for the RSS feeds)
  * [ysfDimensionsPlugin](http://www.symfony-project.org/plugins/ysfDimensionsPlugin) (for multiple sites)
 
 ### MooTools 1.3.2
@@ -30,7 +31,7 @@ Dependancies
 Setup
 -----
 
-If it's a fresh setup of a project, you can use the installer to create a skeleton project using the `sfCmsPlugin`.
+If it's a fresh setup of a project, you can use the installer to create a skeleton project using the `sfCmsPlugin`.  If you are using SVN this will install all of the appropriate plugins and dependancies.
 
     php path/to/symfony generate:project PROJECT_IDENTIFIER --installer=plugins/sfCmsPlugin/data/installer.php
 
@@ -46,7 +47,7 @@ multiple sites, you will add a new config file per dimension (as specified in th
     	    cultures:         [en]
     	    default_culture:  en
     	    url_prefix:       http://www.example.com   # optional url_prefix if cms has a different domain to the main site
-          root_module:      default      # You will need to ensure you have a module.yml for whichever module this is - see below
+          root_module:        index                    # You will need to ensure you have a module.yml for whichever module this is - see below
       
           # the default site
           default_site:     ##SITENAME##

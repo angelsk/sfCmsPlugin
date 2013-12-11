@@ -3,10 +3,11 @@ all:
   site:  # you'll want one of these for each dimension if you have multiple sites
     identifier:           ##SITEIDENTIFIER##
     definition:
-      name:               ##PROJECTNAME##
+      name:               ##PROJECTFNAME##
       cultures:           [en]
       default_culture:    en
-      root_module:        default
+      root_module:        index
+      #url_prefix:         ''
       
     # the default site (used in the admin area)
     default_site:         ##SITEIDENTIFIER##
@@ -15,3 +16,10 @@ all:
       - sitemap
       - pageDisplay
       - listingDisplay
+      - redirectDisplay
+      - iframeDisplay
+      
+  # page and listing templates
+  <?php
+    include(sfConfig::get('sf_root_dir') . "/config/templates.yml");
+  ?>

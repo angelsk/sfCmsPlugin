@@ -1,0 +1,52 @@
+# from app.yml
+#all:
+  #site:
+
+    # TEMPLATES FOR CONTENT PAGE - single piece of content / non-repeatable
+    
+    page_templates:
+    
+      # example template
+      content:
+        name: Simple content page
+        cacheable: true
+
+        blocks:
+          content:
+            name: Content
+            type: HTML
+            with_image: true
+            options:
+              height: 600
+            
+            
+      
+    # TEMPLATES FOR LISTING PAGES - content pages with elements of repeatable content or obvious listings
+      
+    listing_templates:
+    
+      content:
+        name: Simple content listing (with categories)
+        use_categories: true
+        display_pager_class: categoryListingDisplayPager
+        listing_cacheable: true
+        item_cacheable: true
+
+        help: ""
+        
+        listing_blocks:
+          content:
+            name: Content
+            type: HTML
+            with_image: true
+            options:
+              height: 600
+
+        item_blocks:
+          # use title from ListingItem
+          content:
+            name: Content
+            type: HTML
+            with_image: true
+            options:
+              height: 600
