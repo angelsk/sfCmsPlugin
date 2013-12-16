@@ -63,7 +63,7 @@ all:
       - Partial
       - Cache
       - ImagePool
-      - I18n
+      - I18N
       
     login_module:           sfGuardAuth
     login_action:           signin
