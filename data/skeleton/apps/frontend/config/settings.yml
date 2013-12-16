@@ -48,6 +48,7 @@ all:
       - listingDisplay
       - iframeDisplay 
       - redirectDisplay
+      - sitemap
 
     standard_helpers:
       - Partial

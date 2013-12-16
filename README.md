@@ -83,6 +83,9 @@ Enable the frontend display modules in the frontend `settings.yml`.
       - listingDisplay
       - iframeDisplay 
       - redirectDisplay
+	  - sitemap
+
+NOTE: If you want a sitemap - including an XML page, you'll have to set up a hidden node for it.
 
 
 Javascript in the CMS
