@@ -81,6 +81,7 @@ $formTarget = ($sf_data->offsetExists('formTarget') ? $sf_data->getRaw('formTarg
         <?php endif; ?>
         <?php if ('HTML' == $contentBlock->getDefinitionParam('type')) : ?>
           <p><?php echo image_tag('/sfCmsPlugin/images/help.png'); ?> Use SHIFT + RETURN to create a soft new line (&lt;br />) and RETURN to create a new paragraph.</p>
+          <p><?php echo image_tag('/sfCmsPlugin/images/help.png'); ?> Start links with http:// to have them open in a new window.  Internal links should start with /</p>
         <?php endif; ?>
 
         <?php if ($contentBlock->useLang()): ?>
