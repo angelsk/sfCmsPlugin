@@ -25,6 +25,12 @@ class listingDisplayActions extends sfActions
     $listing = ListingTable::getInstance()->findOneBySitetreeId($sitetree->id);
     $this->forward404Unless($listing, "No listing could be found from sitetree with id='{$sitetree->getId()}'");
 
+    if ($request->hasParameter('category'))
+    {
+      $category = ListingCategoryTable::getInstance()->findOneBySlug($request->getParameter('category'));
+      $this->forward404Unless($category, "No category could be found for the listing with slug='{$request->getParameter('category')}'");
+    }
+    
     // layout
     $manager = listingManager::getInstance();
     
