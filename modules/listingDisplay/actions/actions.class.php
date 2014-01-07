@@ -25,6 +25,12 @@ class listingDisplayActions extends sfActions
     $listing = ListingTable::getInstance()->findOneBySitetreeId($sitetree->id);
     $this->forward404Unless($listing, "No listing could be found from sitetree with id='{$sitetree->getId()}'");
 
+    if ($request->hasParameter('category'))
+    {
+      $category = ListingCategoryTable::getInstance()->findOneBySlug($request->getParameter('category'));
+      $this->forward404Unless($category, "No category could be found for the listing with slug='{$request->getParameter('category')}'");
+    }
+    
     // layout
     $manager = listingManager::getInstance();
     
@@ -42,7 +48,7 @@ class listingDisplayActions extends sfActions
    *
    * @param sfRequest $request
    */
-  public function executePreview($request)
+  public function executePreview(sfWebRequest $request)
   {
     $listing = ListingTable::getInstance()->findOneById($request->getParameter('id'));
     $this->forward404Unless($listing, "No listing could be found with id='{$request->getParameter('id')}'");
@@ -73,7 +79,7 @@ class listingDisplayActions extends sfActions
   /**
    * Display a listing page item
    */
-  public function executeItem()
+  public function executeItem(sfWebRequest $request)
   {
     // find where we are in the sitetree
     $sitetree = siteManager::getInstance()->initCurrentSitetreeNode();
@@ -91,6 +97,15 @@ class listingDisplayActions extends sfActions
     $item = Doctrine_Core::getTable($itemClass)->findByDql("slug = ? AND listing_id = ? AND is_active = ?", array($slug, $listing->id, true))->getFirst();
     $this->forward404Unless($item, 'Could not locate item from slug: ' . $slug);
 
+    // check in correct category if supplied
+    if ($request->hasParameter('category'))
+    {
+      $category  = $request->getParameter('category');
+      $actualCat = $item->ListingCategory->slug;
+     
+      if ($category != $actualCat) $this->redirect(siteManager::getInstance()->getRoutingProxy()->generateInternalUrl($sitetree, 'category_item', array('sf_culture'=>$this->getUser()->getCulture(), 'slug'=>$item->slug, 'category'=>$actualCat)), 301);
+    }
+    
     $htmlTitle = $this->getResponse()->getTitle();
     $htmlTitle = sprintf('%s %s %s', $item->title, siteManager::getInstance()->getTitleSeparator(), $htmlTitle);
     $this->getResponse()->setTitle(htmlentities($htmlTitle, null, 'utf-8', false), false);
@@ -117,7 +132,7 @@ class listingDisplayActions extends sfActions
    *
    * @param sfWebRequest $request
    */
-  public function executePreviewItem($request)
+  public function executePreviewItem(sfWebRequest $request)
   {
     $listing = ListingTable::getInstance()->findOneById($request->getParameter('listId'));
     $this->forward404Unless($listing, "No listing could be found with id='{$request->getParameter('listId')}'");
@@ -154,7 +169,7 @@ class listingDisplayActions extends sfActions
    *
    * This looks up the page by site and routeName and renders it.
    */
-  public function executeRss($request)
+  public function executeRss(sfWebRequest $request)
   {
     // find where we are in the sitetree
     $sitetree = siteManager::getInstance()->initCurrentSitetreeNode();
@@ -188,7 +203,7 @@ class listingDisplayActions extends sfActions
    *
    * This looks up the page by site and routeName and renders it.
    */
-  public function executeAtom($request)
+  public function executeAtom(sfWebRequest $request)
   {
     // find where we are in the sitetree
     $sitetree = siteManager::getInstance()->initCurrentSitetreeNode();

@@ -59,6 +59,8 @@ foreach (array('view.yml', 'settings.yml', 'factories.yml') as $file)
 $this->logSection('install', 'Setting up CMS project');
 $this->installDir(dirname(__FILE__).'/skeleton');
 _exec('mkdir -p lib/doctrine_extensions');
+_exec('mkdir -p templates/page');
+_exec('mkdir -p templates/listing');
 
 // Externals
 if ($isSubversion)

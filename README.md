@@ -83,6 +83,9 @@ Enable the frontend display modules in the frontend `settings.yml`.
       - listingDisplay
       - iframeDisplay 
       - redirectDisplay
+	  - sitemap
+
+NOTE: If you want a sitemap - including an XML page, you'll have to set up a hidden node for it.
 
 
 Javascript in the CMS
@@ -457,8 +460,8 @@ An image asset - the images can be managed in the Image Pool tab.  The image can
     content_block_1:
       name: Content Block 1
       type: Image
-	    tag:  [icon]    # set if tag restriction required, as per sfImagePoolable (none set by default)
-	    multiple: false # set if multiple images allowed, as per sfImagePoolable  (false by default)
+      tag:  [icon]    # set if tag restriction required, as per sfImagePoolable (none set by default)
+      multiple: false # set if multiple images allowed, as per sfImagePoolable  (false by default)
 
 
 The image pool rendering options are set in the template itself, as the content block returns an sfImagePoolCollection (if multiple), or an sfImagePoolImage (if not multiple) - so you can treat it like any other image poolable object.
