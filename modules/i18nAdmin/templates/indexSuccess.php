@@ -20,7 +20,7 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array(
               echo __('I18N is not enabled it must be set to true in settings.yml');
               break;
             case 11:
-              echo __('The file: %file%, is not writable and cannot be set to be writable', array('file'=>$error['--file--']));
+              echo __('The file: %file%, is not writable and cannot be set to be writable', array('%file%'=>$error['--file--']));
               break;
             case 12:
               echo __('There are no translations available for this application');
