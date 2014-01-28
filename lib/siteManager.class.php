@@ -254,6 +254,16 @@ class siteManager
   }
   
   /**
+   * Set the language
+   * 
+   * @param string $site
+   */
+  public function setCurrentCulture($site)
+  {
+    sfContext::getInstance()->getUser()->setCulture($this->getDefaultCulture());
+  }
+  
+  /**
    * Load config for the current site dimension
    * 
    * @param string $site

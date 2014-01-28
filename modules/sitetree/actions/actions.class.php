@@ -50,6 +50,7 @@ class sitetreeActions extends sfActions
     if ($selectedSite && in_array($selectedSite, $shortSites))
     {
       siteManager::getInstance()->setCurrentSite($selectedSite);
+      siteManager::getInstance()->setCurrentCulture($selectedSite);
       
       $this->redirect('sitetree/index');
     }
@@ -63,6 +64,15 @@ class sitetreeActions extends sfActions
     $manager           = siteManager::getInstance();
     $site              = $manager->getCurrentSite();
     $sites             = siteManager::getInstance()->getActiveSites(true);
+    
+    $siteDefn          = siteManager::getInstance()->getSite();
+    $cultures          = $siteDefn['cultures'];
+    
+    if (!in_array($this->getUser()->getCulture(), $cultures))
+    {
+      $this->getUser()->setCulture($cultures[0]);
+      $this->redirect('sitetree/index');
+    }
     
     // If logged in and not correct site - redirect
     if (!empty($sites) && !in_array($site, array_keys($sites))) $this->redirect('sitetree/changeSite');
