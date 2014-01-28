@@ -39,7 +39,7 @@ sfConfig::set('app_site_awaitingApprovals', $approvals);
           $canPublish = ($canAdmin || $user->hasCredential('site.publish'));
           $approvals  = sfConfig::get('app_site_awaitingApprovals', array());
           
-          $name = esc_entities($sitetree->title).'&nbsp';
+          $name = esc_entities($sitetree->title);
           if (isset($approvals[$sitetree->id]) && $canPublish) $name .= ' <strong>*</strong>';
           
           $out = sprintf('<div class="sitetree"><span class="lnk">%s</span>', $name);
@@ -58,6 +58,8 @@ sfConfig::set('app_site_awaitingApprovals', $approvals);
               ) . "</span>";
             }
           }
+          
+          $out .= '&nbsp';
       
           if ($sitetree->is_hidden && !$sitetree->is_deleted) 
           {
