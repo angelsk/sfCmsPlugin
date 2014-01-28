@@ -39,7 +39,7 @@ sfConfig::set('app_site_awaitingApprovals', $approvals);
           $canPublish = ($canAdmin || $user->hasCredential('site.publish'));
           $approvals  = sfConfig::get('app_site_awaitingApprovals', array());
           
-          $name = esc_entities($sitetree->title);
+          $name = esc_entities($sitetree->title).'&nbsp';
           if (isset($approvals[$sitetree->id]) && $canPublish) $name .= ' <strong>*</strong>';
           
           $out = sprintf('<div class="sitetree"><span class="lnk">%s</span>', $name);
