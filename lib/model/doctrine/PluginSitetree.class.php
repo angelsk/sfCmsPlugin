@@ -149,17 +149,21 @@ abstract class PluginSitetree extends BaseSitetree
     $lang = sfContext::getInstance()->getUser()->getCulture();
     $title = $this->Translation[$lang]->title;
 
-    // Don't return blank site tree title - return default culture version if
-    // translation not available
-    if (!is_null($title)) 
-    {
-      return $title;
-    }
+    // Don't return blank title - return default culture version if translation not available
+    if (!is_null($title))  return $title;
     else 
     {
+      // Try default language of the site
       $defn         = siteManager::getInstance()->getSite();
       $default_lang = $defn['default_culture'];
-      return $this->Translation[$default_lang]->title;
+      $title        = $this->Translation[$default_lang]->title;
+      
+      if (!is_null($title)) return $title;
+      else
+      {
+        // Return first language so we have something
+        return $this->Translation->getFirst()->title;
+      }
     }
   }
 

@@ -48,11 +48,11 @@ class PluginSitetreeTable extends Doctrine_Table
    */
   public function getSitetree($site, $level = null, $hydrationMode, $justActive = true) 
   {
-    $culture = sfContext::getInstance()->getUser()->getCulture();
+    //$culture = sfContext::getInstance()->getUser()->getCulture();
 
     $query = $this->createQuery('s')
            ->select('s.route_name, s.level, t.title, s.lft, s.rgt')
-           ->leftJoin('s.Translation t ON (s.id = t.id AND t.lang = ?) INDEXBY t.lang', array($culture))
+           ->leftJoin('s.Translation t ON (s.id = t.id) INDEXBY t.lang', array()) //  AND t.lang = ? $culture
            ->where('s.site = ? AND s.is_deleted = ?', array($site, false))
            ->orderBy('s.lft');
     
@@ -100,11 +100,11 @@ class PluginSitetreeTable extends Doctrine_Table
    */
   public function getCoreNavigation($site) 
   {
-    $culture = sfContext::getInstance()->getUser()->getCulture();
+    //$culture = sfContext::getInstance()->getUser()->getCulture();
 
     $query = $this->createQuery('s')
            ->select('s.route_name, s.level, t.title')
-           ->leftJoin('s.Translation t ON (s.id = t.id AND t.lang = ?) INDEXBY t.lang', array($culture))
+           ->leftJoin('s.Translation t ON (s.id = t.id) INDEXBY t.lang', array()) // AND t.lang = ? $culture
            ->where('s.site = ? AND s.is_core_navigation = ? AND s.is_active = ? AND s.is_deleted = ?', array($site, true, true, false))
            ->orderBy('s.lft');
     
@@ -134,11 +134,11 @@ class PluginSitetreeTable extends Doctrine_Table
    */
   public static function setTreeQueryWithTranslation() 
   {
-    $culture = sfContext::getInstance()->getUser()->getCulture();
+    //$culture = sfContext::getInstance()->getUser()->getCulture();
 
     $query = SitetreeTable::getInstance()->createQuery('s')
            ->select('s.*, t.*')
-           ->leftJoin('s.Translation t ON (s.id = t.id AND t.lang = ?) INDEXBY t.lang', array($culture));
+           ->leftJoin('s.Translation t ON (s.id = t.id) INDEXBY t.lang', array()); //  AND t.lang = ? $culture
 
     $tree = SitetreeTable::getInstance()->getTree();
     $tree->setBaseQuery($query);
