@@ -1075,7 +1075,16 @@ class siteManager
       }
       else $include = true;
       
-      if ($include) $out[$item[$field]] = str_repeat(':: ', $item['level']) . @$item['Translation'][$culture]['title'];
+      $title = '';
+      if (isset($item['Translation'][$culture]['title'])) $title = $item['Translation'][$culture]['title'];
+      else if (isset($item['Translation']['en']['title'])) $title = $item['Translation']['en']['title'];
+      else if (is_array($item['Translation']) && !empty($item['Translation'])) 
+      {
+          $trans = array_pop($item['Translation']);
+          if (isset($trans['title'])) $title = $trans['title'];
+      }
+      
+      if ($include) $out[$item[$field]] = str_repeat(':: ', $item['level']) . $title;
     }
     
     return $out;
