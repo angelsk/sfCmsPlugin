@@ -108,7 +108,7 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array(
               
               <div class="sf_admin_form_row <?php //if ($error) echo 'errors'; ?>">
                 <div>
-                  <label for="translation_string_<?php echo $msg['id']; ?>" class="long"><?php echo html_entity_decode($msg['key'], ENT_NOQUOTES, 'UTF-8'); ?></label>
+                  <label for="translation_string_<?php echo $msg['id']; ?>" class="long"><?php echo html_entity_encode($msg['key'], ENT_NOQUOTES, 'UTF-8'); ?></label>
                   <div class="content">
                     <textarea name="translation[string_<?php echo $msg['id']; ?>]" id="translation_string_<?php echo $msg['id']; ?>"><?php echo html_entity_decode($msg['value'], ENT_NOQUOTES, 'UTF-8'); ?></textarea>
                   </div>
