@@ -52,6 +52,7 @@ class cmsI18nApplicationExtract extends sfI18nApplicationExtract
     $this->extractFromPhpFiles(sfConfig::get('sf_root_dir').DIRECTORY_SEPARATOR.'templates');
     $this->extractFromPhpFiles(sfConfig::get('sf_lib_dir').DIRECTORY_SEPARATOR.'form');
     $this->extractFromPhpFiles(sfConfig::get('sf_lib_dir').DIRECTORY_SEPARATOR.'validator');
+    $this->extractFromPhpFiles(sfConfig::get('sf_lib_dir').DIRECTORY_SEPARATOR.'helper');
     
     // Add global librairies
     $this->extractFromPhpFiles(sfConfig::get('sf_app_lib_dir'));
