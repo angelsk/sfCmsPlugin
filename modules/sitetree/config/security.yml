@@ -1,3 +1,7 @@
 default:
   is_secure: true
   credentials: [ site ]
+  
+changeSite:
+  is_secure: true
+  credentials: []

@@ -534,7 +534,7 @@ abstract class PluginListing extends BaseListing
     }
     
     // delete categories
-    foreach ($this->ListingCategory as $category)
+    foreach ($this->Categories as $category)
     {
       $category->delete();
     }

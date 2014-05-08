@@ -58,6 +58,8 @@ sfConfig::set('app_site_awaitingApprovals', $approvals);
               ) . "</span>";
             }
           }
+          
+          $out .= '&nbsp';
       
           if ($sitetree->is_hidden && !$sitetree->is_deleted) 
           {
