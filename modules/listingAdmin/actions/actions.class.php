@@ -43,7 +43,7 @@ class listingAdminActions extends sfActions
     $listing = Listing::createFromSitetree($sitetree);
     $form    = new ListingForm($listing);
 
-    if ($request->isMethod(sfWebRequest::POST) && $request->hasParameter('listing'))
+    if (($request->isMethod(sfWebRequest::POST) || $request->isMethod(sfWebRequest::PUT)) && $request->hasParameter('listing'))
     {
       $form->bind($request->getParameter('listing'));
 
@@ -83,7 +83,7 @@ class listingAdminActions extends sfActions
     $manager = listingManager::getInstance();
     $form    = new ListingForm($listing);
 
-    if ($request->isMethod(sfWebRequest::POST) && $request->hasParameter('listing') && $this->canPublish)
+    if (($request->isMethod(sfWebRequest::POST) || $request->isMethod(sfWebRequest::PUT)) && $request->hasParameter('listing') && $this->canPublish)
     {
       $form->bind($request->getParameter('listing'));
 
@@ -178,7 +178,7 @@ class listingAdminActions extends sfActions
     $itemClass  = listingManager::getInstance()->getListItemClass($template);
     
     // If importing
-    if ($request->isMethod(sfWebRequest::POST))
+    if ($request->isMethod(sfWebRequest::POST) || $request->isMethod(sfWebRequest::PUT))
     {
       $itemIds     = $request->getParameter('import_listing_items', array());
       $copiedItems = array();
@@ -262,7 +262,7 @@ class listingAdminActions extends sfActions
     $this->form     = new $formClass($item);
 
     // process the form
-    if ($request->isMethod(sfWebRequest::POST) && $this->hasRequestParameter('publish') && $this->canPublish)
+    if (($request->isMethod(sfWebRequest::POST) || $request->isMethod(sfWebRequest::PUT)) && $this->hasRequestParameter('publish') && $this->canPublish)
     {
       $actionP = ($this->getRequestParameter('publish') === '1') ? 'publish' : 'unPublish';
       $item->$actionP();

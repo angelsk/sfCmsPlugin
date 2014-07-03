@@ -132,7 +132,7 @@ class i18nAdminActions extends sfActions
       
       ksort($this->messages);
       
-      if ($request->isMethod(sfWebRequest::POST) && $request->hasParameter('translation'))
+      if (($request->isMethod(sfWebRequest::POST) || $request->isMethod(sfWebRequest::PUT)) && $request->hasParameter('translation'))
       {
         $counter = 0;
         
