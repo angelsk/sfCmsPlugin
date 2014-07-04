@@ -48,7 +48,7 @@ $formTarget = ($sf_data->offsetExists('formTarget') ? $sf_data->getRaw('formTarg
     <div style="display: none;" class="content_block_editor_loading"><img src="/sfCmsPlugin/images/ajax-bar.gif" alt="Loading..." /></div>
   
     <ul class="sf_admin_actions">
-      <li class="sf_admin_action_preview"><input type="submit" name="preview" id="<?php echo $formId ?>Preview" value="Preview" /></li>
+      <?php if ($previewUrl) : ?><li class="sf_admin_action_preview"><input type="submit" name="preview" id="<?php echo $formId ?>Preview" value="Preview" /></li><?php endif; ?>
       <li class="sf_admin_action_save"><input type="submit" name="save" value="Save version" /></li>
       <li class="sf_admin_action_save_and_add"><input type="submit" name="save_and_publish" value="Save and <?php echo ($canPublish ? 'publish' : 'mark for approval'); ?>" /></li>
       <?php if (isset($cancelUrl)) echo '<li class="sf_admin_action_list">' . link_to('Back', $cancelUrl) . '</li>'; ?>
@@ -96,26 +96,28 @@ $formTarget = ($sf_data->offsetExists('formTarget') ? $sf_data->getRaw('formTarg
       {
         // hide the iframe
         $('<?php echo $formId ?>Iframe').hide(); 
-        
-        $('<?php echo $formId ?>Preview').addEvent('click', function(event) 
-        {
-          // stop form submit
-          event.stopPropagation();
-    
-          // show the iframe
-          $('<?php echo $formId ?>Iframe').show();
-          var form = $('<?php echo $formId ?>');
+
+        <?php if ($previewUrl) : ?>
+          $('<?php echo $formId ?>Preview').addEvent('click', function(event) 
+          {
+            // stop form submit
+            event.stopPropagation();
           
-          // post our form to the iframe so it can render the Content blocks
-          form.set('action', '<?php echo $previewUrl ?>');
-          form.set('target', '<?php echo $formId ?>Iframe');
-          form.submit();
-    
-          // reset so can submit save / publish
-          form.set('action', '<?php echo $formTarget; ?>');
-          form.set('target', '');
-          return false;
-        });
+            // show the iframe
+            $('<?php echo $formId ?>Iframe').show();
+            var form = $('<?php echo $formId ?>');
+            
+            // post our form to the iframe so it can render the Content blocks
+            form.set('action', '<?php echo $previewUrl ?>');
+            form.set('target', '<?php echo $formId ?>Iframe');
+            form.submit();
+          
+            // reset so can submit save / publish
+            form.set('action', '<?php echo $formTarget; ?>');
+            form.set('target', '');
+            return false;
+          });
+        <?php endif; ?>
       });
     </script>
     

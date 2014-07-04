@@ -13,6 +13,10 @@ sfConfig::set('app_site_awaitingApprovals', $approvals);
 
   <h1>Sitetree</h1>
   
+  <?php if (siteManager::getInstance()->checkLock()) : ?>
+    <div class="error">The site is currently disabled; it is probably being updated.  Please note that this may affect content changes. Thank you for your patience.</div>
+  <?php endif; ?>
+  
   <div id="sf_admin_header">
     <div class="sitetreeInfo">
       <p>Click on the page name to edit the content<?php if (!empty($approvals) && $canPublish) : ?> (<strong>*</strong> indicates content awaiting approval)<?php endif; ?>; 

@@ -301,10 +301,62 @@ class siteManager
     return $defn['default_culture'];
   }
   
+  /**
+   * Check if frontend disabled
+   * 
+   * @return boolean
+   */
+  public function checkLock()
+  {
+    $app = $this->getManagedApp();
+    $env = sfContext::getInstance()->getConfiguration()->getEnvironment();
+      
+    return (
+      $this->hasLockFile(sfConfig::get('sf_data_dir').DIRECTORY_SEPARATOR.$app.'_'.$env.'-cli.lck', 5)
+      ||
+      $this->hasLockFile(sfConfig::get('sf_data_dir').DIRECTORY_SEPARATOR.$app.'_'.$env.'.lck')
+    );
+  }
+  
+ /**
+   * Determines if a lock file is present.  Nicked from the sfApplicationConfiguration
+   *
+   * @param  string  $lockFile             Name of the lock file.
+   * @param  integer $maxLockFileLifeTime  A max amount of life time for the lock file.
+   *
+   * @return bool true, if the lock file is present, otherwise false.
+   */
+  protected function hasLockFile($lockFile, $maxLockFileLifeTime = 0)
+  {
+    $isLocked = false;
+    
+    if (is_readable($lockFile) && ($last_access = fileatime($lockFile)))
+    {
+      $now      = time();
+      $timeDiff = $now - $last_access;
+
+      if (!$maxLockFileLifeTime || $timeDiff < $maxLockFileLifeTime)
+      {
+        $isLocked = true;
+      }
+      else
+      {
+        $isLocked = @unlink($lockFile) ? false : true;
+      }
+    }
+
+    return $isLocked;
+  }
+  
+  /**
+   * Get configuration for the specified application
+   * 
+   * @param string $app 
+   * @return sfApplicationConfiguration
+   */
   protected function getAppConfig($app)
   {
     $currentConfig = sfContext::getInstance()->getConfiguration();
-
     $appConfig = ProjectConfiguration::getApplicationConfiguration(
       $app,
       $currentConfig->getEnvironment(),
@@ -327,14 +379,14 @@ class siteManager
       // get current config+context so we can switch back after
       $currentApp = sfConfig::get('sf_app');
       
-      // Switch config
-      $managedAppConfig = $this->getAppConfig($this->getManagedApp());
+      // Switch config - don't because get hit by check_lock
+      //$managedAppConfig = $this->getAppConfig($this->getManagedApp());
       
-      $config = sfFactoryConfigHandler::getConfiguration($managedAppConfig->getConfigPaths('config/factories.yml'));
+      $config = sfFactoryConfigHandler::getConfiguration($this->getConfigPaths('config/factories.yml', $this->getManagedApp()));
       $cachedir = sprintf('%s/%s/%s/site', sfConfig::get('sf_cache_dir'), $this->getManagedApp(), sfConfig::get('sf_environment'));
       
-      // switch back
-      $currentConfig = $this->getAppConfig($currentApp);
+      // switch back - no longer needed
+      //$currentConfig = $this->getAppConfig($currentApp);
       
       $class = $config['view_cache']['class'];
       
@@ -349,7 +401,6 @@ class siteManager
       $parameters['prefix'] = $cachedir;
       $parameters['cache_dir'] = $cachedir;
       if ('sfMemcacheCache' == $class) $parameters['storeCacheInfo'] = true;
-      
       try 
       {
         $this->cache = new $class($parameters);
@@ -358,6 +409,50 @@ class siteManager
     }
     
     return $this->cache;
+  }
+  
+  /**
+   * Gets the configuration file paths for a given relative configuration path. For specified app; rather than switching config (as get hit by check_lock)
+   *
+   * @param string $app The app to use
+   * @param string $configPath The configuration path
+   * @return array An array of paths
+   */
+  private function getConfigPaths($configPath, $app)
+  {
+    $globalConfigPath = basename(dirname($configPath)).'/'.basename($configPath);
+
+    $files = array(
+      sfContext::getInstance()->getConfiguration()->getSymfonyLibDir().'/config/'.$globalConfigPath, // symfony
+    );
+
+    // Skipping plugin paths
+    
+    // App dirs
+    $currentApp  = sfConfig::get('sf_app');
+    $appDir      = str_replace($currentApp, $app, sfConfig::get('sf_app_dir'));
+    $appCacheDir = str_replace($currentApp, $app, sfConfig::get('sf_app_cache_dir'));
+    
+    $files = array_merge($files, array(
+      sfContext::getInstance()->getConfiguration()->getRootDir().'/'.$globalConfigPath,              // project
+      sfContext::getInstance()->getConfiguration()->getRootDir().'/'.$configPath,                    // project
+      $appDir.'/'.$globalConfigPath,      // application
+      $appCacheDir.'/'.$configPath,      // generated modules
+    ));
+
+    $files[] = $appDir.'/'.$configPath;   // module
+
+    $configs = array();
+    
+    foreach (array_unique($files) as $file)
+    {
+      if (is_readable($file))
+      {
+        $configs[] = $file;
+      }
+    }
+    
+    return $configs;
   }
   
   /**

@@ -1,3 +1,7 @@
+<?php if (siteManager::getInstance()->checkLock()) : ?>
+  <div class="error">The site is currently disabled; it is probably being updated.  Please note that this may affect content changes. Thank you for your patience.</div>
+<?php endif; ?>
+
 <?php
 /**
  * Provides info about the current sitetree node
@@ -42,7 +46,7 @@ if ($sitetree = $sf_data->getRaw('sitetree'))
     echo link_to('Edit sitetree properties', 'sitetree/edit?id=' . $sitetree->id);
   }
 
-  if ($sitetree->is_active) 
+  if ($sitetree->is_active && !siteManager::getInstance()->checkLock()) 
   {
       $manager = siteManager::getInstance();
       $culture = sfContext::getInstance()->getUser()->getCulture();

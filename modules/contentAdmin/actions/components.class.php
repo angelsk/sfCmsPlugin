@@ -278,7 +278,7 @@ class ContentAdminComponents extends sfComponents
       $user->setFlash('content_notice', 'Page cache cleared on ' . siteManager::getInstance()->getManagedApp());
     }
 
-    $previewUrl = siteManager::getInstance()->generateCrossAppUrlFor($contentGroup->getContentGroupType()->getPreviewUrl());
+    $previewUrl = (siteManager::getInstance()->checkLock() ? false : siteManager::getInstance()->generateCrossAppUrlFor($contentGroup->getContentGroupType()->getPreviewUrl()));
 
     $this->setVar('previewUrl', $previewUrl);
     $this->setVar('contentBlocks', $contentBlocks, true);
