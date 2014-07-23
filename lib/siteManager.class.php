@@ -472,20 +472,15 @@ class siteManager
   public function clearManagedAppRoutingCache() 
   {
     // get current config+context so we can switch back after
-    $currentApp = sfConfig::get('sf_app');
+    //$currentApp = sfConfig::get('sf_app');
     
     // Switch config
-    $managedAppConfig = $this->getAppConfig($this->getManagedApp());
+    //$managedAppConfig = $this->getAppConfig($this->getManagedApp());
     
-    $this->clearRoutingCache($managedAppConfig);
+    $this->clearRoutingCache(); // $managedAppConfig);
     
     // switch back
-    $currentConfig = $this->getAppConfig($currentApp);
-    
-    if (sfConfig::get('sf_logging_enabled')) 
-    {
-      sfContext::getInstance()->getLogger()->info(sprintf('Cleared %s routing cache', $this->getManagedApp()));
-    }
+    //$currentConfig = $this->getAppConfig($currentApp);
   }
 
   /**
@@ -495,12 +490,13 @@ class siteManager
    *
    * @param sfApplicationConfiguration $appConfiguration
    */
-  protected function clearRoutingCache(sfApplicationConfiguration $appConfiguration) 
+  protected function clearRoutingCache() // sfApplicationConfiguration $appConfiguration) 
   {
-    $app = $appConfiguration->getApplication();
-    $env = $appConfiguration->getEnvironment();
+    //$app = $appConfiguration->getApplication();
+    //$env = $appConfiguration->getEnvironment();
     
-    $config = sfFactoryConfigHandler::getConfiguration($appConfiguration->getConfigPaths('config/factories.yml'));
+    //$config = sfFactoryConfigHandler::getConfiguration($appConfiguration->getConfigPaths('config/factories.yml'));
+    $config = sfFactoryConfigHandler::getConfiguration($this->getConfigPaths('config/factories.yml', $this->getManagedApp()));
     
     if (isset($config['routing']['param']['cache']))
     {    
@@ -513,6 +509,11 @@ class siteManager
       {
         $cache = new $class($parameters);
         $cache->remove('symfony.routing.data'); // just remove the routing data
+        
+         if (sfConfig::get('sf_logging_enabled')) 
+         {
+           sfContext::getInstance()->getLogger()->info(sprintf('Cleared %s routing cache', $this->getManagedApp()));
+         }
       }
       catch (Exception $e) { }
     }
