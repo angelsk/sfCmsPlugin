@@ -170,7 +170,7 @@ class sitetreeActions extends sfActions
 
     $form = new createSitetreeForm($parent);
 
-    if ($request->isMethod(sfWebRequest::POST) && $request->hasParameter('sitetree')) 
+    if (($request->isMethod(sfWebRequest::POST) || $request->isMethod(sfWebRequest::PUT)) && $request->hasParameter('sitetree')) 
     {
       // form was submitted
       $form->bind($request->getParameter('sitetree'));

@@ -54,14 +54,14 @@ class ContentAdminComponents extends sfComponents
     $this->activeSites   = siteManager::getInstance()->getActiveSites();
     
     // Don't import content
-    if ($request->isMethod(sfWebRequest::POST) && $request->hasParameter('dont_import'))
+    if (($request->isMethod(sfWebRequest::POST) || $request->isMethod(sfWebRequest::PUT)) && $request->hasParameter('dont_import'))
     {
       $isNew = false;
       $user->setFlash('content_notice', 'Import skipped, carry on');
     }
     
     // Import content
-    if ($request->isMethod(sfWebRequest::POST) && $request->hasParameter('import'))
+    if (($request->isMethod(sfWebRequest::POST) || $request->isMethod(sfWebRequest::PUT)) && $request->hasParameter('import'))
     {
       $importContentGroupId = $request->getParameter('import_content_group_id', null);
       
@@ -109,7 +109,7 @@ class ContentAdminComponents extends sfComponents
     }
     
     // if form submitted
-    if ($request->isMethod(sfWebRequest::POST)
+    if (($request->isMethod(sfWebRequest::POST)  || $request->isMethod(sfWebRequest::PUT))
       && ($request->hasParameter('save') || $request->hasParameter('save_and_publish')))
     {
       $editingContentBlockVersions = $this->getEditingContentBlockVersions($contentGroup, $contentBlocks);
@@ -278,7 +278,7 @@ class ContentAdminComponents extends sfComponents
       $user->setFlash('content_notice', 'Page cache cleared on ' . siteManager::getInstance()->getManagedApp());
     }
 
-    $previewUrl = siteManager::getInstance()->generateCrossAppUrlFor($contentGroup->getContentGroupType()->getPreviewUrl());
+    $previewUrl = (siteManager::getInstance()->checkLock() ? false : siteManager::getInstance()->generateCrossAppUrlFor($contentGroup->getContentGroupType()->getPreviewUrl()));
 
     $this->setVar('previewUrl', $previewUrl);
     $this->setVar('contentBlocks', $contentBlocks, true);

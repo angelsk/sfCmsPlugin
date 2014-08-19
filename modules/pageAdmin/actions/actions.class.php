@@ -48,7 +48,7 @@ class pageAdminActions extends sfActions
     $page = Page::createFromSitetree($sitetree);
     $form = new PageForm($page);
 
-    if ($request->isMethod(sfWebRequest::POST))
+    if ($request->isMethod(sfWebRequest::POST) || $request->isMethod(sfWebRequest::PUT))
     {
       $form->bind($request->getParameter('page'));
 
@@ -122,8 +122,8 @@ class pageAdminActions extends sfActions
     $sitetree = SitetreeTable::getInstance()->findOneById($page->sitetree_id);
 
     $form = new PageForm($page);
-
-    if ($request->isMethod(sfWebRequest::POST))
+    
+    if ($request->isMethod(sfWebRequest::POST) || $request->isMethod(sfWebRequest::PUT))
     {
       $form->bind($request->getParameter('page'));
 

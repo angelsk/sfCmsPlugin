@@ -56,7 +56,7 @@ class listingAdminComponents extends sfComponents
       $category->set('Listing', $listing);
       $form     = new ListingCategoryForm($category);
       
-      if ($request->isMethod(sfWebRequest::POST) && $request->hasParameter('listing_category')) 
+      if (($request->isMethod(sfWebRequest::POST) || $request->isMethod(sfWebRequest::PUT)) && $request->hasParameter('listing_category')) 
       {
         $form->bind($request->getParameter('listing_category'));
         
