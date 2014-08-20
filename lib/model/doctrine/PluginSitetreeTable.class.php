@@ -33,7 +33,7 @@ class PluginSitetreeTable extends Doctrine_Table
           ->where("s.site = ? AND s.route_name = ? AND s.is_deleted = ?", array($site, $routeName, false));
           
     if ($checkIsActive) $query->andWhere('s.is_active = ?', array(true));
-
+    
     return $query->execute(array(), Doctrine_Core::HYDRATE_RECORD)->getFirst();
   }
     
@@ -103,7 +103,7 @@ class PluginSitetreeTable extends Doctrine_Table
     //$culture = sfContext::getInstance()->getUser()->getCulture();
 
     $query = $this->createQuery('s')
-           ->select('s.route_name, s.level, t.title')
+           ->select('s.route_name, s.level, t.title, t.link_title')
            ->leftJoin('s.Translation t ON (s.id = t.id) INDEXBY t.lang', array()) // AND t.lang = ? $culture
            ->where('s.site = ? AND s.is_core_navigation = ? AND s.is_active = ? AND s.is_deleted = ?', array($site, true, true, false))
            ->orderBy('s.lft');
