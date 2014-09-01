@@ -74,6 +74,9 @@ class sfCmsPluginConfiguration extends sfPluginConfiguration
         
         if ($dimension && in_array($dimension, $activeSites))
         {
+            // Set the dimension
+            $this->configuration->setDimension(array('site' => $dimension));
+
           // Load the config
           siteManager::getInstance()->loadSiteConfig($dimension);
         }
