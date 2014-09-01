@@ -18,6 +18,8 @@ all:
       - iframeDisplay
       
     default_site:               en  # define locally
+
+    # preview_https:            true # convert preview urls to https (chrome security warning)
     
     # for the backend to know what to display in the site selection - see README
     #active_sites:

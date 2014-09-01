@@ -187,6 +187,16 @@ class siteManager
   {
     return sfConfig::get('app_site_default_site');
   }
+
+  /**
+   * Checks if we require HTTPS on preview in CMS
+   *
+   * @return boolean
+   */
+  public function isPreviewHttps()
+  {
+    return sfConfig::get('app_site_preview_https', false);
+  }
   
   /**
    * Get the current site we're on (managed by ysfDimensions if multiple sites)
@@ -760,7 +770,6 @@ class siteManager
       
       if (false === strpos($hostName, 'http'))
       {
-        
         $hostName = sprintf('http%s://%s', ($request->isSecure() ? 's' : ''), $hostName);
       } 
     }
