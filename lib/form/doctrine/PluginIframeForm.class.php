@@ -42,6 +42,8 @@ abstract class PluginIframeForm extends BaseIframeForm
     $files    = array();
     $this->readDir($files, $location);
 
+    ksort($files);
+
     $combineFiles = array('' => 'No files uploaded');
     if (!empty($files)) $combineFiles = array(''=>'&nbsp;') + array_combine($files, $files);
 
