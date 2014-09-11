@@ -280,6 +280,11 @@ class ContentAdminComponents extends sfComponents
 
     $previewUrl = (siteManager::getInstance()->checkLock() ? false : siteManager::getInstance()->generateCrossAppUrlFor($contentGroup->getContentGroupType()->getPreviewUrl()));
 
+    if (siteManager::getInstance()->isPreviewHttps())
+    {
+      $previewUrl = preg_replace("/^http:/i", "https:", $previewUrl);
+    }
+
     $this->setVar('previewUrl', $previewUrl);
     $this->setVar('contentBlocks', $contentBlocks, true);
     $this->setVar('contentBlockVersions', $contentBlockVersions, true);

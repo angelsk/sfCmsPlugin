@@ -58,11 +58,24 @@ slot('breadcrumbs', get_partial('sitetree/breadcrumbs', array(
   
   <?php if (!empty($messages)) :
     $start = '';
-    $chars = range('a', 'z'); ?>
+    $chars = range('a', 'z');
+
+    try {
+      $lang = sfCultureInfo::getInstance()->getLanguage($selected_lang);
+    }
+    catch (InvalidArgumentException $e) {
+      // try splitting on country code and language
+      $parts = explode('_', $selected_lang);
+      $lang = sprintf('%s (%s)', sfCultureInfo::getInstance()->getLanguage($parts[0]), sfCultureInfo::getInstance()->getCountry($parts[1]));
+    }
+    catch (Exception $e) {
+      $lang = 'Unknown';
+    }
+    ?>
     <div id="sf_admin_content">
       <h1>
         <?php echo format_number_choice('[0]No strings to translate|[1]1 string to translate|(1,+Inf]%1% strings to translate', array('%1%'=>count($messages)), count($messages)); ?> 
-        (<?php echo __('Language'); ?>: <?php echo sfCultureInfo::getInstance()->getLanguage($selected_lang); ?>)
+        (<?php echo __('Language'); ?>: <?php echo $lang; ?>)
       </h1>
     
       <div class="sf_admin_form">
