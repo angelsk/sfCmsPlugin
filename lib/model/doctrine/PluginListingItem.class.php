@@ -18,7 +18,7 @@ abstract class PluginListingItem extends BaseListingItem
    * @param Listing $listing
    * @return Listing
    */
-  public static function createFromListing(Listing $listing) 
+  public static function createFromListing(Listing $listing)
   {
     $listingItem = new ListingItem();
     $listingItem->listing_id = $listing->id;
@@ -35,26 +35,26 @@ abstract class PluginListingItem extends BaseListingItem
     $this->ContentGroup = $group;
     $this->save();
   }
-  
+
   /**
    * Create a copy of the item including the content for the specified listing
-   * 
+   *
    * @param Listing $listing
    * @return ListingItem
    */
   public function createCopy($copyToListing)
   {
     $this->refreshRelated('Translation');
-    
+
     $copy = $this->copy(true);
     $copy->Listing  = $copyToListing;
     $copy->position = $copy->created_at = $copy->updated_at = null;
-    
+
     // Deal with categories
     if (!is_null($this->listing_category_id))
     {
       $copyToCategory = ListingCategoryTable::getInstance()->findOneByListingIdAndSlug($copyToListing->id, $this->ListingCategory->slug);
-      
+
       // If find match
       if ($copyToCategory)
       {
@@ -62,43 +62,51 @@ abstract class PluginListingItem extends BaseListingItem
       }
       else $copy->listing_category_id = null;
     }
-    
+
     $copy->updateNew(); // create content group and save item
-    
+
     // copy content from here
-    $blocks = $copy->ContentGroup->createFrom($this->ContentGroup->id); 
-    
+    $blocks = $copy->ContentGroup->createFrom($this->ContentGroup->id);
+
     $copy->refresh();
-    
-    
-    
+
+
+
     return $copy;
   }
-  
+
   /**
    * Get localised title
    *
    * @return string
    */
-  public function getTitle() 
+  public function getTitle()
   {
     $lang = sfContext::getInstance()->getUser()->getCulture();
     $title = $this->Translation[$lang]->title;
 
     // Don't return blank item title - return default culture version if
     // translation not available
-    if (!is_null($title)) 
+    if (!is_null($title))
     {
       return $title;
     }
-    else 
+    else
     {
+      // Try default language of the site
       $defn         = siteManager::getInstance()->getSite();
       $default_lang = $defn['default_culture'];
-      return $this->Translation[$default_lang]->title;
+      $title        = $this->Translation[$default_lang]->title;
+
+      if (!is_null($title)) return $title;
+      else
+      {
+          // Return first language so we have something
+          return $this->Translation->getFirst()->title;
+      }
     }
   }
-  
+
   /**
    * Render a listing item
    *
@@ -110,10 +118,10 @@ abstract class PluginListingItem extends BaseListingItem
   {
     if (is_null($listing)) $listing = $this->Listing;
     if (is_null($sitetreeNode)) $sitetreeNode = $listing->Sitetree;
-    
+
     $manager = listingManager::getInstance();
     $template = $listing->template;
-    
+
     $partialVariables = array('sitetree' => $sitetreeNode);
 
     // init fragment groups
@@ -122,7 +130,7 @@ abstract class PluginListingItem extends BaseListingItem
 
     // cache
     $useCache = false;
-    
+
     if ($tryUseCache)
     {
       // See if we should be using the cache for this template
@@ -137,15 +145,15 @@ abstract class PluginListingItem extends BaseListingItem
 
     // get template file location
     $partialVariables['templateFileLocation'] = $manager->getItemTemplateFile($template);
-    
+
     // Add stylesheets etc to response
     $response = sfContext::getInstance()->getResponse();
-    
+
     if ($stylesheets = $manager->getTemplateDefinitionParameter($template, 'item_stylesheets'))
     {
       foreach ($stylesheets as $stylesheet) $response->addStylesheet($stylesheet, '', array('media' => $media));
     }
-    
+
     if ($javascripts = $manager->getTemplateDefinitionParameter($template, 'item_javascripts'))
     {
       foreach ($javascripts as $javascript) $response->addJavascript($javascript, 'last');
@@ -156,7 +164,7 @@ abstract class PluginListingItem extends BaseListingItem
     $partialVariables['item']       = $this;
     $partialVariables['category']   = $this->ListingCategory;
     $partialVariables['contentGroup'] = $contentGroup;
-    
+
     if (!function_exists('get_partial'))
     {
       sfApplicationConfiguration::getActive()->loadHelpers('Partial');
@@ -167,10 +175,10 @@ abstract class PluginListingItem extends BaseListingItem
     sfConfig::set('sf_escaping_strategy', false);
     $content = get_partial('listingDisplay/render', $partialVariables);
     sfConfig::set('sf_escaping_strategy', $strategy);
-    
+
     return $content;
   }
-  
+
 
   /**
    * Initialise and return the ContentGroup for this item
@@ -197,10 +205,10 @@ abstract class PluginListingItem extends BaseListingItem
   {
     return $this->ContentGroup->renderContent($identifier, $extraParams);
   }
-  
+
   /**
    * Get date that the content fragment was last updated
-   * 
+   *
    * @param string $identifier
    */
   public function getLastUpdated($identifier, $format = 'd/m/Y H:i')
@@ -243,7 +251,7 @@ abstract class PluginListingItem extends BaseListingItem
 
     // delete the item:
     parent::delete($conn);
-    
+
     // delete associated item content group
     $this->ContentGroup->delete();
   }
