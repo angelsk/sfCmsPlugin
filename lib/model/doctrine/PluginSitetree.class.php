@@ -473,6 +473,21 @@ abstract class PluginSitetree extends BaseSitetree
   }
 
   /**
+   * Create copy of sitetree with images
+   *
+   * @param boolean $deep
+   * @see Doctrine_Record::copy();
+   */
+  public function copy($deep = false)
+  {
+    $copy = parent::copy($deep);
+
+    $copy->setImages($this->getPoolImages());
+
+    return $copy;
+  }
+
+  /**
    * Does this page share a URL with another page on the site
    *
    * @param string $url
