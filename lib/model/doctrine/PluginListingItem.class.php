@@ -70,7 +70,20 @@ abstract class PluginListingItem extends BaseListingItem
 
     $copy->refresh();
 
+    return $copy;
+  }
 
+  /**
+   * Create copy of item with images
+   *
+   * @param boolean $deep
+   * @see Doctrine_Record::copy();
+   */
+  public function copy($deep = false)
+  {
+    $copy = parent::copy($deep);
+
+    $copy->setImages($this->getPoolImages());
 
     return $copy;
   }
