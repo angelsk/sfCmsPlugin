@@ -95,26 +95,45 @@ abstract class PluginContentGroup extends BaseContentGroup
 
 		return $this->typeObj;
 	}
-	
+
 	/**
 	 * Copy content blocks and latest version of content from specified content group
-	 * 
+	 *
 	 * @param int $copyFromContentGroupId
 	 */
 	public function createFrom($copyFromContentGroupId)
 	{
 	  $copyContentFrom = ContentGroupTable::getInstance()->findOneById($copyFromContentGroupId);
 	  $contentBlocks = array();
-	  
+
 	  foreach ($copyContentFrom->getOrderedBlocks(true) as $block)
 	  {
 	    $contentBlockCopy = $block->copy(false);
 	    $contentBlockCopy->ContentGroup = $this;
 	    $contentBlockCopy->created_at = $contentBlockCopy->updated_at = null;
-	    
+
 	    $contentBlockCopy->save();
 	    $contentBlockCopy->refresh();
-	    
+
+	    $langs         = array();
+	    $matchLang     = null;
+	    $siteLang      = siteManager::getInstance()->getDefaultCulture();
+	    $siteLangParts = explode('_', $siteLang, 2);
+
+	    // Find closest match for lang
+	    foreach ($block->getCurrentVersions() as $cv)
+	    {
+	      if (!empty($cv->lang))
+	      {
+    	    $langParts = explode('_', $cv->lang, 2);
+    	    if ($langParts[0] == $siteLangParts[0]) $matchLang = $cv->lang;
+
+    	    $langs[] = $cv->lang;
+	      }
+	    }
+
+	    if (empty($matchLang) && !empty($langs)) $matchLang = $langs[0]; // If not closest match then just go for matching the first lang
+
 	    // Get latest versions (all langs)
 	    foreach ($block->getCurrentVersions() as $cv)
 	    {
@@ -123,18 +142,23 @@ abstract class PluginContentGroup extends BaseContentGroup
 	      $contentVersionCopy->created_at = null;
 	      // NOTE: We're not going to reset any lang here - as copying content from english
 	      // to french (for example) makes no sense
-	      
+	      // NOTE2: Actually - we are - because copying content invisibly makes less sense ;) (But only doing this for content blocks)
+	      if (!empty($matchLang) && $cv->lang == $matchLang)
+	      {
+	        $contentVersionCopy->lang = $siteLang;
+	      }
+
 	      $contentVersionCopy->save();
 	      $contentVersionCopy->refresh();
-	      
+
 	      $contentBlockCopy->makeVersionCurrent($contentVersionCopy);
 	    }
-	    
+
 	    $contentBlocks[] = $contentBlockCopy;
 	  }
-	  
+
 	  $this->refresh();
-	  
+
 	  return $contentBlocks;
 	}
 
@@ -175,14 +199,14 @@ abstract class PluginContentGroup extends BaseContentGroup
 
 	/**
 	 * Is this a new content group - no blocks yet?
-	 * 
+	 *
 	 * @return boolean
 	 */
 	public function isNew()
 	{
 	  return (count($this->getContentBlocks()) == 0);
 	}
-	
+
 	/**
 	 * Initialises the Content blocks for this group, that is:
 	 *  - Looks at Content block definitions for this group
@@ -400,7 +424,7 @@ abstract class PluginContentGroup extends BaseContentGroup
           $cVersion->delete();
           $cVersion->free();
         }
-        
+
         // delete all of the ContentBlock versions
         $allVersions = $contentBlock->Versions;
         foreach ($allVersions as $version)
@@ -408,7 +432,7 @@ abstract class PluginContentGroup extends BaseContentGroup
           $version->delete();
           $version->free();
         }
-  
+
         $this->ContentBlocks->remove($key);
         $contentBlock->delete();
         $contentBlock->free();
@@ -540,10 +564,10 @@ abstract class PluginContentGroup extends BaseContentGroup
 			return $contentBlockVersion->getContentBlockType()->render();
 		}
 	}
-	
+
 	/**
    * Get date that the content fragment was last updated
-   * 
+   *
    * @param string $identifier
    */
   public function getLastUpdated($identifier, $format = 'd/m/Y H:i')
@@ -557,10 +581,10 @@ abstract class PluginContentGroup extends BaseContentGroup
     {
       return null;
     }
-    
+
     return $contentBlockVersion->CurrentVersion->getDateTimeObject('updated_at')->format($format);
   }
-	
+
 
 	/**
 	 * Delete this Content group and all associated Content
@@ -578,7 +602,7 @@ abstract class PluginContentGroup extends BaseContentGroup
         $cVersion->delete();
         $cVersion->free();
       }
-		  
+
 			// delete all of the ContentBlock versions
 			$allVersions = $contentBlock->Versions;
 			foreach ($allVersions as $version)

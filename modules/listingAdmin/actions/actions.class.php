@@ -13,13 +13,13 @@ class listingAdminActions extends sfActions
   public function preExecute()
   {
     $this->getResponse()->addJavascript('/sfCmsPlugin/js/SimpleTabs.js', 'last');
-    
+
     // Permissions
     $user = sfContext::getInstance()->getUser();
     $this->canAdmin   = $user->hasCredential('site.admin');
     $this->canPublish = ($this->canAdmin || $user->hasCredential('site.publish'));
   }
-  
+
   /**
    * Edit a listing by a route_name
    *
@@ -95,7 +95,7 @@ class listingAdminActions extends sfActions
         $this->getUser()->setFlash('edit_notice', 'Your listing property changes have been saved');
       }
     }
-    
+
     // get a pager for the items in this content listing:
     $pager = $this->getPager($listing);
     $pager->initFromRequest($request);
@@ -156,10 +156,10 @@ class listingAdminActions extends sfActions
     $this->setVar('contentGroup', null);
     $this->setTemplate('editItem');
   }
-  
+
   /**
    * Import items from another site
-   * 
+   *
    * @param sfWebRequest $request
    */
   public function executeImportItems(sfWebRequest $request)
@@ -169,20 +169,20 @@ class listingAdminActions extends sfActions
     $listing   = ListingTable::getInstance()->findOneById($request->getParameter('id'));
 
     $this->forward404Unless($listing);
-    
+
     if (!$this->canPublish) $this->redirect('listingAdmin/edit?id=' . $listing->id);
-    
+
     $sitetree   = SitetreeTable::getInstance()->findOneById($listing->sitetree_id);
     $template   = $listing->template;
     $order      = listingManager::getInstance()->getListItemOrdering($template);
     $itemClass  = listingManager::getInstance()->getListItemClass($template);
-    
+
     // If importing
     if ($request->isMethod(sfWebRequest::POST) || $request->isMethod(sfWebRequest::PUT))
     {
       $itemIds     = $request->getParameter('import_listing_items', array());
       $copiedItems = array();
-      
+
       if (!empty($itemIds))
       {
         try
@@ -190,14 +190,14 @@ class listingAdminActions extends sfActions
           foreach ($itemIds as $itemId)
           {
             $item = Doctrine_Core::getTable($itemClass)->findOneById($itemId);
-            
+
             if ($item)
             {
               // Create copy with final version of content
               $copiedItems[] = $item->createCopy($listing);
             }
           }
-          
+
           $this->getUser()->setFlash('listing_notice', count($copiedItems) . ' item(s) imported');
           $this->redirect('listingAdmin/edit?id=' . $listing->id);
         }
@@ -211,9 +211,9 @@ class listingAdminActions extends sfActions
         $this->getUser()->setFlash('listing_error', 'No items selected to import');
       }
     }
-    
+
     // Get other items of this template
-    $this->setVar('items', Doctrine_Core::getTable($itemClass)->findOtherItemsByListing($listing, $sitetree->site, $order));
+    $this->setVar('items', Doctrine_Core::getTable($itemClass)->findOtherItemsByListing($listing, $sitetree->site, 'site, '. $order));
     $this->setVar('sitetree', $sitetree, true);
     $this->setVar('listing', $listing);
     $this->setVar('importedItems', $request->getParameter('import_listing_items', array()), true);
@@ -239,7 +239,7 @@ class listingAdminActions extends sfActions
     $template   = $listing->template;
     $itemClass  = $manager->getListItemClass($template);
     $item       = Doctrine_Core::getTable($itemClass)->findOneById($request->getParameter('id'));
-    
+
     $this->forward404Unless($item, 'No item with that id');
 
     $contentGroup = $item->ContentGroup;
@@ -253,7 +253,7 @@ class listingAdminActions extends sfActions
 
     $contentGroup->setCurrentLang($this->getUser()->getCulture());
     $contentGroup->getContentGroupType()->setListingItem($item);
-    
+
     $this->forward404Unless($contentGroup, 'Item is missing content group');
 
     // get the form we're using to edit this item
@@ -307,7 +307,7 @@ class listingAdminActions extends sfActions
     $template   = $listing->template;
     $itemClass  = $manager->getListItemClass($template);
     $item       = Doctrine_Core::getTable($itemClass)->findOneById($request->getParameter('id'));
-    
+
     $this->forward404Unless($item, 'No item with that id');
 
     // Reset the ordering for the listing, based on current order then creation date
@@ -318,7 +318,7 @@ class listingAdminActions extends sfActions
 
     $direction  = $request->getParameter('direction');
     $directions = array('top', 'up', 'down', 'bottom'); // Currently just using up/down
-    
+
     $this->forward404Unless(in_array($direction, $directions));
 
     $methodName = "move" . ucfirst($direction);
@@ -335,9 +335,9 @@ class listingAdminActions extends sfActions
   {
     $manager = listingManager::getInstance();
     $listing = ListingTable::getInstance()->findOneById($request->getParameter('listId'));
-    
+
     $this->forward404Unless($listing);
-    
+
     if (!$this->canPublish) $this->redirect("listingAdmin/edit?id=$listing->id");
 
     $sitetree = SitetreeTable::getInstance()->findOneById($listing->sitetree_id);
@@ -346,7 +346,7 @@ class listingAdminActions extends sfActions
     $template   = $listing->template;
     $itemClass  = $manager->getListItemClass($template);
     $item       = Doctrine_Core::getTable($itemClass)->findOneById($request->getParameter('id'));
-    
+
     $this->forward404Unless($item, 'No item with that id');
 
     $item->publish();
@@ -365,9 +365,9 @@ class listingAdminActions extends sfActions
   {
     $manager = listingManager::getInstance();
     $listing = ListingTable::getInstance()->findOneById($request->getParameter('listId'));
-    
+
     $this->forward404Unless($listing);
-    
+
     if (!$this->canAdmin) $this->redirect("listingAdmin/edit?id=$listing->id");
 
     $sitetree = SitetreeTable::getInstance()->findOneById($listing->sitetree_id);
@@ -376,7 +376,7 @@ class listingAdminActions extends sfActions
     $template   = $listing->template;
     $itemClass  = $manager->getListItemClass($template);
     $item       = Doctrine_Core::getTable($itemClass)->findOneById($request->getParameter('id'));
-    
+
     $this->forward404Unless($item, 'No item with that id');
 
     $item->delete();
@@ -400,7 +400,7 @@ class listingAdminActions extends sfActions
     $template   = $listing->template;
     $pagerClass = $manager->getListItemPagerClass($template);
     $pager      = new $pagerClass($listing);
-    
+
     $pager->setMaxPerPage(15); // Lets not get silly in the admin area
     $pager->getQuery()->addWhere('listing_id = ?', array($listing->id));
 
