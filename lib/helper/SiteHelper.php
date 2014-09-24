@@ -27,18 +27,18 @@
  * @param array $params
  * @return string
  */
-function internal_url_for_sitetree($sitetree, $name='', $params = array()) 
+function internal_url_for_sitetree($sitetree, $name='', $params = array())
 {
-  if (is_string($sitetree)) 
+  if (is_string($sitetree))
   {
     $site = siteManager::getInstance()->getCurrentSite();
-    
+
     // check is active node
     $sitetree = SitetreeTable::getInstance()->retrieveByRoutename($site, $sitetree, true);
   }
-  
+
   if (!$sitetree) return false;
-    
+
   return siteManager::getInstance()->getRoutingProxy()->generateInternalUrl($sitetree, $name, $params);
 }
 
@@ -50,12 +50,12 @@ function internal_url_for_sitetree($sitetree, $name='', $params = array())
  * @param array $options link_to options
  * @return string
  */
-function link_to_sitetree($sitetree, $displayName=null, $options=array()) 
+function link_to_sitetree($sitetree, $displayName=null, $options=array())
 {
-  if (is_string($sitetree))  
+  if (is_string($sitetree))
   {
     $site = siteManager::getInstance()->getCurrentSite();
-    
+
     // check is active node
     $sitetree = SitetreeTable::getInstance()->retrieveByRoutename($site, $sitetree, true);
   }
@@ -63,34 +63,34 @@ function link_to_sitetree($sitetree, $displayName=null, $options=array())
   if (!$sitetree) return false;
 
   // If we want to not render links for hidden sitetrees
-  if (isset($options['not_hidden']) && true == $options['not_hidden'] && $sitetree->is_hidden) 
+  if (isset($options['not_hidden']) && true == $options['not_hidden'] && $sitetree->is_hidden)
   {
     return false;
   }
-  
+
   // If it contains html in the $displayName
-  $escapeTitle = !(isset($options['not_escaped']) && true == $options['not_escaped']); 
-  
-  if (isset($options['not_escaped'])) 
+  $escapeTitle = !(isset($options['not_escaped']) && true == $options['not_escaped']);
+
+  if (isset($options['not_escaped']))
   {
     unset($options['not_escaped']);
   }
-  
+
   $internalUrl = internal_url_for_sitetree($sitetree, '');
 
   if ($displayName === null) $displayName = $sitetree->getTitle();
   if ($escapeTitle) $displayName = htmlentities($displayName, null, 'utf-8', false);
-  
-  if (!isset($options['title'])) 
+
+  if (!isset($options['title']))
   {
       $linkTitle = $sitetree->getLinkTitle();
-    
-      if ('' != $linkTitle)  
+
+      if ('' != $linkTitle)
       {
         if ($escapeTitle) $options['title'] = htmlentities($linkTitle, null, 'utf-8', false);
         else $options['title'] = $linkTitle;
       }
-      else 
+      else
       {
         $options['title'] = strip_tags($displayName);
       }
@@ -102,16 +102,16 @@ function link_to_sitetree($sitetree, $displayName=null, $options=array())
 /**
  * Gets the title for a sitetree node
  */
-function title_for_sitetree($sitetree) 
+function title_for_sitetree($sitetree)
 {
-  if (is_string($sitetree)) 
+  if (is_string($sitetree))
   {
     $site = siteManager::getInstance()->getCurrentSite();
-    
+
     // check is active node
     $sitetree = SitetreeTable::getInstance()->retrieveByRoutename($site, $sitetree, true);
   }
-  
+
   if (!$sitetree) return false;
 
   $displayName = $sitetree->getTitle();
@@ -121,78 +121,78 @@ function title_for_sitetree($sitetree)
 
 /**
  * Generate the rss URL for a listing
- * 
+ *
  * @param string/sitetree $sitetree
  */
-function rss_for_sitetree($sitetree) 
+function rss_for_sitetree($sitetree)
 {
-  if (is_string($sitetree))  
+  if (is_string($sitetree))
   {
     $site = siteManager::getInstance()->getCurrentSite();
-    
+
     // check is active node
     $sitetree = SitetreeTable::getInstance()->retrieveByRoutename($site, $sitetree, true);
   }
 
   if (!$sitetree) return false;
-  
-  if ('listingDisplay' != $sitetree->target_module) 
+
+  if ('listingDisplay' != $sitetree->target_module)
   {
     return false;
   }
-  
+
   $listing = ListingTable::getInstance()->findOneBySitetreeId($sitetree->id);
-  
+
   // Set in listing - e.g: Feedburner URL
-  if ('' != $listing->getRssUrl()) 
+  if ('' != $listing->getRssUrl())
   {
     return $listing->getRssUrl();
   }
-  else if (listingManager::getInstance()->getRssEnabled($listing->template)) 
+  else if (listingManager::getInstance()->getRssEnabled($listing->template))
   {
     return url_for(internal_url_for_sitetree($sitetree, 'rss'), true);
   }
-  
+
   else return false;
 }
 
 /**
  * Generate the atom URL for a listing
- * 
+ *
  * @param string/sitetree $sitetree
  */
 function atom_for_sitetree($sitetree)
 {
-  if (is_string($sitetree))  
+  if (is_string($sitetree))
   {
     $site = siteManager::getInstance()->getCurrentSite();
-  
+
     // check is active node
     $sitetree = SitetreeTable::getInstance()->retrieveByRoutename($site, $sitetree, true);
   }
 
-  if (!$sitetree) 
+  if (!$sitetree)
   {
     return false;
   }
-  
-  if ('listingDisplay' != $sitetree->target_module) 
+
+  if ('listingDisplay' != $sitetree->target_module)
   {
     return false;
   }
-  
+
   $listing = ListingTable::getInstance()->findOneBySitetreeId($sitetree->id);
-  
+
   // Set in listing - e.g: Feedburner URL
-  if ('' != $listing->getRssUrl()) 
+  if ('' != $listing->getRssUrl())
   {
     return $listing->getRssUrl();
   }
-  else if (listingManager::getInstance()->getRssEnabled($listing->template)) 
+  else if (listingManager::getInstance()->getRssEnabled($listing->template))
   {
     return url_for(internal_url_for_sitetree($sitetree, 'atom'), true);
   }
-  else 
+  else
   {
     return false;
   }
@@ -205,9 +205,9 @@ function atom_for_sitetree($sitetree)
  * @param int $lifeTime
  * @return boolean
  */
-function site_cache($name, $lifeTime = 86400) 
+function site_cache($name, $lifeTime = 86400)
 {
-  if (!sfConfig::get('sf_cache')) 
+  if (!sfConfig::get('sf_cache'))
   {
     // if we're not using the symfony cache, don't use the site one
     return null;
@@ -215,14 +215,14 @@ function site_cache($name, $lifeTime = 86400)
 
   $cache = siteManager::getInstance()->getCache();
 
-  if (sfConfig::get('site.cache.started')) 
+  if (sfConfig::get('site.cache.started'))
   {
     throw new sfCacheException('Cache already started.');
   }
 
   $data = $cache->get($name);
 
-  if ($data === null) 
+  if ($data === null)
   {
     sfConfig::set('site.cache.started', true);
     sfConfig::set('site.cache.name', $name);
@@ -232,8 +232,8 @@ function site_cache($name, $lifeTime = 86400)
     ob_implicit_flush(0);
 
     return false;
-  } 
-  else 
+  }
+  else
   {
     echo $data;
     return true;
@@ -243,15 +243,15 @@ function site_cache($name, $lifeTime = 86400)
 /**
  * Version of symfony's cache_save() which uses the site cache instead.
  */
-function site_cache_save() 
+function site_cache_save()
 {
-  if (!sfConfig::get('sf_cache')) 
+  if (!sfConfig::get('sf_cache'))
   {
     // if we're not using the symfony cache, don't use the site one
     return null;
   }
 
-  if (!sfConfig::get('site.cache.started')) 
+  if (!sfConfig::get('site.cache.started'))
   {
     throw new sfCacheException('Cache not started.');
   }
@@ -271,33 +271,33 @@ function site_cache_save()
 
 /**
  * Make the input XML friendly - e.g: escape utf-8 html encoded characters into their hex form
- * 
+ *
  * Used for the listing RSS feeds
- * 
+ *
  * @param string $content
  */
-function xml_character_encode($content = "") 
+function xml_character_encode($content = "")
 {
   $content = html_entity_decode($content, null, 'utf-8');
   $contents = unicode_string_to_array($content);
   $swap = "";
   $iCount = count($contents);
 
-  for ($o=0;$o<$iCount;$o++) 
+  for ($o=0;$o<$iCount;$o++)
   {
     $contents[$o] = unicode_entity_replace($contents[$o]);
     $swap .= $contents[$o];
   }
 
-  return mb_convert_encoding($swap, "UTF-8"); 
+  return mb_convert_encoding($swap, "UTF-8");
 }
 
-function unicode_string_to_array($string) 
-{ 
+function unicode_string_to_array($string)
+{
   $strlen = mb_strlen($string);
   $array = array();
 
-  while ($strlen) 
+  while ($strlen)
   {
     $array[] = mb_substr( $string, 0, 1, "UTF-8" );
     $string = mb_substr( $string, 1, $strlen, "UTF-8" );
@@ -307,13 +307,13 @@ function unicode_string_to_array($string)
   return $array;
 }
 
-function unicode_entity_replace($c) 
-{ 
-  $h = ord($c{0});   
+function unicode_entity_replace($c)
+{
+  $h = ord($c{0});
 
-  if ($h <= 0x7F || $h < 0xC2) 
+  if ($h <= 0x7F || $h < 0xC2)
   {
-    switch ($c) 
+    switch ($c)
     {
       case '<':
         return '&lt;';
@@ -328,19 +328,19 @@ function unicode_entity_replace($c)
     }
   }
 
-  if ($h <= 0xDF) 
+  if ($h <= 0xDF)
   {
     $h = ($h & 0x1F) << 6 | (ord($c{1}) & 0x3F);
     $h = "&#" . $h . ";";
     return $h;
-  } 
-  else if ($h <= 0xEF) 
+  }
+  else if ($h <= 0xEF)
   {
     $h = ($h & 0x0F) << 12 | (ord($c{1}) & 0x3F) << 6 | (ord($c{2}) & 0x3F);
     $h = "&#" . $h . ";";
     return $h;
-  } 
-  else if ($h <= 0xF4) 
+  }
+  else if ($h <= 0xF4)
   {
     $h = ($h & 0x0F) << 18 | (ord($c{1}) & 0x3F) << 12 | (ord($c{2}) & 0x3F) << 6 | (ord($c{3}) & 0x3F);
     $h = "&#" . $h . ";";
