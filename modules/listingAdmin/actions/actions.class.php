@@ -213,7 +213,7 @@ class listingAdminActions extends sfActions
     }
 
     // Get other items of this template
-    $this->setVar('items', Doctrine_Core::getTable($itemClass)->findOtherItemsByListing($listing, $sitetree->site, 'site, '. $order));
+    $this->setVar('items', Doctrine_Core::getTable($itemClass)->findOtherItemsByListing($listing, $sitetree->site, 'site, listing_id, '. $order));
     $this->setVar('sitetree', $sitetree, true);
     $this->setVar('listing', $listing);
     $this->setVar('importedItems', $request->getParameter('import_listing_items', array()), true);
